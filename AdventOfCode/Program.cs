@@ -16,8 +16,10 @@ namespace AdventOfCode
             // Day3B(args[0]);
             // Day4A(args[0]);
             // Day4B(args[0]);
-            Day5A(args[0]);
-            Day5B(args[0]);
+            // Day5A(args[0]);
+            // Day5B(args[0]);
+            Day6A(args[0]);
+            Day6B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -91,6 +93,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day5.GetMySeatId(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day6A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day6.CalculateQuestionSumAllQuestions(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day6B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day6.CalculateQuestionSumSameQuestions(input);
             Console.WriteLine(total);
         }
         }
