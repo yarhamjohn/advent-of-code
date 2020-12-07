@@ -12,8 +12,10 @@ namespace AdventOfCode
             // Day1B(args[0]);
             // Day2A(args[0]);
             // Day2B(args[0]);
-            Day3A(args[0]);
-            Day3B(args[0]);
+            // Day3A(args[0]);
+            // Day3B(args[0]);
+            Day4A(args[0]);
+            Day4B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -60,6 +62,20 @@ namespace AdventOfCode
             var total4 = Day3.CountTreesHit(input, 7, 1);
             var total5 = Day3.CountTreesHit(input, 1, 2);
             Console.WriteLine((long)total1 * total2 * total3 * total4 * total5);
+        }
+        
+        private static void Day4A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day4.CountPassportsWithExpectedFields(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day4B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day4.CountPassportsWithValidFields(input);
+            Console.WriteLine(total);
         }
         }
     }
