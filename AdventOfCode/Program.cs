@@ -18,8 +18,10 @@ namespace AdventOfCode
             // Day4B(args[0]);
             // Day5A(args[0]);
             // Day5B(args[0]);
-            Day6A(args[0]);
-            Day6B(args[0]);
+            // Day6A(args[0]);
+            // Day6B(args[0]);
+            // Day7A(args[0]);
+            Day7B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -109,6 +111,19 @@ namespace AdventOfCode
             var total = Day6.CalculateQuestionSumSameQuestions(input);
             Console.WriteLine(total);
         }
+        
+        private static void Day7A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day7.CountContainingBagColours(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day7B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day7.CountContainingBags(input);
+            Console.WriteLine(total);
         }
     }
 }
