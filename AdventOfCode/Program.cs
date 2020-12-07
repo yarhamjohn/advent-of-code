@@ -8,8 +8,10 @@ namespace AdventOfCode
     {
         public static void Main(string[] args)
         {
-            Day1A(args[0]);
-            Day1B(args[0]);
+            // Day1A(args[0]);
+            // Day1B(args[0]);
+            Day2A(args[0]);
+            Day2B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -23,6 +25,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path);
             var total = Day1.CalculateTotalForThreeNumbers(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day2A(string path)
+        {
+            var input = File.ReadLines(path);
+            var total = Day2.CountValidPasswordsWrongPolicy(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day2B(string path)
+        {
+            var input = File.ReadLines(path);
+            var total = Day2.CountValidPasswordsCorrectPolicy(input);
             Console.WriteLine(total);
         }
         }
