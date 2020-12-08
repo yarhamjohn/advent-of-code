@@ -21,7 +21,9 @@ namespace AdventOfCode
             // Day6A(args[0]);
             // Day6B(args[0]);
             // Day7A(args[0]);
-            Day7B(args[0]);
+            // Day7B(args[0]);
+            Day8A(args[0]);
+            Day8B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -123,6 +125,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day7.CountContainingBags(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day8A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day8.GetNumBeforeInfiniteLoop(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day8B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day8.GetNumAfterBreakingInfiniteLoop(input);
             Console.WriteLine(total);
         }
     }
