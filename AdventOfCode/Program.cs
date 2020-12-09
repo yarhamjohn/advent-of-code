@@ -22,8 +22,10 @@ namespace AdventOfCode
             // Day6B(args[0]);
             // Day7A(args[0]);
             // Day7B(args[0]);
-            Day8A(args[0]);
-            Day8B(args[0]);
+            // Day8A(args[0]);
+            // Day8B(args[0]);
+            Day9A(args[0]);
+            Day9B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -139,6 +141,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day8.GetNumAfterBreakingInfiniteLoop(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day9A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day9.GetInvalidNum(input, 25);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day9B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day9.GetWeakness(input, 25);
             Console.WriteLine(total);
         }
     }
