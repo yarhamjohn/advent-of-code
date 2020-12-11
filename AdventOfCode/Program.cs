@@ -24,8 +24,10 @@ namespace AdventOfCode
             // Day7B(args[0]);
             // Day8A(args[0]);
             // Day8B(args[0]);
-            Day9A(args[0]);
-            Day9B(args[0]);
+            // Day9A(args[0]);
+            // Day9B(args[0]);
+            // Day10A(args[0]);
+            Day10B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -155,6 +157,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day9.GetWeakness(input, 25);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day10A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day10.GetJoltDifference(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day10B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day10.GetAdapterArrangements(input);
             Console.WriteLine(total);
         }
     }
