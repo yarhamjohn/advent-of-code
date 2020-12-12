@@ -28,8 +28,10 @@ namespace AdventOfCode
             // Day9B(args[0]);
             // Day10A(args[0]);
             // Day10B(args[0]);
-            Day11A(args[0]);
-            Day11B(args[0]);
+            // Day11A(args[0]);
+            // Day11B(args[0]);
+            Day12A(args[0]);
+            Day12B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -187,6 +189,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day11.CountEmptySeatsNewRules(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day12A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day12.CalculateManhattanDistance(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day12B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day12.CalculateManhattanDistanceUsingWaypoint(input);
             Console.WriteLine(total);
         }
     }
