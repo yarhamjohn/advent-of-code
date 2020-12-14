@@ -32,8 +32,10 @@ namespace AdventOfCode
             // Day11B(args[0]);
             // Day12A(args[0]);
             // Day12B(args[0]);
-            Day13A(args[0]);
-            Day13B(args[0]);
+            // Day13A(args[0]);
+            // Day13B(args[0]);
+            Day14A(args[0]);
+            Day14B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -219,6 +221,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day13.CalculateTimestamp(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day14A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day14.SumInMemoryValues(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day14B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day14.SumInMemoryValuesVersion2(input);
             Console.WriteLine(total);
         }
     }
