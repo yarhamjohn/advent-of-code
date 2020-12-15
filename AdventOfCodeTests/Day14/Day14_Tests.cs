@@ -16,6 +16,7 @@ namespace AdventOfCodeTests.Day14
             Assert.That(result, Is.EqualTo(165));
         }
         [Test]
+        
         public void Should_Sum_In_Memory_Values_Version_Two()
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day14/Input/Example2.txt");
