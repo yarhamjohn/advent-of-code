@@ -36,10 +36,12 @@ namespace AdventOfCode
             // Day13B(args[0]);
             // Day14A(args[0]);
             // Day14B(args[0]);
-            Day15A(args[0]);
-            Day15B(args[0]);
-            Day16A(args[0]);
-            Day16B(args[0]);
+            // Day15A(args[0]);
+            // Day15B(args[0]);
+            // Day16A(args[0]);
+            // Day16B(args[0]);
+            Day17A(args[0]);
+            Day17B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -267,6 +269,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day16.CalculateDepartureFields(input, "departure");
+            Console.WriteLine(total);
+        }
+        
+        private static void Day17A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day17.CountActiveCubes(input, 3);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day17B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day17.CountActiveCubes(input, 4);
             Console.WriteLine(total);
         }
     }
