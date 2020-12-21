@@ -42,8 +42,10 @@ namespace AdventOfCode
             // Day16B(args[0]);
             // Day17A(args[0]);
             // Day17B(args[0]);
-            Day18A(args[0]);
-            Day18B(args[0]);
+            // Day18A(args[0]);
+            // Day18B(args[0]);
+            Day19A(args[0]);
+            Day19B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -299,6 +301,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day18.CalculateWithPrecedence(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day19A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day19.CountValidMessages(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day19B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day19.CountValidMessages(input);
             Console.WriteLine(total);
         }
     }
