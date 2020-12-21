@@ -40,8 +40,10 @@ namespace AdventOfCode
             // Day15B(args[0]);
             // Day16A(args[0]);
             // Day16B(args[0]);
-            Day17A(args[0]);
-            Day17B(args[0]);
+            // Day17A(args[0]);
+            // Day17B(args[0]);
+            Day18A(args[0]);
+            Day18B(args[0]);
         }
 
         private static void Day1A(string path)
@@ -283,6 +285,20 @@ namespace AdventOfCode
         {
             var input = File.ReadLines(path).ToList();
             var total = Day17.CountActiveCubes(input, 4);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day18A(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day18.Calculate(input);
+            Console.WriteLine(total);
+        }
+        
+        private static void Day18B(string path)
+        {
+            var input = File.ReadLines(path).ToList();
+            var total = Day18.CalculateWithPrecedence(input);
             Console.WriteLine(total);
         }
     }
