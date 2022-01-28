@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day10
+namespace AdventOfCode2020Tests.Day10
 {
     [TestFixture]
     public class Day10_Tests
@@ -12,7 +12,7 @@ namespace AdventOfCodeTests.Day10
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day10/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day10.GetJoltDifference(input);
+            var result = AdventOfCode2020.Day10.Day10.GetJoltDifference(input);
             Assert.That(result, Is.EqualTo(35));
         }
         
@@ -21,7 +21,7 @@ namespace AdventOfCodeTests.Day10
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day10/Input/Example2.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day10.GetJoltDifference(input);
+            var result = AdventOfCode2020.Day10.Day10.GetJoltDifference(input);
             Assert.That(result, Is.EqualTo(220));
         }
         
@@ -30,7 +30,7 @@ namespace AdventOfCodeTests.Day10
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day10/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day10.GetAdapterArrangements(input);
+            var result = AdventOfCode2020.Day10.Day10.GetAdapterArrangements(input);
             Assert.That(result, Is.EqualTo(8));
         }
         
@@ -39,7 +39,7 @@ namespace AdventOfCodeTests.Day10
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day10/Input/Example2.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day10.GetAdapterArrangements(input);
+            var result = AdventOfCode2020.Day10.Day10.GetAdapterArrangements(input);
             Assert.That(result, Is.EqualTo(19208));
         }
         
@@ -48,7 +48,7 @@ namespace AdventOfCodeTests.Day10
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day10/Input/Example3.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day10.GetAdapterArrangements(input);
+            var result = AdventOfCode2020.Day10.Day10.GetAdapterArrangements(input);
             Assert.That(result, Is.EqualTo(4));
         }
         
@@ -57,7 +57,7 @@ namespace AdventOfCodeTests.Day10
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day10/Input/Example4.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day10.GetAdapterArrangements(input);
+            var result = AdventOfCode2020.Day10.Day10.GetAdapterArrangements(input);
             Assert.That(result, Is.EqualTo(49));
         }
     }

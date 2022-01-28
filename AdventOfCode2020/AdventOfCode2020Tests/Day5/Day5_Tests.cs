@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day5
+namespace AdventOfCode2020Tests.Day5
 {
     [TestFixture]
     public class Day5_Tests
@@ -12,7 +12,7 @@ namespace AdventOfCodeTests.Day5
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day5/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day5.GetHighestSeatId(input);
+            var result = AdventOfCode2020.Day5.Day5.GetHighestSeatId(input);
             Assert.That(result, Is.EqualTo(820));
         }
     }

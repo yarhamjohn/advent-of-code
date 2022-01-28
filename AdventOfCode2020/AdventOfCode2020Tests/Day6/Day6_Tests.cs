@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day6
+namespace AdventOfCode2020Tests.Day6
 {
     [TestFixture]
     public class Day6_Tests
@@ -12,7 +12,7 @@ namespace AdventOfCodeTests.Day6
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day6/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day6.CalculateQuestionSumAllQuestions(input);
+            var result = AdventOfCode2020.Day6.Day6.CalculateQuestionSumAllQuestions(input);
             Assert.That(result, Is.EqualTo(11));
         }
         
@@ -21,7 +21,7 @@ namespace AdventOfCodeTests.Day6
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day6/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day6.CalculateQuestionSumSameQuestions(input);
+            var result = AdventOfCode2020.Day6.Day6.CalculateQuestionSumSameQuestions(input);
             Assert.That(result, Is.EqualTo(6));
         }
     }

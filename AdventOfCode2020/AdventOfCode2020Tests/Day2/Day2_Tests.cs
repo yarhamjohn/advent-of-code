@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day2
+namespace AdventOfCode2020Tests.Day2
 {
     [TestFixture]
     public class Day2Tests
@@ -11,7 +11,7 @@ namespace AdventOfCodeTests.Day2
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day2/Input/Example.txt");
             var input = File.ReadAllLines(inputPath);
-            var result = AdventOfCode.Day2.CountValidPasswordsWrongPolicy(input);
+            var result = AdventOfCode2020.Day2.Day2.CountValidPasswordsWrongPolicy(input);
             Assert.That(result, Is.EqualTo(2));
         }
         
@@ -20,7 +20,7 @@ namespace AdventOfCodeTests.Day2
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day2/Input/Example.txt");
             var input = File.ReadAllLines(inputPath);
-            var result = AdventOfCode.Day2.CountValidPasswordsCorrectPolicy(input);
+            var result = AdventOfCode2020.Day2.Day2.CountValidPasswordsCorrectPolicy(input);
             Assert.That(result, Is.EqualTo(1));
         }
     }

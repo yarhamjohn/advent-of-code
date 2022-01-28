@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day12
+namespace AdventOfCode2020Tests.Day12
 {
     [TestFixture]
     public class Day12_Tests
@@ -12,7 +12,7 @@ namespace AdventOfCodeTests.Day12
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day12/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day12.CalculateManhattanDistance(input);
+            var result = AdventOfCode2020.Day12.Day12.CalculateManhattanDistance(input);
             Assert.That(result, Is.EqualTo(25));
         }
         
@@ -21,7 +21,7 @@ namespace AdventOfCodeTests.Day12
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day12/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day12.CalculateManhattanDistanceUsingWaypoint(input);
+            var result = AdventOfCode2020.Day12.Day12.CalculateManhattanDistanceUsingWaypoint(input);
             Assert.That(result, Is.EqualTo(286));
         }
     }

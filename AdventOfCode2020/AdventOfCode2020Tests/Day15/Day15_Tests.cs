@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day15
+namespace AdventOfCode2020Tests.Day15
 {
     [TestFixture]
     public class Day15_Tests
@@ -16,7 +16,7 @@ namespace AdventOfCodeTests.Day15
         [TestCase("3,1,2", 1836)]
         public void Should_Find_2020th_Number(string input, int target)
         {
-            var result = AdventOfCode.Day15.FindNumber(input, 2020);
+            var result = AdventOfCode2020.Day15.Day15.FindNumber(input, 2020);
             Assert.That(result, Is.EqualTo(target));
         }
         
@@ -29,7 +29,7 @@ namespace AdventOfCodeTests.Day15
         [TestCase("3,1,2", 362)]
         public void Should_Find_30000000th_Number(string input, int target)
         {
-            var result = AdventOfCode.Day15.FindNumber(input, 30000000);
+            var result = AdventOfCode2020.Day15.Day15.FindNumber(input, 30000000);
             Assert.That(result, Is.EqualTo(target));
         }
     }

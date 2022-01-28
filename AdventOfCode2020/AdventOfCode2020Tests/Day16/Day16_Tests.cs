@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day16
+namespace AdventOfCode2020Tests.Day16
 {
     [TestFixture]
     public class Day16_Tests
@@ -12,7 +12,7 @@ namespace AdventOfCodeTests.Day16
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day16/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day16.CalculateScanningErrorRate(input);
+            var result = AdventOfCode2020.Day16.Day16.CalculateScanningErrorRate(input);
             Assert.That(result, Is.EqualTo(71));
         }
         
@@ -23,7 +23,7 @@ namespace AdventOfCodeTests.Day16
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day16/Input/Example2.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day16.CalculateDepartureFields(input, rule);
+            var result = AdventOfCode2020.Day16.Day16.CalculateDepartureFields(input, rule);
             Assert.That(result, Is.EqualTo(target));
         }
     }

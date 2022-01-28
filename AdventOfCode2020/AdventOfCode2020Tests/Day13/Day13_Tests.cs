@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day13
+namespace AdventOfCode2020Tests.Day13
 {
     [TestFixture]
     public class Day13_Tests
@@ -12,7 +12,7 @@ namespace AdventOfCodeTests.Day13
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day13.CalculateBusId(input);
+            var result = AdventOfCode2020.Day13.Day13.CalculateBusId(input);
             Assert.That(result, Is.EqualTo(295));
         }
         
@@ -21,7 +21,7 @@ namespace AdventOfCodeTests.Day13
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13/Input/Example1.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day13.CalculateTimestamp(input);
+            var result = AdventOfCode2020.Day13.Day13.CalculateTimestamp(input);
             Assert.That(result, Is.EqualTo(1068781));
         }
         
@@ -30,7 +30,7 @@ namespace AdventOfCodeTests.Day13
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13/Input/Example2.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day13.CalculateTimestamp(input);
+            var result = AdventOfCode2020.Day13.Day13.CalculateTimestamp(input);
             Assert.That(result, Is.EqualTo(3417));
         }
         
@@ -39,7 +39,7 @@ namespace AdventOfCodeTests.Day13
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13/Input/Example3.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day13.CalculateTimestamp(input);
+            var result = AdventOfCode2020.Day13.Day13.CalculateTimestamp(input);
             Assert.That(result, Is.EqualTo(754018));
         }
         
@@ -48,7 +48,7 @@ namespace AdventOfCodeTests.Day13
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13/Input/Example4.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day13.CalculateTimestamp(input);
+            var result = AdventOfCode2020.Day13.Day13.CalculateTimestamp(input);
             Assert.That(result, Is.EqualTo(779210));
         }
         
@@ -57,7 +57,7 @@ namespace AdventOfCodeTests.Day13
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13/Input/Example5.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day13.CalculateTimestamp(input);
+            var result = AdventOfCode2020.Day13.Day13.CalculateTimestamp(input);
             Assert.That(result, Is.EqualTo(1261476));
         }
         
@@ -66,7 +66,7 @@ namespace AdventOfCodeTests.Day13
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13/Input/Example6.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day13.CalculateTimestamp(input);
+            var result = AdventOfCode2020.Day13.Day13.CalculateTimestamp(input);
             Assert.That(result, Is.EqualTo(1202161486));
         }
         
@@ -75,7 +75,7 @@ namespace AdventOfCodeTests.Day13
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13/Input/Example7.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day13.CalculateTimestamp(input);
+            var result = AdventOfCode2020.Day13.Day13.CalculateTimestamp(input);
             Assert.That(result, Is.EqualTo(17));
         }
     }

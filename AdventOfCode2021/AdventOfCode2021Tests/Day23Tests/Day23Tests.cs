@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
-using AdventOfCode.Day23;
+using AdventOfCode2021.Day23;
 
-namespace AdventOfCodeTests.Day23Tests;
+namespace AdventOfCode2021Tests.Day23Tests;
 
 [TestFixture]
 public class Day23Tests

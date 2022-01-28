@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day14
+namespace AdventOfCode2020Tests.Day14
 {
     [TestFixture]
     public class Day14_Tests
@@ -12,7 +12,7 @@ namespace AdventOfCodeTests.Day14
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day14/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day14.SumInMemoryValues(input);
+            var result = AdventOfCode2020.Day14.Day14.SumInMemoryValues(input);
             Assert.That(result, Is.EqualTo(165));
         }
         [Test]
@@ -21,7 +21,7 @@ namespace AdventOfCodeTests.Day14
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day14/Input/Example2.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day14.SumInMemoryValuesVersion2(input);
+            var result = AdventOfCode2020.Day14.Day14.SumInMemoryValuesVersion2(input);
             Assert.That(result, Is.EqualTo(208));
         }
     }

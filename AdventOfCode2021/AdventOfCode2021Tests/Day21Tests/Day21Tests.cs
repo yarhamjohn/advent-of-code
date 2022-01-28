@@ -1,6 +1,6 @@
-using AdventOfCode.Day21;
+using AdventOfCode2021.Day21;
 
-namespace AdventOfCodeTests.Day21Tests;
+namespace AdventOfCode2021Tests.Day21Tests;
 
 [TestFixture]
 public class Day21Tests

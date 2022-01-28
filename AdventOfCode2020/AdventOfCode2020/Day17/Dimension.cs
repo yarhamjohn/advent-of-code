@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AdventOfCode
+namespace AdventOfCode2020.Day17
 {
     public static partial class Day17
     {

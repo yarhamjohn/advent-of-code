@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2020", "AdventOfCode2020\AdventOfCode2020\AdventOfCode2020.csproj", "{8435634F-0DBA-47DE-9E33-E0BBA99876A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCodeTests2020", "AdventOfCode2020\AdventOfCode2020Tests\AdventOfCodeTests2020.csproj", "{F9253038-8E22-46CA-A747-E438C1C080C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2020Tests", "AdventOfCode2020\AdventOfCode2020Tests\AdventOfCode2020Tests.csproj", "{F9253038-8E22-46CA-A747-E438C1C080C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2021", "AdventOfCode2021\AdventOfCode2021\AdventOfCode2021.csproj", "{1A266CA1-59CC-4FB7-ABE6-F6BFDA3076AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCodeTests2021", "AdventOfCode2021\AdventOfCode2021Tests\AdventOfCodeTests2021.csproj", "{F2BDBCA9-71E4-44C2-9189-28FD3ADC3DF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2021Tests", "AdventOfCode2021\AdventOfCode2021Tests\AdventOfCode2021Tests.csproj", "{627B3E41-B451-411A-8F7F-74BD3CCEB2DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,9 +32,9 @@ Global
 		{1A266CA1-59CC-4FB7-ABE6-F6BFDA3076AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A266CA1-59CC-4FB7-ABE6-F6BFDA3076AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A266CA1-59CC-4FB7-ABE6-F6BFDA3076AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2BDBCA9-71E4-44C2-9189-28FD3ADC3DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2BDBCA9-71E4-44C2-9189-28FD3ADC3DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2BDBCA9-71E4-44C2-9189-28FD3ADC3DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2BDBCA9-71E4-44C2-9189-28FD3ADC3DF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{627B3E41-B451-411A-8F7F-74BD3CCEB2DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{627B3E41-B451-411A-8F7F-74BD3CCEB2DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{627B3E41-B451-411A-8F7F-74BD3CCEB2DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{627B3E41-B451-411A-8F7F-74BD3CCEB2DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

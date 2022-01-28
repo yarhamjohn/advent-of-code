@@ -7,7 +7,7 @@
 
         <Nullable>enable</Nullable>
 
-        <RootNamespace>AdventOfCodeTests</RootNamespace>
+        <RootNamespace>AdventOfCode2020Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

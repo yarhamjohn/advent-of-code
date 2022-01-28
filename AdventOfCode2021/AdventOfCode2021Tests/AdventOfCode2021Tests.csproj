@@ -6,7 +6,7 @@
 
         <IsPackable>false</IsPackable>
 
-        <RootNamespace>AdventOfCodeTests</RootNamespace>
+        <RootNamespace>AdventOfCode2021Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

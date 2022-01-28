@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <RootNamespace>AdventOfCode</RootNamespace>
+        <RootNamespace>AdventOfCode2020</RootNamespace>
     </PropertyGroup>
 
 </Project>

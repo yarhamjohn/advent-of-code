@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using Microsoft.VisualBasic;
 
-namespace AdventOfCode
+namespace AdventOfCode2020.Day15
 {
     public static class Day15
     {

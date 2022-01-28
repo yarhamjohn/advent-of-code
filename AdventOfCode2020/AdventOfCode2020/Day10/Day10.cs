@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using Microsoft.VisualBasic;
 
-namespace AdventOfCode
+namespace AdventOfCode2020.Day10
 {
     public static class Day10
     {

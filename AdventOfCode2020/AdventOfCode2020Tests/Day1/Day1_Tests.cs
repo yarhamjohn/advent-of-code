@@ -1,7 +1,7 @@
 using System.IO;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day1
+namespace AdventOfCode2020Tests.Day1
 {
     [TestFixture]
     public class Day1Tests
@@ -11,7 +11,7 @@ namespace AdventOfCodeTests.Day1
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day1/Input/Example.txt");
             var input = File.ReadAllLines(inputPath);
-            var result = AdventOfCode.Day1.CalculateTotalForTwoNumbers(input, 2020);
+            var result = AdventOfCode2020.Day1.Day1.CalculateTotalForTwoNumbers(input, 2020);
             Assert.That(result, Is.EqualTo(514579));
         }
         
@@ -20,7 +20,7 @@ namespace AdventOfCodeTests.Day1
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day1/Input/Example.txt");
             var input = File.ReadAllLines(inputPath);
-            var result = AdventOfCode.Day1.CalculateTotalForThreeNumbers(input);
+            var result = AdventOfCode2020.Day1.Day1.CalculateTotalForThreeNumbers(input);
             Assert.That(result, Is.EqualTo(241861950));
         }
     }

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace AdventOfCode.Day16;
+namespace AdventOfCode2021.Day16;
 
 public static class Day16
 {

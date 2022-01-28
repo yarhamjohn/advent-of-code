@@ -1,4 +1,4 @@
-namespace AdventOfCode.Day10
+namespace AdventOfCode2021.Day10
 {
     public static class Day10
     {

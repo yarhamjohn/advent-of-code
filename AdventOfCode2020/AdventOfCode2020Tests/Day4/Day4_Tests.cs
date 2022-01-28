@@ -2,7 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 
-namespace AdventOfCodeTests.Day4
+namespace AdventOfCode2020Tests.Day4
 {
     [TestFixture]
     public class Day4Tests
@@ -12,7 +12,7 @@ namespace AdventOfCodeTests.Day4
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day4/Input/Example.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day4.CountPassportsWithExpectedFields(input);
+            var result = AdventOfCode2020.Day4.Day4.CountPassportsWithExpectedFields(input);
             Assert.That(result, Is.EqualTo(2));
         }
         
@@ -21,7 +21,7 @@ namespace AdventOfCodeTests.Day4
         {
             var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day4/Input/ExampleB.txt");
             var input = File.ReadAllLines(inputPath).ToList();
-            var result = AdventOfCode.Day4.CountPassportsWithValidFields(input);
+            var result = AdventOfCode2020.Day4.Day4.CountPassportsWithValidFields(input);
             Assert.That(result, Is.EqualTo(4));
         }
     }
