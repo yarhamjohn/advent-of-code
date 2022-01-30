@@ -17,11 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Day1Tests\Input" />
-      <Folder Include="Day2Tests\Input" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\AdventOfCode2015\AdventOfCode2015.csproj" />
     </ItemGroup>
 
