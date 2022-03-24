@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-namespace AdventOfCode2015.Day6;
+﻿namespace AdventOfCode2015.Day6;
 
 public static class Day6
 {
