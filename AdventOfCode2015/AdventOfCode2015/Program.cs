@@ -3,6 +3,7 @@ using AdventOfCode2015.Day2;
 using AdventOfCode2015.Day3;
 using AdventOfCode2015.Day4;
 using AdventOfCode2015.Day5;
+using AdventOfCode2015.Day6;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -19,5 +20,8 @@ long Day4B() => Day4.GetLowestHashableNumber(File.ReadAllText("./Day4/input.txt"
 long Day5A() => Day5.GetNumNiceStrings(File.ReadAllLines("./Day5/input.txt"));
 long Day5B() => Day5.GetNumNiceStrings2(File.ReadAllLines("./Day5/input.txt"));
 
+long Day6A() => Day6.GetNumLitLights(File.ReadAllLines("./Day6/input.txt"));
+long Day6B() => Day6.GetTotalBrightness(File.ReadAllLines("./Day6/input.txt"));
 
-Console.WriteLine(Day5B());
+
+Console.WriteLine(Day6B());
