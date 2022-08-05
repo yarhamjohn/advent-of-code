@@ -1,29 +1,96 @@
-﻿namespace AdventOfCode2015.Day7
+﻿using System.Runtime.CompilerServices;
+
+namespace AdventOfCode2015.Day7
 {
     public static class Day7
     {
+        private static string[] Gates = { "AND", "OR", "NOT", "LSHIFT", "RSHIFT" };
+
         public static int GetWireSignal(string wire, string[] input)
         {
             var wireDefinitions = GetWireDefinitions(input);
             foreach (var w in wireDefinitions)
             {
-                Console.WriteLine($"[{w.Key}, [{string.Join( ", ", w.Value)}]]");
+                Console.WriteLine($"[{w.Key}, [{string.Join(", ", w.Value)}]]");
             }
-            
+
             var definition = ConsolidateDefinitions(wireDefinitions, wireDefinitions[wire]);
-            
+
             return Calculate(definition);
         }
 
-        private static string[] ConsolidateDefinitions(Dictionary<string, string[]> wireDefinitions, string[] definition)
+        private static string[] ConsolidateDefinitions2(Dictionary<string, string[]> wireDefinitions,
+            string[] definition)
+        {
+            // Find every definition that is a number.
+            // Replace all uses in other definitions.
+            // Do any possible calculation.
+            // Repeat
+
+
+            // foreach element, replace with definition if not gate or number
+            var result = new[] { definition };
+            while (result.SelectMany(x => x).Any(y => !Gates.Contains(y) && !int.TryParse(y, out _)))
+            {
+                for (var i = result.Length - 1; i >= 0; i--)
+                {
+                    var replacement = new List<string>();
+                    foreach (var elem in result[i])
+                    {
+                        if (!Gates.Contains(elem) && !int.TryParse(elem, out _))
+                        {
+                            replacement.AddRange(wireDefinitions[elem]);
+                        }
+
+                        else
+                        {
+                            replacement.Add(elem);
+                        }
+                    }
+
+                    result[i] = replacement.ToArray();
+                }
+            }
+
+            return result.SelectMany(x => x).ToArray();
+        }
+
+        private static string[] ConsolidateDefinitions(Dictionary<string, string[]> wireDefinitions,
+            string[] definition)
+        {
+            // Find every definition that is a number.
+            // Replace all uses in other definitions.
+            // Do any possible calculation.
+            // Repeat
+                var knownKeys = wireDefinitions.Where(x => x.Value.Length == 1 && int.TryParse(x.Value[0], out _))
+                    .Select(y => y.Key).ToArray();
+                foreach (var key in knownKeys)
+                {
+                    var val = wireDefinitions[key][0];
+                    foreach (var def in wireDefinitions)
+                    {
+                        wireDefinitions[def.Key] = def.Value.Select(x => x == key ? val : x).ToArray();
+                    }
+                }
+
+                foreach (var w in wireDefinitions)
+                {
+                    Console.WriteLine($"[{w.Key}, [{string.Join(", ", w.Value)}]]");
+                }
+
+            return Array.Empty<string>();
+        }
+
+        private static string[] ConsolidateDefinitions1(Dictionary<string, string[]> wireDefinitions,
+            string[] definition)
         {
             if (definition.Length == 1)
             {
                 if (int.TryParse(definition[0], out var value))
                 {
-                    return new [] { value.ToString()};
+                    return new[] { value.ToString() };
                 }
-                
+
                 return wireDefinitions[definition[0]];
             }
 
