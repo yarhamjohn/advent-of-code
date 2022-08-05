@@ -2,201 +2,97 @@
 {
     public static class Day7
     {
-        public static Dictionary<string, int> WireValues;
-
-        public static long GetWireASignal(string wire, string[] input)
+        public static int GetWireSignal(string wire, string[] input)
         {
-            var wires = Parse(input);
-            var calculation = GetFullCalculation(wire, wires);
-
-            // remove parens around integers
-            // while there are parens, evaluate inside innermost parens
-            return 0;
+            var wireDefinitions = GetWireDefinitions(input);
+            foreach (var w in wireDefinitions)
+            {
+                Console.WriteLine($"[{w.Key}, [{string.Join( ", ", w.Value)}]]");
+            }
+            
+            var definition = ConsolidateDefinitions(wireDefinitions, wireDefinitions[wire]);
+            
+            return Calculate(definition);
         }
 
-        private static Segment[] GetFullCalculation(string wire, Dictionary<string, Segment[]> wires)
+        private static string[] ConsolidateDefinitions(Dictionary<string, string[]> wireDefinitions, string[] definition)
         {
-            var calculation = wires[wire].ToList();
-
-            while (calculation.Any(x => x is Wire))
+            if (definition.Length == 1)
             {
-                for (var i = calculation.Count - 1; i >= 0; i--)
+                if (int.TryParse(definition[0], out var value))
                 {
-                    if (calculation[i] is Wire)
-                    {
-                        var segmentsToInsert = new List<Segment> { new OpenParen(), new CloseParen() };
-                        segmentsToInsert.InsertRange(1, wires[(calculation[i] as Wire)!.Name]);
-                        
-                        calculation.RemoveAt(i);
-                        calculation.InsertRange(i, segmentsToInsert);
-                    }
+                    return new [] { value.ToString()};
                 }
+                
+                return wireDefinitions[definition[0]];
             }
 
-            return calculation.ToArray();
-        }
-
-        private static Dictionary<string, Segment[]> Parse(string[] input)
-        {
-            var wires = new Dictionary<string, Segment[]>();
-
-            foreach (var line in input)
+            if (definition.Length == 2)
             {
-                var splitLine = line.Split(" -> ");
-                wires[splitLine[1]] = GetSegments(splitLine[0]);
+                var gate = new[] { definition[0] };
+                var remainder = ConsolidateDefinitions(wireDefinitions, new[] { definition[1] });
+
+                return gate.Concat(remainder).ToArray();
             }
 
-            return wires;
+            if (definition.Length == 3)
+            {
+                var partOne = ConsolidateDefinitions(wireDefinitions, new[] { definition[0] });
+                var gate = new[] { definition[1] };
+                var partTwo = ConsolidateDefinitions(wireDefinitions, new[] { definition[2] });
+
+                return partOne.Concat(gate).Concat(partTwo).ToArray();
+            }
+
+            throw new Exception($"Unexpected definition: {string.Join(",", definition)}");
         }
 
-        private static Segment[] GetSegments(string input)
+        private static int Calculate(string[] definition)
         {
-            var splitInput = input.Split(" ");
-            return splitInput.Length switch
+            if (definition.Length == 1)
             {
-                1 => new[]
-                {
-                    GetSignalOrWire(splitInput[0])
-                },
-                2 => new[]
-                {
-                    new Operation("NOT"),
-                    GetSignalOrWire(splitInput[1])
-                },
-                _ => new[]
-                {
-                    GetSignalOrWire(splitInput[0]),
-                    new Operation(splitInput[1]),
-                    GetSignalOrWire(splitInput[2])
-                }
+                return Convert.ToInt32(definition[0]);
+            }
+
+            if (definition[0] == "NOT")
+            {
+                var notResult = GetBitwiseComplement(definition);
+                return Calculate(new[] { notResult.ToString() }.Concat(definition[2..]).ToArray());
+            }
+
+            var gateResult = CalculateBitwiseOperation(definition[0], definition[1], definition[2]);
+            return Calculate(new[] { gateResult.ToString() }.Concat(definition[3..]).ToArray());
+        }
+
+        private static int CalculateBitwiseOperation(string left, string gate, string right)
+        {
+            return gate switch
+            {
+                "AND" => Convert.ToInt32(left) & Convert.ToInt32(right),
+                "OR" => Convert.ToInt32(left) | Convert.ToInt32(right),
+                "LSHIFT" => Convert.ToInt32(left) << Convert.ToInt32(right),
+                "RSHIFT" => Convert.ToInt32(left) >> Convert.ToInt32(right),
+                _ => throw new Exception("Unknown gate")
             };
         }
 
-        private static Segment GetSignalOrWire(string input)
+        private static int GetBitwiseComplement(string[] definition)
         {
-            return int.TryParse(input, out var value)
-                ? new Signal(value)
-                : new Wire(input);
+            var twosComplement = Convert.ToString(~Convert.ToInt32(definition[1]), 2);
+            var sixteenBit = twosComplement[^16..].PadLeft(32, '0');
+            return Convert.ToInt32(sixteenBit, 2);
         }
 
-        private record Segment;
+        private static Dictionary<string, string[]> GetWireDefinitions(string[] input)
+        {
+            var dict = new Dictionary<string, string[]>();
+            foreach (var line in input)
+            {
+                var elems = line.Split("->").Select(x => x.Trim()).ToArray();
+                dict[elems.Last()] = elems.First().Split(" ");
+            }
 
-        private record Wire(string Name) : Segment;
-
-        private record Signal(int Value) : Segment;
-
-        private record Operation(string Type) : Segment;
-
-        private record OpenParen() : Segment;
-        
-        private record CloseParen() : Segment;
-
-        //
-        // private static Operation GetOperation(string input)
-        // {
-        //     var splitInput = input.Split(" ");
-        //
-        //     if (input.Contains("AND"))
-        //     {
-        //         return new BitwiseAnd(splitInput[0], splitInput[2]);
-        //     }
-        //
-        //     if (input.Contains("OR"))
-        //     {
-        //         return new BitwiseOr(splitInput[0], splitInput[2]);
-        //     }
-        //
-        //     if (input.Contains("LSHIFT"))
-        //     {
-        //         return new LeftShift(splitInput[0], Convert.ToInt32(splitInput[2]));
-        //     }
-        //
-        //     if (input.Contains("RSHIFT"))
-        //     {
-        //         return new RightShift(splitInput[0], Convert.ToInt32(splitInput[2]));
-        //     }
-        //
-        //     if (input.Contains("NOT"))
-        //     {
-        //         return new BitwiseComplement(splitInput[1]);
-        //     }
-        //
-        //     return new Signal(splitInput[0]);
-        // }
-        //
-        // public abstract record Operation
-        // {
-        //     public abstract int GetValue(Dictionary<string, Operation> circuit);
-        // }
-        //
-        // private record BitwiseAnd(string WireOrValueOne, string WireOrValueTwo) : Operation
-        // {
-        //     public override int GetValue(Dictionary<string, Operation> circuit)
-        //     {                
-        //         var leftValue = int.TryParse(WireOrValueOne, out var valueOne) 
-        //             ? valueOne 
-        //             : circuit[WireOrValueOne].GetValue(circuit);
-        //         var rightValue = int.TryParse(WireOrValueTwo, out var valueTwo) 
-        //             ? valueTwo 
-        //             : circuit[WireOrValueTwo].GetValue(circuit);
-        //
-        //
-        //         return leftValue & rightValue;
-        //     }
-        // }
-        //
-        // private record BitwiseOr(string WireOrValueOne, string WireOrValueTwo) : Operation
-        // {
-        //     public override int GetValue(Dictionary<string, Operation> circuit)
-        //     {
-        //         var leftValue = int.TryParse(WireOrValueOne, out var valueOne) 
-        //             ? valueOne 
-        //             : circuit[WireOrValueOne].GetValue(circuit);
-        //         var rightValue = int.TryParse(WireOrValueTwo, out var valueTwo) 
-        //             ? valueTwo 
-        //             : circuit[WireOrValueTwo].GetValue(circuit);
-        //
-        //         return leftValue | rightValue;
-        //     }
-        // }
-        //
-        // private record LeftShift(string Wire, int Value) : Operation
-        // {
-        //     public override int GetValue(Dictionary<string, Operation> circuit)
-        //     {
-        //         return circuit[Wire].GetValue(circuit) << Value;
-        //     }
-        // }
-        //
-        // private record RightShift(string Wire, int Value) : Operation
-        // {
-        //     public override int GetValue(Dictionary<string, Operation> circuit)
-        //     {
-        //         return circuit[Wire].GetValue(circuit) >> Value;
-        //     }
-        // }
-        //
-        // private record BitwiseComplement(string Wire) : Operation
-        // {
-        //     public override int GetValue(Dictionary<string, Operation> circuit)
-        //     {
-        //         // using tilde (~), bitwise complement doesn't work as we need
-        //         // the binary to be 16 digits long. For instance:
-        //         // 3 in binary is 11 but we need it to be 0000000000000011 for
-        //         // this operation. This can be achieved using ^ (logical exclusive OR)
-        //         // with a mask of the maximum number (16 digits, all 1).
-        //         return 65535 ^ circuit[Wire].GetValue(circuit);
-        //     }
-        // }
-        //
-        // private record Signal(string WireOrValue) : Operation
-        // {
-        //     public override int GetValue(Dictionary<string, Operation> circuit)
-        //     {
-        //         return int.TryParse(WireOrValue, out var value) 
-        //             ? value
-        //             : circuit[WireOrValue].GetValue(circuit);
-        //     }
-        // }
+            return dict;
+        }
     }
 }
