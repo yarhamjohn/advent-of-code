@@ -6,6 +6,7 @@ using AdventOfCode2015.Day5;
 using AdventOfCode2015.Day6;
 using AdventOfCode2015.Day7;
 using AdventOfCode2015.Day8;
+using AdventOfCode2015.Day9;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -31,4 +32,6 @@ long Day7B() => Day7.GetWireSignal2("a", File.ReadAllLines("./Day7/input.txt"));
 long Day8A() => Day8.CalculateCharacters(File.ReadAllLines("./Day8/input.txt"));
 long Day8B() => Day8.CalculateCharacters2(File.ReadAllLines("./Day8/input.txt"));
 
-Console.WriteLine(Day8B());
+long Day9A() => Day9.GetDistance(File.ReadAllLines("./Day9/input.txt"));
+
+Console.WriteLine(Day9A());
