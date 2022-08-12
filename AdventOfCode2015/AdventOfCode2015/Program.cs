@@ -7,6 +7,7 @@ using AdventOfCode2015.Day6;
 using AdventOfCode2015.Day7;
 using AdventOfCode2015.Day8;
 using AdventOfCode2015.Day9;
+using AdventOfCode2015.Day10;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -35,4 +36,7 @@ long Day8B() => Day8.CalculateCharacters2(File.ReadAllLines("./Day8/input.txt"))
 long Day9A() => Day9.GetMinDistance(File.ReadAllLines("./Day9/input.txt"));
 long Day9B() => Day9.GetMaxDistance(File.ReadAllLines("./Day9/input.txt"));
 
-Console.WriteLine(Day9B());
+long Day10A() => Day10.GetLength("1113222113", 40);
+long Day10B() => Day10.GetLength("1113222113", 50);
+
+Console.WriteLine(Day10B());
