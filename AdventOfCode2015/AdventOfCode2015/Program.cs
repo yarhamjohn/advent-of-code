@@ -9,6 +9,7 @@ using AdventOfCode2015.Day8;
 using AdventOfCode2015.Day9;
 using AdventOfCode2015.Day10;
 using AdventOfCode2015.Day11;
+using AdventOfCode2015.Day12;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -43,4 +44,7 @@ long Day10B() => Day10.GetLength("1113222113", 50);
 string Day11A() => Day11.GetNextPassword("hepxcrrq");
 string Day11B() => Day11.GetNextPassword("hepxxyzz");
 
-Console.WriteLine(Day11B());
+long Day12A() => Day12.GetSum(File.ReadAllText("./Day12/input.json"));
+long Day12B() => Day12.GetSumWithoutRed(File.ReadAllText("./Day12/input.json"));
+
+Console.WriteLine(Day12B());
