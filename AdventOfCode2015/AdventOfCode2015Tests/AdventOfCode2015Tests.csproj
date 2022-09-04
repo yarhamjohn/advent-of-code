@@ -24,6 +24,9 @@
       <Content Include="Day13Tests\Input\example.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <Content Include="Day14Tests\Input\example.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
       <Content Include="Day7Tests\Input\example.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>

@@ -11,6 +11,7 @@ using AdventOfCode2015.Day10;
 using AdventOfCode2015.Day11;
 using AdventOfCode2015.Day12;
 using AdventOfCode2015.Day13;
+using AdventOfCode2015.Day14;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -51,4 +52,7 @@ long Day12B() => Day12.GetSumWithoutRed(File.ReadAllText("./Day12/input.json"));
 long Day13A() => Day13.CalculateOptimalHappiness(File.ReadAllLines("./Day13/input.txt"));
 long Day13B() => Day13.CalculateOptimalHappiness(File.ReadAllLines("./Day13/input2.txt"));
 
-Console.WriteLine(Day13B());
+long Day14A() => Day14.GetWinningDistance(File.ReadAllLines("./Day14/input.txt"), 2503);
+long Day14B() => Day14.GetWinningPoints(File.ReadAllLines("./Day14/input.txt"), 2503);
+
+Console.WriteLine(Day14B());
