@@ -13,6 +13,7 @@ using AdventOfCode2015.Day12;
 using AdventOfCode2015.Day13;
 using AdventOfCode2015.Day14;
 using AdventOfCode2015.Day15;
+using AdventOfCode2015.Day16;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -59,4 +60,7 @@ long Day14B() => Day14.GetWinningPoints(File.ReadAllLines("./Day14/input.txt"), 
 long Day15A() => Day15.GetHighestScoringCookie(File.ReadAllLines("./Day15/input.txt"));
 long Day15B() => Day15.GetHighestScoringCookieWithCalories(File.ReadAllLines("./Day15/input.txt"));
 
-Console.WriteLine(Day15B());
+long Day16A() => Day16.GetCorrectAuntSue(File.ReadAllLines("./Day16/input.txt"));
+long Day16B() => Day16.GetCorrectAuntSueWithRecalibration(File.ReadAllLines("./Day16/input.txt"));
+
+Console.WriteLine(Day16B());
