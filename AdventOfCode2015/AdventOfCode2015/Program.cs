@@ -57,6 +57,6 @@ long Day14A() => Day14.GetWinningDistance(File.ReadAllLines("./Day14/input.txt")
 long Day14B() => Day14.GetWinningPoints(File.ReadAllLines("./Day14/input.txt"), 2503);
 
 long Day15A() => Day15.GetHighestScoringCookie(File.ReadAllLines("./Day15/input.txt"));
-// long Day15B() => Day15.GetHighestScoringCookieWithCalories(File.ReadAllLines("./Day15/input.txt"));
+long Day15B() => Day15.GetHighestScoringCookieWithCalories(File.ReadAllLines("./Day15/input.txt"));
 
-Console.WriteLine(Day15A());
+Console.WriteLine(Day15B());
