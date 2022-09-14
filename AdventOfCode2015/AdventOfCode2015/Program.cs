@@ -65,5 +65,6 @@ long Day16A() => Day16.GetCorrectAuntSue(File.ReadAllLines("./Day16/input.txt"))
 long Day16B() => Day16.GetCorrectAuntSueWithRecalibration(File.ReadAllLines("./Day16/input.txt"));
 
 long Day17A() => Day17.GetContainerCombinations(File.ReadAllLines("./Day17/input.txt"), 150);
+long Day17B() => Day17.GetNumberOfWays(File.ReadAllLines("./Day17/input.txt"), 150);
 
-Console.WriteLine(Day17A());
+Console.WriteLine(Day17B());

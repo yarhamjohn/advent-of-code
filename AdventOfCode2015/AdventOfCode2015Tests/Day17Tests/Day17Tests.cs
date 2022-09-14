@@ -7,7 +7,7 @@ namespace AdventOfCode2015Tests.Day17Tests;
 public class Day17Tests
 {
     [Test]
-    public static void GetsHighestScoringCookie()
+    public static void GetsContainerCombinations()
     {
         var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day17Tests/Input/example.txt");
         var input = File.ReadLines(inputPath);
@@ -15,5 +15,16 @@ public class Day17Tests
         var result = Day17.GetContainerCombinations(input, 25);
         
         Assert.That(result, Is.EqualTo(4));
+    }
+    
+    [Test]
+    public static void GetsNumWays()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day17Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath);
+
+        var result = Day17.GetNumberOfWays(input, 25);
+        
+        Assert.That(result, Is.EqualTo(3));
     }
 }
