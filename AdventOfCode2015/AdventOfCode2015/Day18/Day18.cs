@@ -14,12 +14,42 @@ public static class Day18
 
         return CountOnLights(grid);
     }
+    
+    public static long CountLightsWithStuckOn(IEnumerable<string> input, int steps)
+    {
+        var grid = ParseInput(input);
 
-    private static char[][] IterateSteps(int steps, char[][] grid)
+        SetCornersOn(grid);
+
+        Console.WriteLine("Initial state:");
+        PrintGrid(grid);
+        Console.WriteLine();
+
+        grid = IterateSteps(steps, grid, true);
+
+        return CountOnLights(grid);
+    }
+
+    private static void SetCornersOn(char[][] grid)
+    {
+        var maxCoord = grid.GetLength(0) - 1;
+        
+        grid[0][0] = '#';
+        grid[maxCoord][maxCoord] = '#';
+        grid[0][maxCoord] = '#';
+        grid[maxCoord][0] = '#';
+    }
+
+    private static char[][] IterateSteps(int steps, char[][] grid, bool stickCornersOn = false)
     {
         for (var step = 1; step <= steps; step++)
         {
             grid = UpdateGrid(grid);
+
+            if (stickCornersOn)
+            {
+                SetCornersOn(grid);
+            }
 
             Console.WriteLine($"After step {step}:");
             PrintGrid(grid);

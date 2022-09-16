@@ -69,5 +69,6 @@ long Day17A() => Day17.GetContainerCombinations(File.ReadAllLines("./Day17/input
 long Day17B() => Day17.GetNumberOfWays(File.ReadAllLines("./Day17/input.txt"), 150);
 
 long Day18A() => Day18.CountLights(File.ReadAllLines("./Day18/input.txt"), 100);
+long Day18B() => Day18.CountLightsWithStuckOn(File.ReadAllLines("./Day18/input.txt"), 100);
 
-Console.WriteLine(Day18A());
+Console.WriteLine(Day18B());

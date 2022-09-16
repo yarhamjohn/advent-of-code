@@ -16,4 +16,15 @@ public class Day18Tests
         
         Assert.That(result, Is.EqualTo(4));
     }
+    
+    [Test]
+    public static void GetCorrectNumberOfLightsWhenStuckOn()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day18Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath);
+
+        var result = Day18.CountLightsWithStuckOn(input, 5);
+        
+        Assert.That(result, Is.EqualTo(17));
+    }
 }
