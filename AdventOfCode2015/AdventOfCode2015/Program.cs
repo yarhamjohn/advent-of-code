@@ -15,6 +15,7 @@ using AdventOfCode2015.Day14;
 using AdventOfCode2015.Day15;
 using AdventOfCode2015.Day16;
 using AdventOfCode2015.Day17;
+using AdventOfCode2015.Day18;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -67,4 +68,6 @@ long Day16B() => Day16.GetCorrectAuntSueWithRecalibration(File.ReadAllLines("./D
 long Day17A() => Day17.GetContainerCombinations(File.ReadAllLines("./Day17/input.txt"), 150);
 long Day17B() => Day17.GetNumberOfWays(File.ReadAllLines("./Day17/input.txt"), 150);
 
-Console.WriteLine(Day17B());
+long Day18A() => Day18.CountLights(File.ReadAllLines("./Day18/input.txt"), 100);
+
+Console.WriteLine(Day18A());
