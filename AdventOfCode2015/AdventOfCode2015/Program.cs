@@ -16,6 +16,7 @@ using AdventOfCode2015.Day15;
 using AdventOfCode2015.Day16;
 using AdventOfCode2015.Day17;
 using AdventOfCode2015.Day18;
+using AdventOfCode2015.Day19;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -71,4 +72,6 @@ long Day17B() => Day17.GetNumberOfWays(File.ReadAllLines("./Day17/input.txt"), 1
 long Day18A() => Day18.CountLights(File.ReadAllLines("./Day18/input.txt"), 100);
 long Day18B() => Day18.CountLightsWithStuckOn(File.ReadAllLines("./Day18/input.txt"), 100);
 
-Console.WriteLine(Day18B());
+long Day19A() => Day19.CountDistinctMolecules(File.ReadAllLines("./Day19/input.txt"), "CRnSiRnCaPTiMgYCaPTiRnFArSiThFArCaSiThSiThPBCaCaSiRnSiRnTiTiMgArPBCaPMgYPTiRnFArFArCaSiRnBPMgArPRnCaPTiRnFArCaSiThCaCaFArPBCaCaPTiTiRnFArCaSiRnSiAlYSiThRnFArArCaSiRnBFArCaCaSiRnSiThCaCaCaFYCaPTiBCaSiThCaSiThPMgArSiRnCaPBFYCaCaFArCaCaCaCaSiThCaSiRnPRnFArPBSiThPRnFArSiRnMgArCaFYFArCaSiRnSiAlArTiTiTiTiTiTiTiRnPMgArPTiTiTiBSiRnSiAlArTiTiRnPMgArCaFYBPBPTiRnSiRnMgArSiThCaFArCaSiThFArPRnFArCaSiRnTiBSiThSiRnSiAlYCaFArPRnFArSiThCaFArCaCaSiThCaCaCaSiRnPRnCaFArFYPMgArCaPBCaPBSiRnFYPBCaFArCaSiAl");
+
+Console.WriteLine(Day19A());
