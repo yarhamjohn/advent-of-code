@@ -10,7 +10,7 @@ public static class Day19
         
         var segments = ParseInput(input);
             
-        var replacements = GetAllReplacements(segments);
+        var replacements = GetAllReplacements(segments, moleculeElements);
 
         var molecules = GetReplacementMolecules(moleculeElements, replacements);
 
@@ -25,7 +25,7 @@ public static class Day19
             .ToArray();
     }
 
-    private static Dictionary<string, List<string>> GetAllReplacements(string[][] segments)
+    private static Dictionary<string, List<string>> GetAllReplacements(string[][] segments, string[] moleculeElements)
     {
         var replacements = new Dictionary<string, List<string>>();
 
@@ -38,6 +38,14 @@ public static class Day19
             else
             {
                 replacements[elem[0]] = new List<string> { elem[1] };
+            }
+        }
+
+        foreach (var element in moleculeElements)
+        {
+            if (!replacements.ContainsKey(element))
+            {
+                replacements[element] = new List<string>();
             }
         }
 
@@ -57,97 +65,106 @@ public static class Day19
             }
 
             molecules.AddRange(possibleReplacements.Single().Value
-                .Select(replacement => string.Join("", BuildNewMolecule(moleculeElements, i, replacement))));
+                .Select(replacement => BuildNewMolecule(moleculeElements, i, replacement)));
         }
 
         return molecules;
     }
 
-    private static IEnumerable<string> BuildNewMolecule(string[] moleculeElements, int indexToReplace, string replacement) =>
-        moleculeElements[..indexToReplace]
+    private static string BuildNewMolecule(string[] moleculeElements, int indexToReplace, string replacement) =>
+        string.Join("", moleculeElements[..indexToReplace]
             .Concat(new[] {replacement})
-            .Concat(moleculeElements[(indexToReplace + 1)..]);
+            .Concat(moleculeElements[(indexToReplace + 1)..]));
 
     public static long GetFewestSteps(IEnumerable<string> input, string molecule)
     {
+        numStepsTaken = int.MaxValue;
+        rejected = new List<string>();
+        counter = 0;
+        
+        var moleculeElements = GetMoleculeElements(molecule);
+
         var segments = ParseInput(input);
 
-        var replacements = GetAllReplacements(segments);
+        var replacements = GetAllReplacements(segments, moleculeElements);
 
         var startElectrons = segments.Where(s => s[0] == "e");
 
-        return startElectrons
-            .Select(start => GetSteps(start[1], replacements, molecule))
-            .Prepend(int.MaxValue)
-            .Min();
-    }
-
-    private static int GetSteps(string startMolecule, Dictionary<string, List<string>> replacements, string targetMolecule)
-    {
-        var steps = 1;
-
-        var molecules = new List<string> { startMolecule};
-
-        while (true)
+        foreach (var electron in startElectrons)
         {
-            Console.WriteLine(steps);
-            Console.WriteLine(molecules.Count);
-            
-            // foreach (var m in molecules) Console.WriteLine(m);
-            
-            molecules = molecules.SelectMany(x => GetReplacementMolecules(GetMoleculeElements(x), replacements)).ToList();
-            // Console.WriteLine("----");
-
-            // foreach (var m in molecules) Console.WriteLine(m);
-            Console.WriteLine(molecules.Count);
-            // Console.WriteLine("----");
-
-            
-            // TODO Probably need to search deep via recursion rather than broad here
-                molecules = molecules
-                .Where(x => GetMoleculeElements(x).Last() != "Ar" && GetMoleculeElements(x).Last() != "Y" && GetMoleculeElements(x).Last() != "C" && GetMoleculeElements(x).Last() != "Rn")
-                .Where(x => 
-                    !x.Contains("YY") && 
-                    !x.Contains("YAr") && 
-                    !x.Contains("ArY") && 
-                    !x.Contains("RnRn") && 
-                    !x.Contains("RnY") && 
-                    !x.Contains("YRn") && 
-                    !x.Contains("ArRn") && 
-                    !x.Contains("RnAr") && 
-                    !x.Contains("CAr") && 
-                    !x.Contains("CC") && 
-                    !x.Contains("CY") &&
-                    !x.Contains("ArCRn") &&
-                    !x.Contains("RnCRn")) 
-                // ArAr is possible
-                // YC is possible
-                // CRn not at front
-                // ArCa RnCa is possible but not ArC or RnC
-                .Distinct()
-                .ToList();
-                
-                // foreach (var m in molecules) Console.WriteLine(m);
-
-                Console.WriteLine(molecules.Count);
-                Console.WriteLine("----------------------------------------");
-
-            if (molecules.Contains(targetMolecule))
-            {
-                return ++steps;
-            }
-
-            if (molecules.All(x => x.Length >= targetMolecule.Length))
-            {
-                return int.MaxValue;
-            }
-            
-            steps++;
-
-            // if (steps == 3) break;
+            Something(GetMoleculeElements(electron[1]), 0, replacements, GetMoleculeElements(molecule), 1);
         }
 
-        return steps;
+        Console.WriteLine($"counter: {counter}");
+        return numStepsTaken;
+    }
+
+    private static int numStepsTaken;
+
+    private static List<string> rejected;
+
+    private static int counter;
+    
+    private static bool Something(string[] inputElements, int index,
+        IReadOnlyDictionary<string, List<string>> replacements, string[] targetMoleculeElements, int step)
+    {
+        counter++;
+      
+        if (step == numStepsTaken) return false;
+
+
+        if (rejected.Contains(string.Join("", inputElements)))
+        {
+            return false;
+        }
+        
+        if (inputElements.Length > targetMoleculeElements.Length)
+        {
+            rejected.Add(string.Join("", inputElements));
+
+            return false;
+        }
+
+        if (inputElements.Length == targetMoleculeElements.Length)
+        {
+            if (inputElements.SequenceEqual(targetMoleculeElements))
+            {
+                numStepsTaken = Math.Min(step, numStepsTaken);
+                // Console.WriteLine(numStepsTaken);
+
+                return true;
+            }
+
+            rejected.Add(string.Join("", inputElements));
+
+            return false;
+        }
+
+        var anyResultFound = false;
+        
+        for (var i = index; i < inputElements.Length; i++)
+        {
+            var possibleReplacements = replacements[inputElements[i]];
+
+            foreach (var repl in possibleReplacements)
+            {
+                var replacementMolecule = BuildNewMolecule(inputElements, i, repl);
+
+                var resultFound = Something(GetMoleculeElements(replacementMolecule), 0, replacements, targetMoleculeElements, step + 1);
+
+                if (resultFound)
+                {
+                    anyResultFound = resultFound;
+                }
+            }
+        }
+
+        if (!anyResultFound)
+        {
+            rejected.Add(string.Join("", inputElements));
+        }
+
+        return anyResultFound;
     }
 
     private static string[] GetMoleculeElements(string molecule)
