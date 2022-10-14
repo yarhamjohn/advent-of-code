@@ -78,6 +78,9 @@ public static class Day19
 
     public static long GetFewestSteps(IEnumerable<string> input, string molecule)
     {
+        SomethingNew(input, molecule);
+        return 0;
+        
         numStepsTaken = int.MaxValue;
         rejected = new List<string>();
         counter = 0;
@@ -104,6 +107,48 @@ public static class Day19
     private static List<string> rejected;
 
     private static int counter;
+    
+    // TODO: Can this be reversed? Start with the desired result and shorten it by iterative replacement until it equals an e and count the steps
+    // Still would need to catch every scenario but might be fewer of them
+    
+    // find all possible previous molecules given the known replacements, then find all the previous molecules for each of those etc
+
+    private static void SomethingNew(IEnumerable<string> input, string molecule)
+    {
+        var moleculeElements = GetMoleculeElements(molecule);
+
+        var segments = ParseInput(input);
+
+        var replacements = new Dictionary<string, string>();
+
+        foreach (var segment in segments)
+        {
+            replacements[segment[1]] = segment[0];
+        }
+
+        var previousMolecules = new List<string>();
+        foreach (var (key, value) in replacements)
+        {
+            var indexes = new List<int>();
+            var index = 0;
+            while (index < molecule.Length - value.Length)
+            {
+                if (molecule.IndexOf(key, index) == index)
+                {
+                    indexes.Add(index);
+                }
+
+                index++;
+            }
+            
+            foreach (var i in indexes)
+            {
+                var previousMole = molecule.Substring(0, i) + value + molecule.Substring(i + key.Length);
+                
+                Console.WriteLine($"i: {i}, key: {key}, value: {value}, previous: {previousMole}");
+            }
+        }
+    }
     
     private static bool Something(string[] inputElements, int index,
         IReadOnlyDictionary<string, List<string>> replacements, string[] targetMoleculeElements, int step)
