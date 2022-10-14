@@ -8,19 +8,24 @@ public static class Day19
     {
         var moleculeElements = GetMoleculeElements(molecule);
         
-        var segments = input
-            .Select(line => line.Split(" => "))
-            .ToArray();
+        var segments = ParseInput(input);
             
-        var replacements = GetReplacements(segments);
+        var replacements = GetAllReplacements(segments);
 
-        var molecules = GetMolecules(moleculeElements, replacements);
+        var molecules = GetReplacementMolecules(moleculeElements, replacements);
 
         foreach (var m in molecules) Console.WriteLine(m);
         return molecules.Distinct().Count();
     }
 
-    private static Dictionary<string, List<string>> GetReplacements(string[][] segments)
+    private static string[][] ParseInput(IEnumerable<string> input)
+    {
+        return input
+            .Select(line => line.Split(" => "))
+            .ToArray();
+    }
+
+    private static Dictionary<string, List<string>> GetAllReplacements(string[][] segments)
     {
         var replacements = new Dictionary<string, List<string>>();
 
@@ -39,7 +44,7 @@ public static class Day19
         return replacements;
     }
 
-    private static List<string> GetMolecules(string[] moleculeElements, Dictionary<string, List<string>> replacements)
+    private static List<string> GetReplacementMolecules(string[] moleculeElements, Dictionary<string, List<string>> replacements)
     {
         var molecules = new List<string>();
 
@@ -51,43 +56,30 @@ public static class Day19
                 continue;
             }
 
-            foreach (var repl in possibleReplacements.Single().Value)
-            {
-                var newMolecule = new StringBuilder();
-                newMolecule.Append(string.Join("", moleculeElements[..i]));
-                newMolecule.Append(repl);
-                newMolecule.Append(string.Join("", moleculeElements[(i + 1)..]));
-
-                molecules.Add(newMolecule.ToString());
-            }
+            molecules.AddRange(possibleReplacements.Single().Value
+                .Select(replacement => string.Join("", BuildNewMolecule(moleculeElements, i, replacement))));
         }
 
         return molecules;
     }
 
+    private static IEnumerable<string> BuildNewMolecule(string[] moleculeElements, int indexToReplace, string replacement) =>
+        moleculeElements[..indexToReplace]
+            .Concat(new[] {replacement})
+            .Concat(moleculeElements[(indexToReplace + 1)..]);
+
     public static long GetFewestSteps(IEnumerable<string> input, string molecule)
     {
-        var segments = input
-            .Select(line => line.Split(" => "))
-            .ToArray();
+        var segments = ParseInput(input);
 
-        var replacements = GetReplacements(segments);
+        var replacements = GetAllReplacements(segments);
 
         var startElectrons = segments.Where(s => s[0] == "e");
 
-        var steps = int.MaxValue;
-
-        foreach (var electron in startElectrons)
-        {
-            var stepsNeeded = GetSteps(electron[1], replacements, molecule);
-
-            if (stepsNeeded < steps)
-            {
-                steps = stepsNeeded;
-            }
-        }
-        
-        return steps;
+        return startElectrons
+            .Select(start => GetSteps(start[1], replacements, molecule))
+            .Prepend(int.MaxValue)
+            .Min();
     }
 
     private static int GetSteps(string startMolecule, Dictionary<string, List<string>> replacements, string targetMolecule)
@@ -103,7 +95,7 @@ public static class Day19
             
             // foreach (var m in molecules) Console.WriteLine(m);
             
-            molecules = molecules.SelectMany(x => GetMolecules(GetMoleculeElements(x), replacements)).ToList();
+            molecules = molecules.SelectMany(x => GetReplacementMolecules(GetMoleculeElements(x), replacements)).ToList();
             // Console.WriteLine("----");
 
             // foreach (var m in molecules) Console.WriteLine(m);
