@@ -77,5 +77,6 @@ long Day19A() => Day19.CountDistinctMolecules(File.ReadAllLines("./Day19/input.t
 long Day19B() => Day19.GetFewestSteps(File.ReadAllLines("./Day19/input.txt"), "CRnSiRnCaPTiMgYCaPTiRnFArSiThFArCaSiThSiThPBCaCaSiRnSiRnTiTiMgArPBCaPMgYPTiRnFArFArCaSiRnBPMgArPRnCaPTiRnFArCaSiThCaCaFArPBCaCaPTiTiRnFArCaSiRnSiAlYSiThRnFArArCaSiRnBFArCaCaSiRnSiThCaCaCaFYCaPTiBCaSiThCaSiThPMgArSiRnCaPBFYCaCaFArCaCaCaCaSiThCaSiRnPRnFArPBSiThPRnFArSiRnMgArCaFYFArCaSiRnSiAlArTiTiTiTiTiTiTiRnPMgArPTiTiTiBSiRnSiAlArTiTiRnPMgArCaFYBPBPTiRnSiRnMgArSiThCaFArCaSiThFArPRnFArCaSiRnTiBSiThSiRnSiAlYCaFArPRnFArSiThCaFArCaCaSiThCaCaCaSiRnPRnCaFArFYPMgArCaPBCaPBSiRnFYPBCaFArCaSiAl");
 
 long Day20A() => Day20.GetLowestHouseNumber(36000000);
+long Day20B() => Day20.GetLowestHouseNumberNonInfinite(36000000);
 
-Console.WriteLine(Day20A());
+Console.WriteLine(Day20B());
