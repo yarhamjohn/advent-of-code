@@ -73,11 +73,11 @@ public static class Day21
         
         // one weapon, one armor, no ring
         var weaponPlusArmor = new List<List<Item>>();
-        foreach (var weaponSet in weaponOnly)
+        foreach (var set in weaponOnly)
         {
             foreach (var armor in Shop["Armor"])
             {
-                var newSet = weaponSet.Select(x => x).ToList();
+                var newSet = set.Select(x => x).ToList();
                 newSet.Add(armor);
                 weaponPlusArmor.Add(newSet);
             }
@@ -85,11 +85,71 @@ public static class Day21
         purchases.AddRange(weaponPlusArmor);
         
         // one weapon, no armor, one ring
-        // one weapon, no armor, two rings
-        // one weapon, one armor, one ring
-        // one weapon, one armor, two rings
+        var weaponPlusRing = new List<List<Item>>();
+        foreach (var set in weaponOnly)
+        {
+            foreach (var ring in Shop["Rings"])
+            {
+                var newSet = set.Select(x => x).ToList();
+                newSet.Add(ring);
+                weaponPlusRing.Add(newSet);
+            }
+        }
+        purchases.AddRange(weaponPlusRing);
 
+        var ringPairs = GetRingPairs();
+        // one weapon, no armor, two rings
+        var weaponPlusRings = new List<List<Item>>();
+        foreach (var set in weaponOnly)
+        {
+            foreach (var ringSet in ringPairs)
+            {
+                var newSet = set.Select(x => x).ToList();
+                newSet.AddRange(ringSet);
+                weaponPlusRings.Add(newSet);
+            }
+        }
+        purchases.AddRange(weaponPlusRings);
+        
+        // one weapon, one armor, one ring
+        var weaponPlusArmorPlusRing = new List<List<Item>>();
+        foreach (var set in weaponPlusArmor)
+        {
+            foreach (var ring in Shop["Rings"])
+            {
+                var newSet = set.Select(x => x).ToList();
+                newSet.Add(ring);
+                weaponPlusArmorPlusRing.Add(newSet);
+            }
+        }
+        purchases.AddRange(weaponPlusArmorPlusRing);
+        
+        // one weapon, one armor, two rings
+        var weaponPlusArmorPlusRings = new List<List<Item>>();
+        foreach (var set in weaponPlusArmor)
+        {
+            foreach (var ringSet in ringPairs)
+            {
+                var newSet = set.Select(x => x).ToList();
+                newSet.AddRange(ringSet);
+                weaponPlusArmorPlusRings.Add(newSet);
+            }
+        }
+        purchases.AddRange(weaponPlusArmorPlusRings);
+        
         return purchases;
+    }
+
+    private static List<List<Item>> GetRingPairs()
+    {
+        var pairs = new List<List<Item>>();
+        for (var i = 0; i < Shop["Rings"].Count; ++i)
+        {
+            for (var j = i + 1; j < Shop["Rings"].Count; ++j)
+                pairs.Add(new List<Item> {Shop["Rings"][i], Shop["Rings"][j]});
+        }
+
+        return pairs;
     }
 
     private static void InitializeShop()
