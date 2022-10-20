@@ -54,3 +54,5 @@ You have 100 hit points. The boss's actual stats are in your puzzle input. What 
 Turns out the shopkeeper is working with the boss, and can persuade you to buy whatever items he wants. The other rules still apply, and he still only has one of each item.
 
 What is the most amount of gold you can spend and still lose the fight?
+
+`Your puzzle answer was 148.`

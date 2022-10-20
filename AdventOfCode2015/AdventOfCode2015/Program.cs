@@ -81,5 +81,6 @@ long Day20A() => Day20.GetLowestHouseNumber(36000000);
 long Day20B() => Day20.GetLowestHouseNumberNonInfinite(36000000);
 
 long Day21A() => Day21.GetMinimumGoldSpend();
+long Day21B() => Day21.GetMaximumGoldSpend();
 
-Console.WriteLine(Day21A());
+Console.WriteLine(Day21B());

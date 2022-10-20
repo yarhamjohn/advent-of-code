@@ -42,6 +42,46 @@ public static class Day21
         
         return goldRequired;
     }
+    
+    
+    public static long GetMaximumGoldSpend()
+    {
+        InitializeShop();
+
+        var possiblePurchases = GetPossiblePurchases();
+        
+        var boss = new Player(104, 8, 1);
+
+        var goldRequired = 0;
+        foreach (var purchases in possiblePurchases)
+        {
+            Console.WriteLine(string.Join(",", purchases.Select(x => x.Name)));
+
+            var damage = purchases.Sum(x => x.Damage);
+            var armor = purchases.Sum(x => x.Armor);
+            var player = new Player(100, damage, armor);
+
+            var playerWon = PlayGame(boss, player);
+
+            Console.WriteLine($"Boss: {boss}");
+            Console.WriteLine($"Player: {player}");
+
+            boss.ResetHealth();
+            player.ResetHealth();
+            
+            if (!playerWon)
+            {
+                var totalCost = purchases.Sum(x => x.Cost);
+                if (totalCost > goldRequired)
+                {
+                    Console.WriteLine(totalCost);
+                    goldRequired = totalCost;
+                }
+            }
+        }
+        
+        return goldRequired;
+    }
 
     private static bool PlayGame(Player boss, Player player)
     {
