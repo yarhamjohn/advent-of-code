@@ -19,6 +19,7 @@ using AdventOfCode2015.Day18;
 using AdventOfCode2015.Day19;
 using AdventOfCode2015.Day20;
 using AdventOfCode2015.Day21;
+using AdventOfCode2015.Day23;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -83,4 +84,7 @@ long Day20B() => Day20.GetLowestHouseNumberNonInfinite(36000000);
 long Day21A() => Day21.GetMinimumGoldSpend();
 long Day21B() => Day21.GetMaximumGoldSpend();
 
-Console.WriteLine(Day21B());
+long Day23A() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt"), 0);
+long Day23B() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt"), 1);
+
+Console.WriteLine(Day23B());
