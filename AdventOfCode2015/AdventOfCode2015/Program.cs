@@ -20,6 +20,7 @@ using AdventOfCode2015.Day19;
 using AdventOfCode2015.Day20;
 using AdventOfCode2015.Day21;
 using AdventOfCode2015.Day23;
+using AdventOfCode2015.Day24;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -87,4 +88,6 @@ long Day21B() => Day21.GetMaximumGoldSpend();
 long Day23A() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt"), 0);
 long Day23B() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt"), 1);
 
-Console.WriteLine(Day23B());
+long Day24A() => Day24.CalculateQuantumEntanglement(File.ReadAllLines("./Day24/input.txt"));
+
+Console.WriteLine(Day24A());
