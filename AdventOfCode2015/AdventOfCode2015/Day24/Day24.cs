@@ -31,16 +31,46 @@ public static class Day24
     {
         Console.WriteLine(string.Join(",", packages));
         Console.WriteLine("------------------------");
-        var possibleCombinations = GetPossibleCombinations(packages, groupWeight);
+        var possibleCombinations = GetPossibleCombinations(packages, groupWeight).OrderBy(x => x.Length).ToList();
 
         Console.WriteLine(possibleCombinations.Count);
-        
-        var permutations = GetPermutations(possibleCombinations, 3)
-            .Where(x => x.SelectMany(y => y).OrderBy(a => a).SequenceEqual(packages.OrderBy(b => b)));
 
-        Console.WriteLine(permutations.Count());
+        int length;
+        int? maxLength = null;
 
-        // return each set of 3 mutually exclusive groups
+        var permutations = new List<IEnumerable<int[]>>();
+        foreach (var combination in possibleCombinations)
+        {
+            length = combination.Length;
+
+            if (length > maxLength)
+            {
+                break;
+            }
+            
+            //TODO we know the shortest possible valid is 6. answer is 10439961859
+
+            var eligibleCombinations = possibleCombinations.Where(x => !x.Intersect(combination).Any()).ToList();
+            eligibleCombinations.Add(combination);
+            Console.WriteLine($"Combination: {string.Join(",", combination)}; # Eligible: {eligibleCombinations.Count}");
+            foreach (var x in eligibleCombinations)
+            {
+                File.WriteAllLines("test.txt", new [] {string.Join(",", x)});
+            }
+            
+            
+            var result = GetPermutations(eligibleCombinations, 3)
+                .Where(x => x.SelectMany(y => y).Distinct().Count() == packages.Length).ToList();
+
+            if (result.Any())
+            {
+                permutations.AddRange(result);
+                maxLength = length;
+            }
+        }
+
+        Console.WriteLine(permutations.Count);
+
         return permutations;
     }
 
