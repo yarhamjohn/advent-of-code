@@ -9,6 +9,16 @@ public static class Day24
         var totalWeight = packages.Sum();
         var groupWeight = totalWeight / 3;
 
+        for (var i = 0; i < packages.Length; i++)
+        {
+            // get all combinations of length i
+            // filter for any combinations have required weight.
+            // if there are none move to next i
+            // if combinations do exist, repeat on remaining packages
+            // if additional valid combinations are found, save them
+            // otherwise, move to next i
+        }
+
         // Get all possible combinations of 3 groups that each weigh the same as the groupWeight
         var groupCombinations = GetGroupCombinations(packages, groupWeight);
 
