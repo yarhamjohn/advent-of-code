@@ -4,6 +4,59 @@ namespace AdventOfCode2015.Day19;
 
 public static class Day19
 {
+    public static long GetFewestSteps(IEnumerable<string> input, string molecule)
+    {
+        var segments = ParseInput(input);
+        var middleDictionary = new Dictionary<string, string>();
+        var endDictionary = new Dictionary<string, string>();
+        
+        foreach (var segment in segments)
+        {
+            if (segment[0] == "e")
+            {
+                endDictionary[segment[1]] = segment[0];
+            }
+            else
+            {
+                middleDictionary[segment[1]] = segment[0];
+            }
+        }
+
+        var result = Recurse(molecule, middleDictionary, endDictionary, new List<string>());
+        return result.Min(x => x.Count);
+    }
+
+    private static IEnumerable<string> GetPreviousMolecules(string molecule, Dictionary<string, string> middleDictionary)
+    {
+        foreach (var (key, value) in middleDictionary.Where(x => molecule.Contains(x.Key)))
+        {
+            for (var i = molecule.IndexOf(key, StringComparison.Ordinal); i <= molecule.LastIndexOf(key, StringComparison.Ordinal); i++)
+            {
+                if (molecule[i..(i + key.Length)] == key)
+                {
+                    yield return molecule[..i] + value + molecule[(i + key.Length)..];
+                }
+            }
+        }
+    }
+
+    private static List<List<string>> Recurse(string molecule, Dictionary<string, string> middleDictionary, Dictionary<string, string> endDictionary, List<string> moleculeHistory)
+    {
+        moleculeHistory.Add(molecule);
+            
+        if (endDictionary.ContainsKey(molecule))
+        {
+            Console.WriteLine(moleculeHistory.Count);
+            
+            return new List<List<string>> { moleculeHistory };
+        }
+
+        var previousMolecules = GetPreviousMolecules(molecule, middleDictionary).Distinct();
+        var result = previousMolecules.SelectMany(x => Recurse(x, middleDictionary, endDictionary, new List<string>(moleculeHistory))).ToList();
+
+        return result;
+    }
+
     public static long CountDistinctMolecules(IEnumerable<string> input, string molecule)
     {
         var moleculeElements = GetMoleculeElements(molecule);
@@ -75,142 +128,6 @@ public static class Day19
         string.Join("", moleculeElements[..indexToReplace]
             .Concat(new[] {replacement})
             .Concat(moleculeElements[(indexToReplace + 1)..]));
-
-    public static long GetFewestSteps(IEnumerable<string> input, string molecule)
-    {
-        SomethingNew(input, molecule);
-        return 0;
-        
-        numStepsTaken = int.MaxValue;
-        rejected = new List<string>();
-        counter = 0;
-        
-        var moleculeElements = GetMoleculeElements(molecule);
-
-        var segments = ParseInput(input);
-
-        var replacements = GetAllReplacements(segments, moleculeElements);
-
-        var startElectrons = segments.Where(s => s[0] == "e");
-
-        foreach (var electron in startElectrons)
-        {
-            Something(GetMoleculeElements(electron[1]), 0, replacements, GetMoleculeElements(molecule), 1);
-        }
-
-        Console.WriteLine($"counter: {counter}");
-        return numStepsTaken;
-    }
-
-    private static int numStepsTaken;
-
-    private static List<string> rejected;
-
-    private static int counter;
-    
-    // TODO: Can this be reversed? Start with the desired result and shorten it by iterative replacement until it equals an e and count the steps
-    // Still would need to catch every scenario but might be fewer of them
-    
-    // find all possible previous molecules given the known replacements, then find all the previous molecules for each of those etc
-
-    private static void SomethingNew(IEnumerable<string> input, string molecule)
-    {
-        var moleculeElements = GetMoleculeElements(molecule);
-
-        var segments = ParseInput(input);
-
-        var replacements = new Dictionary<string, string>();
-
-        foreach (var segment in segments)
-        {
-            replacements[segment[1]] = segment[0];
-        }
-
-        var previousMolecules = new List<string>();
-        foreach (var (key, value) in replacements)
-        {
-            var indexes = new List<int>();
-            var index = 0;
-            while (index < molecule.Length - value.Length)
-            {
-                if (molecule.IndexOf(key, index) == index)
-                {
-                    indexes.Add(index);
-                }
-
-                index++;
-            }
-            
-            foreach (var i in indexes)
-            {
-                var previousMole = molecule.Substring(0, i) + value + molecule.Substring(i + key.Length);
-                
-                Console.WriteLine($"i: {i}, key: {key}, value: {value}, previous: {previousMole}");
-            }
-        }
-    }
-    
-    private static bool Something(string[] inputElements, int index,
-        IReadOnlyDictionary<string, List<string>> replacements, string[] targetMoleculeElements, int step)
-    {
-        counter++;
-      
-        if (step == numStepsTaken) return false;
-
-
-        if (rejected.Contains(string.Join("", inputElements)))
-        {
-            return false;
-        }
-        
-        if (inputElements.Length > targetMoleculeElements.Length)
-        {
-            rejected.Add(string.Join("", inputElements));
-
-            return false;
-        }
-
-        if (inputElements.Length == targetMoleculeElements.Length)
-        {
-            if (inputElements.SequenceEqual(targetMoleculeElements))
-            {
-                numStepsTaken = Math.Min(step, numStepsTaken);
-                // Console.WriteLine(numStepsTaken);
-
-                return true;
-            }
-
-            rejected.Add(string.Join("", inputElements));
-
-            return false;
-        }
-
-        var anyResultFound = false;
-        
-        for (var i = index; i < inputElements.Length; i++)
-        {
-            var possibleReplacements = replacements[inputElements[i]];
-
-            foreach (var repl in possibleReplacements)
-            {
-                var replacementMolecule = BuildNewMolecule(inputElements, i, repl);
-
-                var resultFound = Something(GetMoleculeElements(replacementMolecule), 0, replacements, targetMoleculeElements, step + 1);
-
-                if (resultFound)
-                {
-                    anyResultFound = resultFound;
-                }
-            }
-        }
-
-        if (!anyResultFound)
-        {
-            rejected.Add(string.Join("", inputElements));
-        }
-
-        return anyResultFound;
-    }
 
     private static string[] GetMoleculeElements(string molecule)
     {

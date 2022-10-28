@@ -94,4 +94,4 @@ long Day24B() => Day24.CalculateQuantumEntanglement(File.ReadAllLines("./Day24/i
 
 long Day25A() => Day25.CalculateTargetCoord(2978, 3083);
 
-Console.WriteLine(Day25A());
+Console.WriteLine(Day19B());
