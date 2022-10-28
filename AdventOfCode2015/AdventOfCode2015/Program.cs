@@ -21,6 +21,7 @@ using AdventOfCode2015.Day20;
 using AdventOfCode2015.Day21;
 using AdventOfCode2015.Day23;
 using AdventOfCode2015.Day24;
+using AdventOfCode2015.Day25;
 
 long Day1A() => Day1.GetTargetFloor(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBasementEntry(File.ReadAllText("./Day1/input.txt"));
@@ -91,4 +92,6 @@ long Day23B() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt")
 long Day24A() => Day24.CalculateQuantumEntanglement(File.ReadAllLines("./Day24/input.txt"), 3);
 long Day24B() => Day24.CalculateQuantumEntanglement(File.ReadAllLines("./Day24/input.txt"), 4);
 
-Console.WriteLine(Day24B());
+long Day25A() => Day25.CalculateTargetCoord(2978, 3083);
+
+Console.WriteLine(Day25A());

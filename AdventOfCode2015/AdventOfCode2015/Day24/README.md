@@ -56,3 +56,5 @@ Given the example packages above, this would be some of the new unique first gro
 Of these, there are three arrangements that put the minimum (two) number of packages in the first group: `11 4`, `10 5`, and `8 7`. Of these, `11 4` has the lowest quantum entanglement, and so it is selected.
 
 Now, what is the quantum entanglement of the first group of packages in the ideal configuration?
+
+`Your puzzle answer was 72050269.`
