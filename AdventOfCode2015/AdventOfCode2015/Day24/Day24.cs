@@ -2,61 +2,53 @@
 
 public static class Day24
 {
-    public static long CalculateQuantumEntanglement(IEnumerable<string> input)
+    public static long CalculateQuantumEntanglement(IEnumerable<string> input, int compartments)
     {
         var packages = input.Select(x => Convert.ToInt64(x)).ToArray();
+        var targetWeight = packages.Sum() / compartments;
 
-        var totalWeight = packages.Sum();
-        var groupWeight = totalWeight / 3;
-
-        var result = long.MaxValue;
+        var quantumEntanglement = long.MaxValue;
         
         for (var combinationLength = 1; combinationLength <= packages.Length; combinationLength++)
         {
-            var combinations = GetUniqueCombinations(packages, combinationLength);
-            
-            var validCombinations = combinations.Where(x => x.Sum() == groupWeight).ToArray();
-            if (!validCombinations.Any())
+            var combinations1 = GetCombinationsMatchingTargetWeight(packages, combinationLength, targetWeight);
+            if (!combinations1.Any()) continue;
+
+            foreach (var c1 in combinations1)
             {
-                continue;
-            }
+                var nextQuantumEntanglement = c1.Aggregate((a, b) => a * b);
+                if (nextQuantumEntanglement > quantumEntanglement) continue;
 
-            foreach (var combination in validCombinations)
-            {
-                var qe = combination.Aggregate((a, b) => a * b);
-                if (qe > result)
+                var p2 = packages.Where(x => !c1.Contains(x)).ToArray();
+                for (var l2 = 1; l2 <= p2.Length; l2++)
                 {
-                    continue;
-                }
-
-                var remainingPackages = packages.Where(x => !combination.Contains(x)).ToArray();
-                for (var secondCombinationLength = 1;
-                     secondCombinationLength <= remainingPackages.Length;
-                     secondCombinationLength++)
-                {
-                    var secondCombinations = GetUniqueCombinations(remainingPackages, secondCombinationLength);
- 
-                    var validSecondCombinations = secondCombinations.Where(x => x.Sum() == groupWeight).ToArray();
-                    if (!validSecondCombinations.Any())
+                    var combinations2 = GetCombinationsMatchingTargetWeight(p2, l2, targetWeight);
+                    if (!combinations2.Any()) continue;
+                    
+                    foreach (var p3 in GetUnusedPackages(combinations2, p2))
                     {
-                        continue;
-                    }
-
-                    foreach (var comb in validSecondCombinations)
-                    {
-                        var lastPackages = remainingPackages.Where(x => !comb.Contains(x)).ToArray();
-                        for (var thirdCombinationLength = 1;
-                             thirdCombinationLength <= lastPackages.Length;
-                             thirdCombinationLength++)
+                        for (var l3 = 1; l3 <= p3.Length; l3++)
                         {
-                            var thirdCombinations = GetUniqueCombinations(lastPackages, thirdCombinationLength);
-                            var validThirdCombinations = thirdCombinations.Where(x => x.Sum() == groupWeight).ToArray();
-                            if (validThirdCombinations.Any())
+                            var combinations3 = GetCombinationsMatchingTargetWeight(p3, l3, targetWeight);
+                            if (!combinations3.Any()) continue;
+                            
+                            if (compartments == 3 && nextQuantumEntanglement < quantumEntanglement)
                             {
-                                var quantumEntanglement = combination.Aggregate((a, b) => a * b);
-                                if (quantumEntanglement < result)
+                                quantumEntanglement = nextQuantumEntanglement;
+                                continue;
+                            }
+                            
+                            foreach (var p4 in GetUnusedPackages(combinations3, p3))
+                            {
+                                for (var l4 = 1; l4 <= p4.Length; l4++)
                                 {
-                                    result = quantumEntanglement;
+                                    var combinations4 = GetCombinationsMatchingTargetWeight(p4, l4, targetWeight);
+                                    if (!combinations4.Any()) continue;
+                                    
+                                    if (nextQuantumEntanglement < quantumEntanglement)
+                                    {
+                                        quantumEntanglement = nextQuantumEntanglement;
+                                    }
                                 }
                             }
                         }
@@ -64,10 +56,20 @@ public static class Day24
                 }
             }
 
-            if (result < long.MaxValue) break;
+            if (quantumEntanglement < long.MaxValue) break;
         }
 
-        return result;
+        return quantumEntanglement;
+    }
+
+    private static IEnumerable<long[]> GetUnusedPackages(List<long[]> combinations2, long[] p2)
+    {
+        return combinations2.Select(c2 => p2.Where(x => !c2.Contains(x)).ToArray());
+    }
+
+    private static List<long[]> GetCombinationsMatchingTargetWeight(long[] packages, int combinationLength, long targetWeight)
+    {
+        return GetUniqueCombinations(packages, combinationLength).Where(x => x.Sum() == targetWeight).ToList();
     }
 
     private static IEnumerable<long[]> GetUniqueCombinations(long[] packages, long length)

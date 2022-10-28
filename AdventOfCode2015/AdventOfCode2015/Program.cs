@@ -88,6 +88,7 @@ long Day21B() => Day21.GetMaximumGoldSpend();
 long Day23A() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt"), 0);
 long Day23B() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt"), 1);
 
-long Day24A() => Day24.CalculateQuantumEntanglement(File.ReadAllLines("./Day24/input.txt"));
+long Day24A() => Day24.CalculateQuantumEntanglement(File.ReadAllLines("./Day24/input.txt"), 3);
+long Day24B() => Day24.CalculateQuantumEntanglement(File.ReadAllLines("./Day24/input.txt"), 4);
 
-Console.WriteLine(Day24A());
+Console.WriteLine(Day24B());
