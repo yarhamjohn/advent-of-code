@@ -55,3 +55,5 @@ If you'd like to make `HOH`, you start with `e`, and then make the following rep
 So, you could make `HOH` after `3` steps. Santa's favorite molecule, `HOHOHO`, can be made in `6` steps.
 
 How long will it take to make the medicine? Given the available replacements and the medicine molecule in your puzzle input, what is the fewest number of steps to go from e to the medicine molecule?
+
+`Your puzzle answer was 200.`

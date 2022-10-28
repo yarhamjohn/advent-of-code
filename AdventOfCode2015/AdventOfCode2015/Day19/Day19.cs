@@ -1,12 +1,11 @@
-﻿using System.Text;
-
-namespace AdventOfCode2015.Day19;
+﻿namespace AdventOfCode2015.Day19;
 
 public static class Day19
 {
     public static long GetFewestSteps(IEnumerable<string> input, string molecule)
     {
         var segments = ParseInput(input);
+        
         var middleDictionary = new Dictionary<string, string>();
         var endDictionary = new Dictionary<string, string>();
         
@@ -22,8 +21,8 @@ public static class Day19
             }
         }
 
-        var result = Recurse(molecule, middleDictionary, endDictionary, new List<string>());
-        return result.Min(x => x.Count);
+        return Recurse(molecule, middleDictionary, endDictionary, new List<string>())
+            .Min(x => x.Count);
     }
 
     private static IEnumerable<string> GetPreviousMolecules(string molecule, Dictionary<string, string> middleDictionary)
@@ -40,21 +39,45 @@ public static class Day19
         }
     }
 
-    private static List<List<string>> Recurse(string molecule, Dictionary<string, string> middleDictionary, Dictionary<string, string> endDictionary, List<string> moleculeHistory)
+    private static readonly Dictionary<string, List<string>> KnownPaths = new();
+
+    private static int _solved;
+    private static int _iterationsSkipped;
+    private static int _iterations;
+    
+    private static IEnumerable<List<string>> Recurse(string molecule, Dictionary<string, string> middleDictionary, Dictionary<string, string> endDictionary, List<string> moleculeHistory)
     {
+        _iterations++;
+        
+        Console.Write($"\rSolved: {_solved}, iterations: {_iterations}, iterations skipped: {_iterationsSkipped}");
+        
         moleculeHistory.Add(molecule);
             
         if (endDictionary.ContainsKey(molecule))
         {
-            Console.WriteLine(moleculeHistory.Count);
+            for (var i = 0; i < moleculeHistory.Count; i++)
+            {
+                if (!KnownPaths.ContainsKey(moleculeHistory[i]))
+                {
+                    KnownPaths[moleculeHistory[i]] = i == moleculeHistory.Count - 1 ? new List<string>() : moleculeHistory.GetRange(i + 1, moleculeHistory.Count - i - 1);
+                }
+            }
             
+            _solved++;
+            return new List<List<string>> { moleculeHistory };
+        }
+        
+        if (KnownPaths.ContainsKey(molecule))
+        {
+            moleculeHistory.AddRange(KnownPaths[molecule]);
+        
+            _iterationsSkipped += KnownPaths[molecule].Count;
             return new List<List<string>> { moleculeHistory };
         }
 
-        var previousMolecules = GetPreviousMolecules(molecule, middleDictionary).Distinct();
-        var result = previousMolecules.SelectMany(x => Recurse(x, middleDictionary, endDictionary, new List<string>(moleculeHistory))).ToList();
-
-        return result;
+        return GetPreviousMolecules(molecule, middleDictionary)
+            .Distinct()
+            .SelectMany(x => Recurse(x, middleDictionary, endDictionary, new List<string>(moleculeHistory)));
     }
 
     public static long CountDistinctMolecules(IEnumerable<string> input, string molecule)
