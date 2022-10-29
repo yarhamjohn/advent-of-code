@@ -90,9 +90,7 @@ long Day21A() => Day21.GetMinimumGoldSpend();
 long Day21B() => Day21.GetMaximumGoldSpend();
 
 long Day22A() => Day22.CalculateMinimumMana(50, 500, 55, 8);
-
-// 1309 is too high
-// long Day22B() => Day22.CalculateMinimumMana(50, 500, 55, 8, true);
+long Day22B() => Day22.CalculateMinimumMana(50, 500, 55, 8, true);
 
 long Day23A() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt"), 0);
 long Day23B() => Day23.CalculateRegisterB(File.ReadAllLines("./Day23/input.txt"), 1);
@@ -102,4 +100,4 @@ long Day24B() => Day24.CalculateQuantumEntanglement(File.ReadAllLines("./Day24/i
 
 long Day25A() => Day25.CalculateTargetCoord(2978, 3083);
 
-Console.WriteLine(Day22A());
+Console.WriteLine(Day22B());

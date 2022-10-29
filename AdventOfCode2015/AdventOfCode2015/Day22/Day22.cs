@@ -2,12 +2,12 @@
 
 public static class Day22
 {
-    public static long CalculateMinimumMana(int playerHitPoints, int playerMana, int bossHitPoints, int bossDamage)
+    public static long CalculateMinimumMana(int playerHitPoints, int playerMana, int bossHitPoints, int bossDamage, bool hard = false)
     {
         var spells = new Spell[] { new MagicMissile(), new Drain(), new Shield(), new Poison(), new Recharge() };
 
         var spellCombinations = new List<Spell[]>();
-        for (var i = 1; i < 10; i++)
+        for (var i = 1; i < 12; i++)
         {
             var combinations = GetCombinations(spells, i).ToArray();
 
@@ -18,7 +18,7 @@ public static class Day22
         
         foreach (var combination in spellCombinations)
         {
-            var mana = PlayGame(combination, playerHitPoints, playerMana, bossHitPoints, bossDamage);
+            var mana = PlayGame(combination, playerHitPoints, playerMana, bossHitPoints, bossDamage, hard);
 
             if (mana < manaSpent)
             {
@@ -32,7 +32,7 @@ public static class Day22
 
     public static int Total = int.MaxValue;
     
-    public static int? PlayGame(Spell[] spellsChosen, int playerHitPoints, int playerMana, int bossHitPoints, int bossDamage)
+    public static int? PlayGame(Spell[] spellsChosen, int playerHitPoints, int playerMana, int bossHitPoints, int bossDamage, bool hard)
     {
         var activeSpells = new Dictionary<Spell, int>();
         
@@ -48,8 +48,65 @@ public static class Day22
             {
                 return null;
             }
+
+            if (hard && activePlayer is Player)
+            {
+                player.HitPoints -= 1;
+            }
             
-            ApplyActiveSpells(activeSpells, player, boss);
+            if (!GameIsNotOver(player, boss))
+            {
+                break;
+            }
+
+            foreach (var (key, value) in activeSpells)
+            {
+                switch (key)
+                {
+                    case Shield shield:
+                        if (activeSpells[shield] == 0)
+                        {
+                            player.Armor = 0;
+                            activeSpells.Remove(shield);
+                        }
+                        else
+                        {
+                            player.Armor = shield.SetArmor;
+                            activeSpells[shield] -= 1;
+                        }
+
+                        break;
+                    case Poison poison:
+                        if (activeSpells[poison] == 0)
+                        {
+                            activeSpells.Remove(poison);
+                        }
+                        else
+                        {
+                            boss.HitPoints -= poison.DamagePerTurn;
+                            activeSpells[poison] -= 1;
+                        }
+
+                        break;
+                    case Recharge recharge:
+                        if (activeSpells[recharge] == 0)
+                        {
+                            activeSpells.Remove(recharge);
+                        }
+                        else
+                        {
+                            player.Mana += recharge.ManaPerTurn;
+                            activeSpells[recharge] -= 1;
+                        }
+
+                        break;
+                }
+                
+                if (!GameIsNotOver(player, boss))
+                {
+                    break;
+                }
+            }
 
             if (!GameIsNotOver(player, boss))
             {
@@ -98,6 +155,12 @@ public static class Day22
             }
         }
 
+        // already solved
+        if (spellIndex <= spellsChosen.Length - 1)
+        {
+            return null;
+        }
+
         if (player.HitPoints > 0)
         {
             Console.WriteLine(
@@ -105,53 +168,6 @@ public static class Day22
         }
 
         return player.HitPoints > 0 ? player.ManaSpent : null;
-    }
-
-    private static void ApplyActiveSpells(Dictionary<Spell, int> activeSpells, Player player, Boss boss)
-    {
-        foreach (var (key, value) in activeSpells)
-        {
-            switch (key)
-            {
-                case Shield shield:
-                    if (activeSpells[shield] == 0)
-                    {
-                        player.Armor = 0;
-                        activeSpells.Remove(shield);
-                    }
-                    else
-                    {
-                        player.Armor = shield.SetArmor;
-                        activeSpells[shield] -= 1;
-                    }
-
-                    break;
-                case Poison poison:
-                    if (activeSpells[poison] == 0)
-                    {
-                        activeSpells.Remove(poison);
-                    }
-                    else
-                    {
-                        boss.HitPoints -= poison.DamagePerTurn;
-                        activeSpells[poison] -= 1;
-                    }
-
-                    break;
-                case Recharge recharge:
-                    if (activeSpells[recharge] == 0)
-                    {
-                        activeSpells.Remove(recharge);
-                    }
-                    else
-                    {
-                        player.Mana += recharge.ManaPerTurn;
-                        activeSpells[recharge] -= 1;
-                    }
-
-                    break;
-            }
-        }
     }
 
     private static bool GameIsNotOver(Player player, Boss boss)
@@ -189,10 +205,7 @@ public static class Day22
              return spells.Select(s => new[] { s }).ToArray();
         }
 
-        // foreach (var spell in spells)
-        // {
-             return spells.SelectMany(spell => GetCombinations(spells, length - 1).Select(x => new[] { spell }.Concat(x).ToArray()));
-        // }
+        return spells.SelectMany(spell => GetCombinations(spells, length - 1).Select(x => new[] { spell }.Concat(x).ToArray()));
     }
 
     public abstract record Spell
@@ -261,6 +274,7 @@ public static class Day22
         {
             HitPoints = hitPoints;
             Mana = mana;
+            ManaSpent = 0;
         }
 
         public void BuySpell(int cost)
