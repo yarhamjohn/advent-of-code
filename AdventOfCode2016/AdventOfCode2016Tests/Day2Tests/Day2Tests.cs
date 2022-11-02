@@ -9,12 +9,22 @@ namespace AdventOfCode2016Tests.Day2Tests;
 public class Day2Tests
 {
     [Test]
-    public void GetDistanceInBlocks()
+    public void GetBathroomCode()
     {
         var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day2Tests/Input/example.txt");
         var input = File.ReadLines(inputPath).ToArray();
 
         var result = Day2.GetBathroomCode(input);
         Assert.That(result, Is.EqualTo("1985"));
+    }
+    
+    [Test]
+    public void GetExtendedBathroomCode()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day2Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath).ToArray();
+
+        var result = Day2.GetExtendedBathroomCode(input);
+        Assert.That(result, Is.EqualTo("5DB3"));
     }
 }
