@@ -2,6 +2,51 @@
 
 public static class Day1
 {
+    public static int GetBlockCountToDoubleVisitedBlock(string input)
+    {
+        var chunks = input.Split(", ").Select(x => (direction: x[0], distance: Convert.ToInt32(x[1..])));
+
+        var coordinateStore = new List<(int x, int y)>();
+
+        var currentCoordinate = (x: 0, y: 0);
+        var currentDirection = Direction.North;
+        foreach (var (direction, distance) in chunks)
+        {
+            var nextDirection = GetNextDirection(currentDirection, direction);
+
+            for (var i = 0; i < distance; i++)
+            {
+                switch (nextDirection)
+                {
+                    case Direction.North:
+                        coordinateStore.Add((currentCoordinate.x, y: currentCoordinate.y += 1));
+                        break;
+                    case Direction.South:
+                        coordinateStore.Add((currentCoordinate.x, y: currentCoordinate.y -= 1));
+                        break;
+                    case Direction.East:
+                        coordinateStore.Add((x: currentCoordinate.x += 1, currentCoordinate.y));
+                        break;
+                    case Direction.West:
+                        coordinateStore.Add((x: currentCoordinate.x -= 1, currentCoordinate.y));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(nextDirection), nextDirection, "Not a valid direction.");
+                }
+                
+                if (coordinateStore.Distinct().Count() != coordinateStore.Count)
+                {
+                    return Math.Abs(coordinateStore.Last().x) + Math.Abs(coordinateStore.Last().y);
+                }
+            }
+
+            currentCoordinate = coordinateStore.Last();
+            currentDirection = nextDirection;
+        }
+
+        throw new InvalidOperationException("Something went wrong - no double visit was seen.");
+    }
+    
     public static int GetBlockCount(string input)
     {
         var chunks = input.Split(", ").Select(x => (direction: x[0], distance: Convert.ToInt32(x[1..])));
