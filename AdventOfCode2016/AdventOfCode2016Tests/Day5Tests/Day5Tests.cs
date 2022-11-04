@@ -12,4 +12,11 @@ public class Day5Tests
         var result = Day5.GetPassword("abc");
         Assert.That(result, Is.EqualTo("18f47a30"));
     }
+    
+    [Test]
+    public void GetComplexPassword()
+    {
+        var result = Day5.GetComplexPassword("abc");
+        Assert.That(result, Is.EqualTo("05ace8e3"));
+    }
 }

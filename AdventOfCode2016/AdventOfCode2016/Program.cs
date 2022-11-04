@@ -18,5 +18,6 @@ long Day4A() => Day4.GetSectorIdSum(File.ReadAllLines("./Day4/input.txt"));
 long Day4B() => Day4.GetRoomSectorId(File.ReadAllLines("./Day4/input.txt"), "north");
 
 string Day5A() => Day5.GetPassword("reyedfim");
+string Day5B() => Day5.GetComplexPassword("reyedfim");
 
-Console.WriteLine(Day5A());
+Console.WriteLine(Day5B());
