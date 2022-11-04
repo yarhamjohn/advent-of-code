@@ -17,4 +17,11 @@ public class Day4Tests
         var result = Day4.GetSectorIdSum(input);
         Assert.That(result, Is.EqualTo(1514));
     }
+    
+    [Test]
+    public void GetRoomSectorId()
+    {
+        var result = Day4.GetRoomSectorId(new [] {"qzmt-zixmtkozy-ivhz-343[zimth]"}, "very encrypted name");
+        Assert.That(result, Is.EqualTo(343));
+    }
 }

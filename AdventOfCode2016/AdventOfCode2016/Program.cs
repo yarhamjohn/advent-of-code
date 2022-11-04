@@ -14,5 +14,6 @@ long Day3A() => Day3.CountPossibleTriangles(File.ReadAllLines("./Day3/input.txt"
 long Day3B() => Day3.CountPossibleTrianglesVertically(File.ReadAllLines("./Day3/input.txt"));
 
 long Day4A() => Day4.GetSectorIdSum(File.ReadAllLines("./Day4/input.txt"));
-    
-Console.WriteLine(Day4A());
+long Day4B() => Day4.GetRoomSectorId(File.ReadAllLines("./Day4/input.txt"), "north");
+
+Console.WriteLine(Day4B());
