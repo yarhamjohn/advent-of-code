@@ -4,6 +4,7 @@ using AdventOfCode2016.Day2;
 using AdventOfCode2016.Day3;
 using AdventOfCode2016.Day4;
 using AdventOfCode2016.Day5;
+using AdventOfCode2016.Day6;
 
 long Day1A() => Day1.GetBlockCount(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBlockCountToDoubleVisitedBlock(File.ReadAllText("./Day1/input.txt"));
@@ -20,4 +21,7 @@ long Day4B() => Day4.GetRoomSectorId(File.ReadAllLines("./Day4/input.txt"), "nor
 string Day5A() => Day5.GetPassword("reyedfim");
 string Day5B() => Day5.GetComplexPassword("reyedfim");
 
-Console.WriteLine(Day5B());
+string Day6A() => Day6.GetMessage(File.ReadAllLines("./Day6/input.txt"));
+string Day6B() => Day6.GetMessageModified(File.ReadAllLines("./Day6/input.txt"));
+
+Console.WriteLine(Day6B());
