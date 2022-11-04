@@ -5,6 +5,7 @@ using AdventOfCode2016.Day3;
 using AdventOfCode2016.Day4;
 using AdventOfCode2016.Day5;
 using AdventOfCode2016.Day6;
+using AdventOfCode2016.Day7;
 
 long Day1A() => Day1.GetBlockCount(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBlockCountToDoubleVisitedBlock(File.ReadAllText("./Day1/input.txt"));
@@ -24,4 +25,7 @@ string Day5B() => Day5.GetComplexPassword("reyedfim");
 string Day6A() => Day6.GetMessage(File.ReadAllLines("./Day6/input.txt"));
 string Day6B() => Day6.GetMessageModified(File.ReadAllLines("./Day6/input.txt"));
 
-Console.WriteLine(Day6B());
+long Day7A() => Day7.CountTlsIps(File.ReadAllLines("./Day7/input.txt"));
+long Day7B() => Day7.CountSslIps(File.ReadAllLines("./Day7/input.txt"));
+
+Console.WriteLine(Day7B());
