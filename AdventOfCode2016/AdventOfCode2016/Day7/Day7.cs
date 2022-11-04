@@ -4,9 +4,42 @@ public static class Day7
 {
     public static long CountSslIps(string[] input)
     {
-        return 0;
+        var possibleAbaBabPairs = GetPossibleAbaBabPairs();
+        var ips = SplitIps(input);
+
+        var counter = 0;
+        foreach (var ip in ips)
+        {
+            foreach (var pair in possibleAbaBabPairs)
+            {
+                if (ip.supernet.Any(x => x.Contains(pair.aba)) && ip.hypernet.Any(x => x.Contains(pair.bab)))
+                {
+                    counter++;
+                    break;
+                }
+                
+                if (ip.supernet.Any(x => x.Contains(pair.bab)) && ip.hypernet.Any(x => x.Contains(pair.aba)))
+                {
+                    counter++;
+                    break;
+                }
+            }
+        }
+        
+        return counter;
     }
 
+    private static List<(string aba, string bab)> GetPossibleAbaBabPairs()
+    {
+        var possibleChars = Enumerable.Range(97, 26).Select(x => (char) x).ToArray();
+
+        return possibleChars
+            .SelectMany(ch => possibleChars.Select(ch2 => (First: ch, Second: ch2)))
+            .Where(y => y.First != y.Second)
+            .Select(z => ($"{z.First}{z.Second}{z.First}", $"{z.Second}{z.First}{z.Second}"))
+            .ToList();
+    }
+    
     public static long CountTlsIps(string[] input)
     {
         var possibleAbbas = GetPossibleAbbas();
@@ -79,25 +112,12 @@ public static class Day7
 
     private static List<string> GetPossibleAbbas()
     {
-        var result = new List<string>();
-        
-        for (var i = 0; i < 26; i++)
-        {
-            var charOne = (char)(97 + i);
-            
-            for (var j = 0; j < 26; j++)
-            {
-                if (i == j)
-                {
-                    continue;
-                }
+        var possibleChars = Enumerable.Range(97, 26).Select(x => (char) x).ToArray();
 
-                var charTwo = (char)(97 + j);
-                
-                result.Add($"{charOne}{charTwo}{charTwo}{charOne}");
-            }
-        }
-
-        return result;
+        return possibleChars
+            .SelectMany(ch => possibleChars.Select(ch2 => (First: ch, Second: ch2)))
+            .Where(y => y.First != y.Second)
+            .Select(z => $"{z.First}{z.Second}{z.Second}{z.First}")
+            .ToList();
     }
 }

@@ -28,4 +28,4 @@ string Day6B() => Day6.GetMessageModified(File.ReadAllLines("./Day6/input.txt"))
 long Day7A() => Day7.CountTlsIps(File.ReadAllLines("./Day7/input.txt"));
 long Day7B() => Day7.CountSslIps(File.ReadAllLines("./Day7/input.txt"));
 
-Console.WriteLine(Day7B());
+Console.WriteLine(Day7A());
