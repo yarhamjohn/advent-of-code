@@ -7,6 +7,7 @@ using AdventOfCode2016.Day5;
 using AdventOfCode2016.Day6;
 using AdventOfCode2016.Day7;
 using AdventOfCode2016.Day8;
+using AdventOfCode2016.Day9;
 
 long Day1A() => Day1.GetBlockCount(File.ReadAllText("./Day1/input.txt"));
 long Day1B() => Day1.GetBlockCountToDoubleVisitedBlock(File.ReadAllText("./Day1/input.txt"));
@@ -32,6 +33,6 @@ long Day7B() => Day7.CountSslIps(File.ReadAllLines("./Day7/input.txt"));
 long Day8A() => Day8.CountLitPixels(File.ReadAllLines("./Day8/input.txt"), 6, 50);
 void Day8B() => Day8.PrintCode(File.ReadAllLines("./Day8/input.txt"), 6, 50);
 
-Day8B();
-    
-//Console.WriteLine(Day8B());
+long Day9A() => Day9.GetDecompressedLength(File.ReadAllText("./Day9/input.txt"));
+
+Console.WriteLine(Day9A());
