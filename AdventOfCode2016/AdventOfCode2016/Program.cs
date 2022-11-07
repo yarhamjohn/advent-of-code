@@ -34,5 +34,6 @@ long Day8A() => Day8.CountLitPixels(File.ReadAllLines("./Day8/input.txt"), 6, 50
 void Day8B() => Day8.PrintCode(File.ReadAllLines("./Day8/input.txt"), 6, 50);
 
 long Day9A() => Day9.GetDecompressedLength(File.ReadAllText("./Day9/input.txt"));
+long Day9B() => Day9.GetAdvancedDecompressedLength(File.ReadAllText("./Day9/input.txt"));
 
-Console.WriteLine(Day9A());
+Console.WriteLine(Day9B());
