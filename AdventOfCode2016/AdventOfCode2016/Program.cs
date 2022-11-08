@@ -38,5 +38,6 @@ long Day9A() => Day9.GetDecompressedLength(File.ReadAllText("./Day9/input.txt"))
 long Day9B() => Day9.GetAdvancedDecompressedLength(File.ReadAllText("./Day9/input.txt"));
 
 long Day10A() => Day10.GetComparerBotNumber(File.ReadAllLines("./Day10/input.txt"), 61, 17);
+long Day10B() => Day10.GetOutputSummary(File.ReadAllLines("./Day10/input.txt"));
 
-Console.WriteLine(Day10A());
+Console.WriteLine(Day10B());

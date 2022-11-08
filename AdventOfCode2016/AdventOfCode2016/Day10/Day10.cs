@@ -10,20 +10,7 @@ public static class Day10
 
         while (bots.Values.Any(x => x.Active()))
         {
-            
-            foreach (var bot in bots)
-            {
-                Console.WriteLine($"Bot: {bot.Key}, {bot.Value.ToString()}");
-            }
-            foreach (var output in outputs)
-            {
-                Console.WriteLine($"Output: {output.Key}, {output.Value.ToString()}");
-            }
-
-            Console.WriteLine("---------------------------");
-
-            var activeBots = bots.Values.Where(x => x.Active());
-            foreach (var bot in activeBots)
+            foreach (var bot in bots.Values.Where(x => x.Active()))
             {
                 var instructions = bot.GetInstructions();
             
@@ -32,31 +19,48 @@ public static class Day10
                     return bot.Id;
                 }
 
-                foreach (var instruction in instructions)
-                {
-                    if (instruction.instruction is ToBot botInstruction)
-                    {
-                        bots[botInstruction.BotId].AddValue(instruction.value);
-                    }
-                
-                    if (instruction.instruction is ToOutput outputInstruction)
-                    {
-                        outputs[outputInstruction.BinId].AddValue(instruction.value);
-                    }
-                }
+                ApplyInstructions(instructions, bots, outputs);
             }
         }
 
-        foreach (var bot in bots)
+        throw new Exception("No bot compared provided values");
+    }
+    
+    public static long GetOutputSummary(string[] input)
+    {
+        var (bots, outputs) = CreateTargets(input.Where(x => x[..3] == "bot"));
+
+        ApplyInputs(input, bots);
+
+        while (bots.Values.Any(x => x.Active()))
         {
-            Console.WriteLine($"Bot: {bot.Key}, {bot.Value.ToString()}");
+            foreach (var bot in bots.Values.Where(x => x.Active()))
+            {
+                ApplyInstructions(bot.GetInstructions(), bots, outputs);
+            }
         }
-        foreach (var output in outputs)
+
+        return outputs
+            .Where(x => x.Key is 0 or 1 or 2)
+            .SelectMany(y => y.Value.Values)
+            .Aggregate((x, y) => x * y);
+    }
+
+    private static void ApplyInstructions((Instruction instruction, int value)[] instructions, Dictionary<int, Bot> bots,
+        Dictionary<int, Output> outputs)
+    {
+        foreach (var (instruction, value) in instructions)
         {
-            Console.WriteLine($"Bot: {output.Key}, {output.Value.ToString()}");
+            switch (instruction)
+            {
+                case ToBot botInstruction:
+                    bots[botInstruction.BotId].AddValue(value);
+                    break;
+                case ToOutput outputInstruction:
+                    outputs[outputInstruction.BinId].AddValue(value);
+                    break;
+            }
         }
-        
-        return 0;
     }
 
     private static void ApplyInputs(IEnumerable<string> input, IReadOnlyDictionary<int, Bot> bots)
@@ -87,34 +91,30 @@ public static class Day10
 
             if (lowInstruction is ToOutput toOutputLow)
             {
-                outputs.Add(Convert.ToInt32(toOutputLow.BinId), new Output(Convert.ToInt32(toOutputLow.BinId)));
+                outputs.Add(Convert.ToInt32(toOutputLow.BinId), new Output());
             }
             
             if (highInstruction is ToOutput toOutputHigh)
             {
-                outputs.Add(Convert.ToInt32(toOutputHigh.BinId), new Output(Convert.ToInt32(toOutputHigh.BinId)));
+                outputs.Add(Convert.ToInt32(toOutputHigh.BinId), new Output());
             }
         }
 
         return (bots, outputs);
     }
 
-    private interface Target
+    private class Bot
     {
-    }
-
-    private class Bot : Target
-    {
-        public int Id;
+        public readonly int Id;
         private readonly List<int> _value = new();
         private readonly Instruction _lowInstruction;
         private readonly Instruction _highInstruction;
 
-        public Bot(int id, Instruction lowInstructionInstruction, Instruction highInstructionInstruction)
+        public Bot(int id, Instruction lowInstruction, Instruction highInstruction)
         {
             Id = id;
-            _lowInstruction = lowInstructionInstruction;
-            _highInstruction = highInstructionInstruction;
+            _lowInstruction = lowInstruction;
+            _highInstruction = highInstruction;
         }
         
         public void AddValue(int value)
@@ -127,10 +127,7 @@ public static class Day10
             _value.Add(value);
         }
 
-        public bool Active()
-        {
-            return _value.Count == 2;
-        }
+        public bool Active() => _value.Count == 2;
 
         public (Instruction instruction, int value)[] GetInstructions()
         {
@@ -140,32 +137,13 @@ public static class Day10
             
             return instructions;
         }
-
-        public override string ToString()
-        {
-            return $"Values: {string.Join(",", _value)}";
-        }
     }
 
-    private class Output : Target
+    private class Output 
     {
-        private readonly List<int> _value = new();
-        public int Id;
+        public readonly List<int> Values = new();
 
-        public Output(int id)
-        {
-            Id = id;
-        }
-        
-        public void AddValue(int value)
-        {
-            _value.Add(value);
-        }
-        
-        public override string ToString()
-        {
-            return $"Values: {string.Join(",", _value)}";
-        }
+        public void AddValue(int value) => Values.Add(value);
     }
 
     private record Instruction;

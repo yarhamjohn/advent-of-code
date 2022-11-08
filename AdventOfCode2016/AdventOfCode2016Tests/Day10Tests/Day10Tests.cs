@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using AdventOfCode2016.Day10;
-using AdventOfCode2016.Day2;
 using NUnit.Framework;
 
 namespace AdventOfCode2016Tests.Day10Tests;
