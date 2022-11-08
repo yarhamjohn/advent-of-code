@@ -1,5 +1,6 @@
 ﻿
 using AdventOfCode2016.Day1;
+using AdventOfCode2016.Day10;
 using AdventOfCode2016.Day2;
 using AdventOfCode2016.Day3;
 using AdventOfCode2016.Day4;
@@ -36,4 +37,6 @@ void Day8B() => Day8.PrintCode(File.ReadAllLines("./Day8/input.txt"), 6, 50);
 long Day9A() => Day9.GetDecompressedLength(File.ReadAllText("./Day9/input.txt"));
 long Day9B() => Day9.GetAdvancedDecompressedLength(File.ReadAllText("./Day9/input.txt"));
 
-Console.WriteLine(Day9B());
+long Day10A() => Day10.GetComparerBotNumber(File.ReadAllLines("./Day10/input.txt"), 61, 17);
+
+Console.WriteLine(Day10A());
