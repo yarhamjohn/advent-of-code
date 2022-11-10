@@ -1,6 +1,7 @@
 ﻿
 using AdventOfCode2016.Day1;
 using AdventOfCode2016.Day10;
+using AdventOfCode2016.Day11;
 using AdventOfCode2016.Day2;
 using AdventOfCode2016.Day3;
 using AdventOfCode2016.Day4;
@@ -40,4 +41,8 @@ long Day9B() => Day9.GetAdvancedDecompressedLength(File.ReadAllText("./Day9/inpu
 long Day10A() => Day10.GetComparerBotNumber(File.ReadAllLines("./Day10/input.txt"), 61, 17);
 long Day10B() => Day10.GetOutputSummary(File.ReadAllLines("./Day10/input.txt"));
 
-Console.WriteLine(Day10B());
+// Don't bother passing the input as it would require complex parsing but is easy enough to create in code instead.
+long Day11A() => Day11.CountStepsTaken();
+long Day11B() => Day11.CountExtendedStepsTaken();
+
+Console.WriteLine(Day11A());
