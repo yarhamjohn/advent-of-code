@@ -2,6 +2,7 @@
 using AdventOfCode2016.Day1;
 using AdventOfCode2016.Day10;
 using AdventOfCode2016.Day11;
+using AdventOfCode2016.Day12;
 using AdventOfCode2016.Day2;
 using AdventOfCode2016.Day3;
 using AdventOfCode2016.Day4;
@@ -45,4 +46,6 @@ long Day10B() => Day10.GetOutputSummary(File.ReadAllLines("./Day10/input.txt"));
 long Day11A() => Day11.CountStepsTaken();
 long Day11B() => Day11.CountExtendedStepsTaken();
 
-Console.WriteLine(Day11A());
+long Day12A() => Day12.GetValueOfRegister(File.ReadAllLines("./Day12/input.txt"), "a");
+
+Console.WriteLine(Day12A());
