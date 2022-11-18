@@ -2,10 +2,26 @@
 
 public static class Day12
 {
-    public static long GetValueOfRegister(string[] input, string register)
+    public static long GetValueOfRegister(string[] input, string targetRegister)
     {
         var registers = new Dictionary<string, long> { { "a", 0 }, { "b", 0 }, { "c", 0 }, { "d", 0 } };
 
+        ExecuteInstructions(input, registers);
+
+        return registers[targetRegister];
+    }
+
+    public static long GetValueOfRegisterInitialized(string[] input, string targetRegister, IEnumerable<(string, long)> registerInitializations)
+    {
+        var registers = registerInitializations.ToDictionary(x => x.Item1, x => x.Item2);
+
+        ExecuteInstructions(input, registers);
+
+        return registers[targetRegister];
+    }
+
+    private static void ExecuteInstructions(string[] input, Dictionary<string, long> registers)
+    {
         var position = 0;
         while (position < input.Length)
         {
@@ -28,10 +44,8 @@ public static class Day12
 
             position++;
         }
-        
-        return registers[register];
     }
-
+    
     private static int ExecuteJump(Dictionary<string, long> registers, string indicator, int distance)
         => CanJump(registers, indicator) ? distance : 1;
 

@@ -47,5 +47,6 @@ long Day11A() => Day11.CountStepsTaken();
 long Day11B() => Day11.CountExtendedStepsTaken();
 
 long Day12A() => Day12.GetValueOfRegister(File.ReadAllLines("./Day12/input.txt"), "a");
+long Day12B() => Day12.GetValueOfRegisterInitialized(File.ReadAllLines("./Day12/input.txt"), "a", new[] {("c", 1L)});
 
-Console.WriteLine(Day12A());
+Console.WriteLine(Day12B());
