@@ -55,5 +55,6 @@ long Day13A() => Day13.CountSteps((31, 39), 1364);
 long Day13B() => Day13.CountLocations(1364);
 
 long Day14A() => Day14.Get64thKeyIndex("qzyelonm");
+long Day14B() => Day14.Get64thKeyIndexStretched("qzyelonm");
 
-Console.WriteLine(Day14A());
+Console.WriteLine(Day14B());

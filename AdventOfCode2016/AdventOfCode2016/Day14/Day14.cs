@@ -4,6 +4,51 @@ namespace AdventOfCode2016.Day14;
 
 public static class Day14
 {
+    public static long Get64thKeyIndexStretched(string salt)
+    {
+        var index = 0;
+        var matchingIndexes = new List<int>();
+
+        var next1000 = new Dictionary<int, string>();
+        
+        while (matchingIndexes.Count < 64)
+        {
+            var encodedString = GetCandidateStretchedKey(salt, index);
+
+            var firstTrebleChar = GetFirstTrebleChar(encodedString);
+
+            if (firstTrebleChar is not null)
+            {
+                // Remove from dictionary anything not in required range
+                foreach (var x in next1000.Keys.Where(x => x <= index || x > index + 1000))
+                {
+                    next1000.Remove(x);
+                }
+                
+                // add required elements to dictionary
+                for (var i = 0; i < 1000; i++)
+                {
+                    var targetIndex = index + 1 + i;
+                    if (!next1000.ContainsKey(targetIndex))
+                    {
+                        next1000[targetIndex] = GetCandidateStretchedKey(salt, targetIndex);
+                    }
+                }
+
+                if (next1000.Any(x =>
+                        x.Value.Contains(
+                            $"{firstTrebleChar}{firstTrebleChar}{firstTrebleChar}{firstTrebleChar}{firstTrebleChar}")))
+                {
+                    matchingIndexes.Add(index);
+                }
+            }
+            
+            index++;
+        }
+        
+        return matchingIndexes.Last();
+    }
+
     public static long Get64thKeyIndex(string salt)
     {
         var index = 0;
@@ -20,13 +65,9 @@ public static class Day14
             if (firstTrebleChar is not null)
             {
                 // Remove from dictionary anything not in required range
-                // next1000.Clear();
-                foreach (var x in next1000.Keys)
+                foreach (var x in next1000.Keys.Where(x => x <= index || x > index + 1000))
                 {
-                    if (x <= index || x > index + 1000)
-                    {
-                        next1000.Remove(x);
-                    }
+                    next1000.Remove(x);
                 }
                 
                 // add required elements to dictionary
@@ -57,8 +98,19 @@ public static class Day14
     {
         var md5 = MD5.HashData(System.Text.Encoding.ASCII.GetBytes($"{salt}{index}"));
 
-        var encodedString = BitConverter.ToString(md5).Replace("-", "");
-        return encodedString;
+        return BitConverter.ToString(md5).Replace("-", "");
+    }
+
+    private static string GetCandidateStretchedKey(string salt, int index)
+    {
+        var hash = GetCandidateKey(salt, index);
+        for (var i = 0; i < 2016; i++)
+        {
+            var md5 = MD5.HashData(System.Text.Encoding.ASCII.GetBytes($"{hash.ToLower()}"));
+            hash = BitConverter.ToString(md5).Replace("-", "");
+        }
+
+        return hash;
     }
 
     private static char? GetFirstTrebleChar(string encodedString)
@@ -66,15 +118,15 @@ public static class Day14
         var count = 0;
         char? currentChar = null;
         
-        for (var i = 0; i < encodedString.Length; i++)
+        foreach (var ch in encodedString)
         {
-            if (encodedString[i] == currentChar)
+            if (ch == currentChar)
             {
                 count++;
             }
             else
             {
-                currentChar = encodedString[i];
+                currentChar = ch;
                 count = 1;
             }
 
