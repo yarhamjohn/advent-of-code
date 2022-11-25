@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2016.Day13;
+﻿using System.Runtime.InteropServices;
+
+namespace AdventOfCode2016.Day13;
 
 public static class Day13
 {
@@ -16,7 +18,53 @@ public static class Day13
         return _stepsTaken;
     }
 
+    public static long CountLocations(int favouriteNumber)
+    {
+        // starting at (1, 1) get all surrounding spaces (not diagonal, or negative indexes).
+        // move to each in turn and repeat until blocked.
+        // continue until reaching the targetCoordinate
+        // stop searching each if no more options or if every option takes more steps than already taken
+        
+        var currentCoordinate = (col: 1, row: 1);
+
+        var stepsTaken = 0;
+        while (stepsTaken < 50)
+        {
+            
+            stepsTaken++;
+        }
+        
+        Iterate2(currentCoordinate, Array.Empty<(int, int)>(), favouriteNumber, 0);
+
+        return LocationsVisited.Count;
+    }
+    
     private static int _stepsTaken = int.MaxValue;
+    private static readonly List<(int, int)> LocationsVisited = new ();
+    
+    private static void Iterate2((int col, int row) currentCoordinate, (int row, int col)[] previousCoordinates, int favouriteNumber, int stepsTaken)
+    {
+        if (!LocationsVisited.Contains(currentCoordinate))
+        {
+            LocationsVisited.Add(currentCoordinate);
+        }
+
+        // Get next positions but exclude where we just came from and invalid positions
+        var nextCoordinates = GetNextCoordinates(currentCoordinate, previousCoordinates, favouriteNumber);
+
+        stepsTaken++;
+
+        // Reached max steps allowed
+        if (stepsTaken > 50)
+        {
+            return;
+        }
+        
+        foreach (var coord in nextCoordinates)
+        {
+            Iterate2(coord, previousCoordinates.Concat(new[] {currentCoordinate}).ToArray(), favouriteNumber, stepsTaken);
+        }
+    }
 
     private static void Iterate((int col, int row) targetCoordinate, (int col, int row) currentCoordinate, (int row, int col)[] previousCoordinates, int favouriteNumber, int stepsTaken)
     {
@@ -39,8 +87,7 @@ public static class Day13
 
         foreach (var coord in nextCoordinates)
         {
-            var newPreviousCoords = previousCoordinates.Concat(new[] {currentCoordinate}).ToArray();
-            Iterate(targetCoordinate, coord, newPreviousCoords, favouriteNumber, stepsTaken);
+            Iterate(targetCoordinate, coord, previousCoordinates.Concat(new[] {currentCoordinate}).ToArray(), favouriteNumber, stepsTaken);
         }
     }
 
