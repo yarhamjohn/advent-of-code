@@ -4,6 +4,7 @@ using AdventOfCode2016.Day10;
 using AdventOfCode2016.Day11;
 using AdventOfCode2016.Day12;
 using AdventOfCode2016.Day13;
+using AdventOfCode2016.Day14;
 using AdventOfCode2016.Day2;
 using AdventOfCode2016.Day3;
 using AdventOfCode2016.Day4;
@@ -53,4 +54,6 @@ long Day12B() => Day12.GetValueOfRegisterInitialized(File.ReadAllLines("./Day12/
 long Day13A() => Day13.CountSteps((31, 39), 1364);
 long Day13B() => Day13.CountLocations(1364);
 
-Console.WriteLine(Day13B());
+long Day14A() => Day14.Get64thKeyIndex("qzyelonm");
+
+Console.WriteLine(Day14A());
