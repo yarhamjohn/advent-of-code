@@ -67,5 +67,6 @@ string Day16A() => Day16.GetChecksum("10001001100000001", 272);
 string Day16B() => Day16.GetChecksum("10001001100000001", 35651584);
 
 string Day17A() => Day17.GetShortestPath("rrrbmfta");
+int Day17B() => Day17.GetLongestPath("rrrbmfta");
 
-Console.WriteLine(Day16B());
+Console.WriteLine(Day17B());

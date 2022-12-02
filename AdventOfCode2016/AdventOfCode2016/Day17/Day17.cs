@@ -6,42 +6,68 @@ public static class Day17
 {
     public static string GetShortestPath(string input)
     {
-        ValidPaths = new List<string>();
-        ShortestPath = int.MaxValue;
+        _shortestPath = null;
         
-        GetPath("", input, (0, 0));
+        GetShortestPath("", input, (0, 0));
 
-        return ValidPaths.OrderBy(x => x.Length).First();
+        return _shortestPath ?? string.Empty;
     }
 
-    private static List<string> ValidPaths = new();
-    private static int ShortestPath = int.MaxValue;
-    
-    private static void GetPath(string path, string passcode, (int, int) location)
+    public static int GetLongestPath(string input)
     {
-        if (path.Length >= ShortestPath)
+        _longestPath = int.MinValue;
+        
+        GetLongestPath("", input, (0, 0));
+
+        return _longestPath;
+    }
+    
+    private static string? _shortestPath;
+    private static int _longestPath;
+    
+    private static void GetShortestPath(string path, string passcode, (int, int) location)
+    {
+        if (_shortestPath is not null && path.Length >= _shortestPath.Length)
         {
             return;
         }
         
         if (location is { Item1: 3, Item2: 3 })
         {
-            if (path.Length < ShortestPath)
+            if (_shortestPath is null || path.Length < _shortestPath.Length)
             {
-                ShortestPath = path.Length;
+                _shortestPath = path;
             }
-            
-            ValidPaths.Add(path);
         }
 
-        var availableDoors = GetDoors(location);
         var doorState = GetMd5Hash(path, passcode);
-
-        foreach (var door in availableDoors)
+        foreach (var door in GetDoors(location))
         {
             if (IsOpen(doorState, door))
             {
-                GetPath(path + door, passcode, GetNextLocation(location, door));
+                GetShortestPath(path + door, passcode, GetNextLocation(location, door));
+            }
+        }
+    }
+    
+    private static void GetLongestPath(string path, string passcode, (int, int) location)
+    {
+        if (location is { Item1: 3, Item2: 3 })
+        {
+            if (path.Length > _longestPath)
+            {
+                _longestPath = path.Length;
+            }
+
+            return;
+        }
+
+        var doorState = GetMd5Hash(path, passcode);
+        foreach (var door in GetDoors(location))
+        {
+            if (IsOpen(doorState, door))
+            {
+                GetLongestPath(path + door, passcode, GetNextLocation(location, door));
             }
         }
     }
