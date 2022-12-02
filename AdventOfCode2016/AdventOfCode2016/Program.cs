@@ -5,6 +5,7 @@ using AdventOfCode2016.Day11;
 using AdventOfCode2016.Day12;
 using AdventOfCode2016.Day13;
 using AdventOfCode2016.Day14;
+using AdventOfCode2016.Day15;
 using AdventOfCode2016.Day2;
 using AdventOfCode2016.Day3;
 using AdventOfCode2016.Day4;
@@ -57,4 +58,6 @@ long Day13B() => Day13.CountLocations(1364);
 long Day14A() => Day14.Get64thKeyIndex("qzyelonm");
 long Day14B() => Day14.Get64thKeyIndexStretched("qzyelonm");
 
-Console.WriteLine(Day14B());
+long Day15A() => Day15.GetEarliestTime(File.ReadAllLines("./Day15/input.txt"));
+
+Console.WriteLine(Day15A());
