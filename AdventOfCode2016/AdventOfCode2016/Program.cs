@@ -7,6 +7,7 @@ using AdventOfCode2016.Day13;
 using AdventOfCode2016.Day14;
 using AdventOfCode2016.Day15;
 using AdventOfCode2016.Day16;
+using AdventOfCode2016.Day17;
 using AdventOfCode2016.Day2;
 using AdventOfCode2016.Day3;
 using AdventOfCode2016.Day4;
@@ -64,5 +65,7 @@ long Day15B() => Day15.GetEarliestTimeExtended(File.ReadAllLines("./Day15/input.
 
 string Day16A() => Day16.GetChecksum("10001001100000001", 272);
 string Day16B() => Day16.GetChecksum("10001001100000001", 35651584);
+
+string Day17A() => Day17.GetShortestPath("rrrbmfta");
 
 Console.WriteLine(Day16B());
