@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2016.Day16;
+﻿using System.Text;
+
+namespace AdventOfCode2016.Day16;
 
 public static class Day16
 {
@@ -6,7 +8,6 @@ public static class Day16
     {
         var data = CalculateData(input, length);
         var checksum = CalculateChecksum(data);
-        
         while (checksum.Length % 2 == 0)
         {
             checksum = CalculateChecksum(checksum);
@@ -32,5 +33,15 @@ public static class Day16
         => string.Join("", input.Reverse().Select(x => x == '1' ? '0' : '1'));
 
     private static string CalculateChecksum(string data)
-        => data.Chunk(2).Aggregate("", (checksum, pair) => checksum + (pair[0] == pair[1] ? "1" : "0"));
+    {
+        var chunks = data.Chunk(2);
+        var next = new StringBuilder();
+
+        foreach (var chunk in chunks)
+        {
+            next.Append(chunk[0] == chunk[1] ? "1" : "0");
+        }
+
+        return next.ToString();
+    }
 }
