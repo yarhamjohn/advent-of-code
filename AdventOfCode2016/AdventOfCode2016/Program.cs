@@ -59,5 +59,6 @@ long Day14A() => Day14.Get64thKeyIndex("qzyelonm");
 long Day14B() => Day14.Get64thKeyIndexStretched("qzyelonm");
 
 long Day15A() => Day15.GetEarliestTime(File.ReadAllLines("./Day15/input.txt"));
+long Day15B() => Day15.GetEarliestTimeExtended(File.ReadAllLines("./Day15/input.txt"));
 
-Console.WriteLine(Day15A());
+Console.WriteLine(Day15B());

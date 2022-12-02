@@ -17,4 +17,14 @@ public class Day15Tests
         var result = Day15.GetEarliestTime(input);
         Assert.That(result, Is.EqualTo(5));
     }
+    
+    [Test]
+    public void GetEarliestTimeExtended()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day15Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath).ToArray();
+
+        var result = Day15.GetEarliestTimeExtended(input);
+        Assert.That(result, Is.EqualTo(85));
+    }
 }
