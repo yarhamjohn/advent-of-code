@@ -14,4 +14,14 @@ public class Day2Tests
         var result = Day2.GetTotalScore(input);
         Assert.That(result, Is.EqualTo(15));
     }
+    
+    [Test]
+    public void GetTotalRockPaperScissorsScoreRevised()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day2Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath);
+        
+        var result = Day2.GetTotalScoreRevised(input);
+        Assert.That(result, Is.EqualTo(12));
+    }
 }
