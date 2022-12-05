@@ -16,6 +16,7 @@ long Day3B() => Day3.GetBadgePrioritySum(File.ReadAllLines("./Day3/input.txt"));
 long Day4A() => Day4.CountContainedPairs(File.ReadAllLines("./Day4/input.txt"));
 long Day4B() => Day4.CountOverlappingPairs(File.ReadAllLines("./Day4/input.txt"));
 
-string Day5A() => Day5.GetTopCrates(File.ReadAllLines("./Day5/StackInput.txt"), File.ReadAllLines("./Day5/MovementInput.txt"));
+string Day5A() => Day5.GetTopCrates9000(File.ReadAllLines("./Day5/StackInput.txt"), File.ReadAllLines("./Day5/MovementInput.txt"));
+string Day5B() => Day5.GetTopCrates9001(File.ReadAllLines("./Day5/StackInput.txt"), File.ReadAllLines("./Day5/MovementInput.txt"));
 
-Console.WriteLine(Day5A());
+Console.WriteLine(Day5B());
