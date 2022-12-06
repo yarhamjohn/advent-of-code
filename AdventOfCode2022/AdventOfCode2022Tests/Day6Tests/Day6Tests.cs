@@ -12,7 +12,18 @@ public class Day6Tests
     [TestCase("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 11)]
     public void GetStartOfPacket(string input, int expected)
     {
-        var result = Day6.GetStartOfPacket(input);
+        var result = Day6.GetStartOfSection(input, 4);
+        Assert.That(result, Is.EqualTo(expected));
+    }
+    
+    [TestCase("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 19)]
+    [TestCase("bvwbjplbgvbhsrlpgdmjqwftvncz", 23)]
+    [TestCase("nppdvjthqldpwncqszvftbrmjlhg", 23)]
+    [TestCase("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 29)]
+    [TestCase("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 26)]
+    public void GetStartOfMessage(string input, int expected)
+    {
+        var result = Day6.GetStartOfSection(input, 14);
         Assert.That(result, Is.EqualTo(expected));
     }
 }

@@ -2,16 +2,16 @@
 
 public static class Day6
 {
-    public static long GetStartOfPacket(string input)
+    public static long GetStartOfSection(string input, int sectionLength)
     {
         var queue = new Queue<char>();
 
         var position = 0;
         while (true)
         {
-            if (queue.Count == 4)
+            if (queue.Count == sectionLength)
             {
-                if (queue.ToArray().Distinct().Count() == 4)
+                if (queue.Distinct().Count() == sectionLength)
                 {
                     return position;
                 }
