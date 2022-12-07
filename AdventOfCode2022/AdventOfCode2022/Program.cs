@@ -21,5 +21,6 @@ string Day5A() => Day5.GetTopCrates9000(File.ReadAllLines("./Day5/StackInput.txt
 string Day5B() => Day5.GetTopCrates9001(File.ReadAllLines("./Day5/StackInput.txt"), File.ReadAllLines("./Day5/MovementInput.txt"));
 
 long Day7A() => Day7.GetFileSizes(File.ReadAllLines("./Day7/input.txt"));
+long Day7B() => Day7.GetDirectoryToDelete(File.ReadAllLines("./Day7/input.txt"));
 
-Console.WriteLine(Day7A());
+Console.WriteLine(Day7B());
