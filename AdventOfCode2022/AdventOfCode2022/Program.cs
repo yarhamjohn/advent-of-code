@@ -3,6 +3,7 @@ using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
 using AdventOfCode2022.Day5;
+using AdventOfCode2022.Day7;
 
 long Day1A() => Day1.GetTotalCalories(File.ReadAllLines("./Day1/input.txt"), 1);
 long Day1B() => Day1.GetTotalCalories(File.ReadAllLines("./Day1/input.txt"), 3);
@@ -19,4 +20,6 @@ long Day4B() => Day4.CountOverlappingPairs(File.ReadAllLines("./Day4/input.txt")
 string Day5A() => Day5.GetTopCrates9000(File.ReadAllLines("./Day5/StackInput.txt"), File.ReadAllLines("./Day5/MovementInput.txt"));
 string Day5B() => Day5.GetTopCrates9001(File.ReadAllLines("./Day5/StackInput.txt"), File.ReadAllLines("./Day5/MovementInput.txt"));
 
-Console.WriteLine(Day5B());
+long Day7A() => Day7.GetFileSizes(File.ReadAllLines("./Day7/input.txt"));
+
+Console.WriteLine(Day7A());
