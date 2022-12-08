@@ -29,5 +29,6 @@ long Day7A() => Day7.GetFileSizes(File.ReadAllLines("./Day7/input.txt"));
 long Day7B() => Day7.GetDirectoryToDelete(File.ReadAllLines("./Day7/input.txt"));
 
 long Day8A() => Day8.CountVisibleTrees(File.ReadAllLines("./Day8/input.txt"));
+long Day8B() => Day8.CalculateHighestScenicScore(File.ReadAllLines("./Day8/input.txt"));
 
-Console.WriteLine(Day8A());
+Console.WriteLine(Day8B());
