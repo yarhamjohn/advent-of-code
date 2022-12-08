@@ -3,135 +3,55 @@
 public static class Day8
 {
     public static long CountVisibleTrees(string[] input)
-    {
-        var count = 0;
-        for (var i = 0; i < input.Length; i++)
-        {
-            for (var j = 0; j < input[i].Length; j++)
-            {
-                count += IsHidden(input, i, j) ? 0 : 1;
-            }
-        }
-        
-        return count;
-    }
+        => input
+            .SelectMany((x, i) => x.Select((_, j) => IsHidden(input, i, j) ? 0 : 1))
+            .Sum();
 
     public static long CalculateHighestScenicScore(string[] input)
+        => input
+            .SelectMany((x, i) => x.Select((_, j) => CalculateScenicScore(input, i, j)))
+            .Max();
+
+    private static long CalculateScenicScore(IReadOnlyList<string> input, int row, int col)
+        => CountVisibleTrees(GetLeftTrees(input, row, col).Reverse(), input[row][col])
+           * CountVisibleTrees(GetRightTrees(input, row, col), input[row][col])
+           * CountVisibleTrees(GetTopTrees(input, row, col).Reverse(), input[row][col])
+           * CountVisibleTrees(GetBottomTrees(input, row, col), input[row][col]);
+
+    private static long CountVisibleTrees(IEnumerable<char> trees, char target)
     {
-        var scenicScore = 0L;
+        var count = 0;
 
-        for (var i = 0; i < input.Length; i++)
+        foreach (var tree in trees)
         {
-            for (var j = 0; j < input[i].Length; j++)
-            {
-                var score = CalculateScenicScore(input, i, j);
-                if (score > scenicScore)
-                {
-                    scenicScore = score;
-                }
-            }
-        }
-        
-        return scenicScore;
-    }
+            count++;
 
-    private static long CalculateScenicScore(string[] input, int row, int col)
-    {
-        var left = 0;
-        var right = 0;
-        var top = 0;
-        var bottom = 0;
-        var target = input[row][col];
-
-        var leftTrees = GetLeftTrees(input, row, col).ToArray();
-        for (var i = leftTrees.Length - 1; i >= 0; i--)
-        {
-            if (leftTrees[i] < target)
+            if (tree >= target)
             {
-                left++;
-            }
-
-            if (leftTrees[i] >= target)
-            {
-                left++;
-                break;
-            }
-        }
-        
-        var rightTrees = GetRightTrees(input, row, col).ToArray();
-        for (var i = 0; i < rightTrees.Length; i++)
-        {
-            if (rightTrees[i] < target)
-            {
-                right++;
-            }
-
-            if (rightTrees[i] >= target)
-            {
-                right++;
-                break;
-            }
-        }
-        
-        var topTrees = GetTopTrees(input, row).Select(x => x[col]).ToArray();
-        for (var i = topTrees.Length - 1; i >= 0; i--)
-        {
-            if (topTrees[i] < target)
-            {
-                top++;
-            }
-
-            if (topTrees[i] >= target)
-            {
-                top++;
                 break;
             }
         }
 
-        var bottomTrees = GetBottomTrees(input, row).Select(x => x[col]).ToArray();
-        for (var i = 0; i < bottomTrees.Length; i++)
-        {
-            if (bottomTrees[i] < target)
-            {
-                bottom++;
-            }
-
-            if (bottomTrees[i] >= target)
-            {
-                bottom++;
-                break;
-            }
-        }
-        
-        return left * right * top * bottom;
+        return count;
     }
 
     private static bool IsHidden(IReadOnlyList<string> input, int row, int col)
     {
-        var target = input[row][col];
-        return GetLeftTrees(input, row, col).Any(x => x >= target)
-               && GetRightTrees(input, row, col).Any(x => x >= target)
-               && GetTopTrees(input, row).Any(x => x[col] >= target) 
-               && GetBottomTrees(input, row).Any(x => x[col] >= target);
+        return GetLeftTrees(input, row, col).Any(x => x >= input[row][col])
+               && GetRightTrees(input, row, col).Any(x => x >= input[row][col])
+               && GetTopTrees(input, row, col).Any(x => x >= input[row][col]) 
+               && GetBottomTrees(input, row, col).Any(x => x >= input[row][col]);
     }
 
-    private static IEnumerable<string> GetBottomTrees(IReadOnlyList<string> input, int row)
-    {
-        return input.Where((_, i) => i > row);
-    }
+    private static char[] GetBottomTrees(IEnumerable<string> input, int row, int col)
+        => input.Where((_, i) => i > row).Select(x => x[col]).ToArray();
 
-    private static IEnumerable<string> GetTopTrees(IReadOnlyList<string> input, int row)
-    {
-        return input.Where((_, i) => i < row);
-    }
+    private static char[] GetTopTrees(IEnumerable<string> input, int row, int col)
+        => input.Where((_, i) => i < row).Select(x => x[col]).ToArray();
 
-    private static IEnumerable<char> GetRightTrees(IReadOnlyList<string> input, int row, int col)
-    {
-        return input[row][(col + 1)..];
-    }
+    private static char[] GetRightTrees(IReadOnlyList<string> input, int row, int col)
+        => input[row][(col + 1)..].ToArray();
 
-    private static IEnumerable<char> GetLeftTrees(IReadOnlyList<string> input, int row, int col)
-    {
-        return input[row][..col];
-    }
+    private static char[] GetLeftTrees(IReadOnlyList<string> input, int row, int col)
+        => input[row][..col].ToArray();
 }

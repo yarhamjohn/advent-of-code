@@ -76,3 +76,5 @@ However, you can do even better: consider the tree of height `5` in the middle o
 This tree's scenic score is `8` (`2 * 2 * 1 * 2`); this is the ideal spot for the tree house.
 
 Consider each tree on your map. What is the highest scenic score possible for any tree?
+
+`Your puzzle answer was 486540.`
