@@ -2,61 +2,112 @@
 
 public static class Day9
 {
-    public static long CalculatePositionsVisited(string[] input)
+    public static long CalculatePositionsVisited(string[] input, int length)
     {
-        var currentTailPosition = (x: 0, y: 0);
-        var currentHeadPosition = (x: 0, y: 0);
+        var positions = Enumerable.Range(0, length)
+            .ToDictionary(x => x, _ => (currentPosition: (0, 0), visitedPositions: new List<(int, int)> {(0, 0)}));
      
-        var positionsVisited = new HashSet<(int, int)> {currentTailPosition};
-        
         foreach (var instruction in input.Select(x => x.Split(" ")))
         {
             for (var step = 0; step < Convert.ToInt32(instruction[1]); step++)
             {
-                currentHeadPosition = GetNewHeadPosition(currentHeadPosition, instruction[0]);
+                var newHeadPosition = GetNewHeadPosition(positions[0].currentPosition, instruction[0]);
+                positions[0].visitedPositions.Add(newHeadPosition);
+                positions[0] = (currentPosition: newHeadPosition, positions[0].visitedPositions);
 
-                if (NotAdjacent(currentHeadPosition, currentTailPosition))
+                for (var knot = 1; knot < length; knot++)
                 {
-                    currentTailPosition = GetNewTailPosition(currentTailPosition, currentHeadPosition, instruction[0]);
+                    if (NotAdjacent(positions[knot - 1].currentPosition, positions[knot].currentPosition))
+                    {
+                        var newTailPosition = GetNewTailPosition(positions[knot].currentPosition, positions[knot - 1].currentPosition);
+                        positions[knot].visitedPositions.Add(newTailPosition);
+                        positions[knot] = (currentPosition: newTailPosition, positions[knot].visitedPositions);
+                    }
                 }
-                
-                positionsVisited.Add(currentTailPosition);
+
+                // if (instruction[0] == "L" && instruction[1] == "8")
+                // {
+                //     PrintGrid(positions, instruction);
+                // }
             }
+
+            // PrintGrid(positions, instruction);
         }
         
-        return positionsVisited.Count;
+        // PrintPath(positions[length - 1].visitedPositions);
+
+        return positions[length - 1].visitedPositions.Distinct().Count();
     }
 
-    private static (int x, int y) GetNewTailPosition(
-        (int x, int y) currentTailPosition, 
-        (int x, int y) currentHeadPosition, 
-        string direction)
+    private static (int x, int y) GetNewTailPosition((int x, int y) tailPosition, (int x, int y) headPosition)
+    {
+        var newXPosition = tailPosition.x == headPosition.x 
+            ? tailPosition.x 
+            : tailPosition.x > headPosition.x 
+                ? tailPosition.x - 1 
+                : tailPosition.x + 1;
+        
+        var newYPosition = tailPosition.y == headPosition.y 
+            ? tailPosition.y 
+            : tailPosition.y < headPosition.y 
+                ? tailPosition.y + 1 
+                : tailPosition.y - 1;
+        
+        return (newXPosition, newYPosition);
+    }
+
+    private static (int x, int y) GetNewHeadPosition((int x, int y) headPosition, string direction)
         => direction switch
         {
-            "U" => (currentTailPosition.x - 1, GetNewYPosition(currentHeadPosition.y, currentTailPosition.y)),
-            "D" => (currentTailPosition.x + 1, GetNewYPosition(currentHeadPosition.y, currentTailPosition.y)),
-            "L" => (GetNewXPosition(currentHeadPosition.x, currentTailPosition.x), currentTailPosition.y - 1),
-            "R" => (GetNewXPosition(currentHeadPosition.x, currentTailPosition.x), currentTailPosition.y + 1),
+            "U" => (headPosition.x - 1, headPosition.y),
+            "D" => (headPosition.x + 1, headPosition.y),
+            "L" => (headPosition.x, headPosition.y - 1),
+            "R" => (headPosition.x, headPosition.y + 1),
             _ => throw new ArgumentOutOfRangeException(nameof(direction))
         };
 
-    private static (int x, int y) GetNewHeadPosition((int x, int y) currentHeadPosition, string direction)
-        => direction switch
-        {
-            "U" => (currentHeadPosition.x - 1, currentHeadPosition.y),
-            "D" => (currentHeadPosition.x + 1, currentHeadPosition.y),
-            "L" => (currentHeadPosition.x, currentHeadPosition.y - 1),
-            "R" => (currentHeadPosition.x, currentHeadPosition.y + 1),
-            _ => throw new ArgumentOutOfRangeException(nameof(direction))
-        };
-
-    private static int GetNewYPosition(int headYPosition, int tailYPosition) 
-        => headYPosition == tailYPosition ? tailYPosition : headYPosition;
-
-    private static int GetNewXPosition(int headXPosition, int tailXPosition) 
-        => headXPosition == tailXPosition ? tailXPosition : headXPosition;
-    
     private static bool NotAdjacent((int x, int y) currentHeadPosition, (int x, int y) currentTailPosition)
         => Math.Abs(currentHeadPosition.x - currentTailPosition.x) >= 2
            || Math.Abs(currentHeadPosition.y - currentTailPosition.y) >= 2;
+    
+    private static void PrintPath(List<(int, int)> visitedPositions)
+    {
+        var grid = GetGrid();
+
+        foreach (var position in visitedPositions)
+        {
+            grid[position.Item1 + 15][position.Item2 + 11] = "#";
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------");
+        Console.WriteLine();
+
+        foreach (var line in grid)
+        {
+            Console.WriteLine(string.Join("", line.Select(x => x == "" ? "." : x)));
+        }
+    }
+    
+    private static void PrintGrid(Dictionary<int, ((int, int) currentPosition, List<(int, int)> visitedPositions)> positions, string[] instruction)
+    {
+        var grid = GetGrid();
+
+        foreach (var knot in positions)
+        {
+            grid[knot.Value.currentPosition.Item1 + 16][knot.Value.currentPosition.Item2 + 11] = knot.Key.ToString();
+        }
+
+        Console.WriteLine();
+        Console.WriteLine($"-----------------{string.Join(" ", instruction)}---------------------");
+        Console.WriteLine();
+
+        foreach (var line in grid)
+        {
+            Console.WriteLine(string.Join("", line.Select(x => x == "" ? "." : x)));
+        }
+    }
+
+    private static string[][] GetGrid()
+        => Enumerable.Range(0, 21).Select(_ => ".".PadLeft(26, '.').Split("").ToArray()).ToArray();
 }
