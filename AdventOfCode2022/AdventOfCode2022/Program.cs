@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2022.Day1;
+using AdventOfCode2022.Day10;
 using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
@@ -35,4 +36,6 @@ long Day8B() => Day8.CalculateHighestScenicScore(File.ReadAllLines("./Day8/input
 long Day9A() => Day9.CalculatePositionsVisited(File.ReadAllLines("./Day9/input.txt"), 2);
 long Day9B() => Day9.CalculatePositionsVisited(File.ReadAllLines("./Day9/input.txt"), 10);
 
-Console.WriteLine(Day9B());
+long Day10A() => Day10.CalculateSignalStrength(File.ReadAllLines("./Day10/input.txt"));
+
+Console.WriteLine(Day10A());
