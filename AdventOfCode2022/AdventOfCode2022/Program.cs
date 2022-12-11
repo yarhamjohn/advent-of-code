@@ -1,5 +1,6 @@
 ﻿using AdventOfCode2022.Day1;
 using AdventOfCode2022.Day10;
+using AdventOfCode2022.Day11;
 using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
@@ -39,6 +40,6 @@ long Day9B() => Day9.CalculatePositionsVisited(File.ReadAllLines("./Day9/input.t
 long Day10A() => Day10.CalculateSignalStrength(File.ReadAllLines("./Day10/input.txt"));
 void Day10B() => Day10.GetMessage(File.ReadAllLines("./Day10/input.txt"));
 
-Day10B();
+long Day11A() => Day11.CalculateMonkeyBusiness(File.ReadAllLines("./Day11/input.txt"));
 
-// Console.WriteLine(Day10B());
+Console.WriteLine(Day11A());
