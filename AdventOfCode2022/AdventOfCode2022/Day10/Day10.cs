@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace AdventOfCode2022.Day10;
+﻿namespace AdventOfCode2022.Day10;
 
 public static class Day10
 {
@@ -33,7 +31,7 @@ public static class Day10
         return cycleSignalStrength;
     }
 
-    public static void GetMessage(string[] input)
+    public static void GetMessage(IEnumerable<string> input)
     {
         var screen = GetScreen();
 
