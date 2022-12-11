@@ -37,5 +37,8 @@ long Day9A() => Day9.CalculatePositionsVisited(File.ReadAllLines("./Day9/input.t
 long Day9B() => Day9.CalculatePositionsVisited(File.ReadAllLines("./Day9/input.txt"), 10);
 
 long Day10A() => Day10.CalculateSignalStrength(File.ReadAllLines("./Day10/input.txt"));
+void Day10B() => Day10.GetMessage(File.ReadAllLines("./Day10/input.txt"));
 
-Console.WriteLine(Day10A());
+Day10B();
+
+// Console.WriteLine(Day10B());

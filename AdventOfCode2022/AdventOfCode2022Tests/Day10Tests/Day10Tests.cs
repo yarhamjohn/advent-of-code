@@ -14,4 +14,13 @@ public class Day10Tests
         var result = Day10.CalculateSignalStrength(input.ToArray());
         Assert.That(result, Is.EqualTo(13140));
     }
+    
+    [Test]
+    public void GetMessage()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day10Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath);
+
+        Day10.GetMessage(input.ToArray());
+    }
 }
