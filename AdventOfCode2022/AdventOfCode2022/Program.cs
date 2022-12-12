@@ -45,5 +45,6 @@ long Day11A() => Day11.CalculateMonkeyBusiness(File.ReadAllLines("./Day11/input.
 long Day11B() => Day11.CalculateMonkeyBusinessLarge(File.ReadAllLines("./Day11/input.txt"));
 
 long Day12A() => Day12.CountFewestSteps(File.ReadAllLines("./Day12/input.txt"));
+long Day12B() => Day12.CountShortestWalk(File.ReadAllLines("./Day12/input.txt"));
 
-Console.WriteLine(Day12A());
+Console.WriteLine(Day12B());
