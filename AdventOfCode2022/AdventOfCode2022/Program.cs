@@ -41,5 +41,6 @@ long Day10A() => Day10.CalculateSignalStrength(File.ReadAllLines("./Day10/input.
 void Day10B() => Day10.GetMessage(File.ReadAllLines("./Day10/input.txt"));
 
 long Day11A() => Day11.CalculateMonkeyBusiness(File.ReadAllLines("./Day11/input.txt"));
+long Day11B() => Day11.CalculateMonkeyBusinessLarge(File.ReadAllLines("./Day11/input.txt"));
 
-Console.WriteLine(Day11A());
+Console.WriteLine(Day11B());

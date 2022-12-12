@@ -14,4 +14,14 @@ public class Day11Tests
         var result = Day11.CalculateMonkeyBusiness(input.ToArray());
         Assert.That(result, Is.EqualTo(10605));
     }
+    
+    [Test]
+    public void CalculateMonkeyBusinessLarge()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day11Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath);
+
+        var result = Day11.CalculateMonkeyBusinessLarge(input.ToArray());
+        Assert.That(result, Is.EqualTo(2713310158));
+    }
 }
