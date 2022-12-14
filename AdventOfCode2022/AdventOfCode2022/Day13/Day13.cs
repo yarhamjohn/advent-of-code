@@ -32,12 +32,21 @@ public static class Day13
             return false;
         }
         
-        for (var i = 0; i < Math.Min(left.Count, right.Count); i++)
+        for (var i = 0; i < Math.Max(left.Count, right.Count); i++)
         {
             if (left[i] is int leftInt && right[i] is int rightInt)
             {
                 if (leftInt == rightInt)
                 {
+                    if (i + 1 >= left.Count)
+                    {
+                        return true;
+                    }
+                    if (i + 1 >= right.Count)
+                    {
+                        return false;
+                    }
+                    
                     continue;
                 }
 
@@ -54,10 +63,27 @@ public static class Day13
                 return IsCorrectOrder(l2, new List<object> { r2 });
             }
 
-            return IsCorrectOrder((List<object>)left[i], (List<object>)right[i]);
+            var x = IsCorrectOrder((List<object>)left[i], (List<object>)right[i]);
+
+            if (!x)
+            {
+                return false;
+            }
+            
+            if (i + 1 >= left.Count)
+            {
+                return true;
+            }
+
+            if (i + 1 >= right.Count)
+            {
+                return false;
+            }
+
+            return x;
         }
-        
-        return left.Count <= right.Count;
+
+        return true;
     }
 
     private static List<(List<object> left, List<object> right)> GetPairs(string[] input)
