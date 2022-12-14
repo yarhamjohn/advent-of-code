@@ -11,7 +11,7 @@ public static class Day13
         var indexes = 0;
         for (var i = 0; i < pairs.Count; i++)
         {
-            if (IsCorrectOrder(pairs[i].left, pairs[i].right))
+            if (IsCorrectOrder(pairs[i].left, pairs[i].right) == State.True)
             {
                 indexes += i + 1;
             }
@@ -20,16 +20,23 @@ public static class Day13
         return indexes;
     }
 
-    private static bool IsCorrectOrder(List<object> left, List<object> right)
+    private enum State
+    {
+        True,
+        False,
+        Equal
+    }
+
+    private static State IsCorrectOrder(List<object> left, List<object> right)
     {
         if (!left.Any() && right.Any())
         {
-            return true;
+            return State.True;
         }
 
         if (left.Any() && !right.Any())
         {
-            return false;
+            return State.False;
         }
         
         for (var i = 0; i < Math.Max(left.Count, right.Count); i++)
@@ -40,17 +47,17 @@ public static class Day13
                 {
                     if (i + 1 >= left.Count)
                     {
-                        return true;
+                        return State.True;
                     }
                     if (i + 1 >= right.Count)
                     {
-                        return false;
+                        return State.False;
                     }
                     
                     continue;
                 }
 
-                return leftInt < rightInt;
+                return leftInt < rightInt ? State.True : State.False;
             }
 
             if (left[i] is int l1 && right[i] is List<object> r1)
@@ -65,25 +72,23 @@ public static class Day13
 
             var x = IsCorrectOrder((List<object>)left[i], (List<object>)right[i]);
 
-            if (!x)
+            if (x == State.Equal)
             {
-                return false;
-            }
-            
-            if (i + 1 >= left.Count)
-            {
-                return true;
-            }
+                if (i + 1 >= left.Count)
+                {
+                    return State.True;
+                }
 
-            if (i + 1 >= right.Count)
-            {
-                return false;
+                if (i + 1 >= right.Count)
+                {
+                    return State.False;
+                }
             }
 
             return x;
         }
 
-        return true;
+        return State.Equal;
     }
 
     private static List<(List<object> left, List<object> right)> GetPairs(string[] input)
