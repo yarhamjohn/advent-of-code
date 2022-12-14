@@ -11,7 +11,7 @@ public static class Day13
         var indexes = 0;
         for (var i = 0; i < pairs.Count; i++)
         {
-            if (Thing((List<object>)pairs[i].left, (List<object>)pairs[i].right));
+            if (IsCorrectOrder(pairs[i].left, pairs[i].right))
             {
                 indexes += i + 1;
             }
@@ -20,7 +20,7 @@ public static class Day13
         return indexes;
     }
 
-    private static bool Thing(List<object> left, List<object> right)
+    private static bool IsCorrectOrder(List<object> left, List<object> right)
     {
         if (!left.Any() && right.Any())
         {
@@ -34,38 +34,35 @@ public static class Day13
         
         for (var i = 0; i < Math.Min(left.Count, right.Count); i++)
         {
-            if (!CorrectlyOrdered((left[i], right[i])))
+            if (left[i] is int leftInt && right[i] is int rightInt)
             {
-                return false;
+                if (leftInt == rightInt)
+                {
+                    continue;
+                }
+
+                return leftInt < rightInt;
             }
+
+            if (left[i] is int l1 && right[i] is List<object> r1)
+            {
+                return IsCorrectOrder(new List<object> { l1 }, r1);
+            }
+        
+            if (left[i] is List<object> l2 && right[i] is int r2)
+            {
+                return IsCorrectOrder(l2, new List<object> { r2 });
+            }
+
+            return IsCorrectOrder((List<object>)left[i], (List<object>)right[i]);
         }
         
-        return true;
+        return left.Count <= right.Count;
     }
 
-    public static bool CorrectlyOrdered((object left, object right) pair)
-    {        
-        if (pair is { left: int pairLeft, right: int pairRight })
-        {
-            return pairLeft <= pairRight;
-        }
-        
-        if (pair is { left: int x, right: List<object> y })
-        {
-            return Thing(new List<object> {x}, y);
-        }
-        
-        if (pair is { left: List<object> a, right: int b })
-        {
-            return Thing(a, new List<object> { b });
-        }
-
-        return Thing((List<object>)pair.left, (List<object>)pair.right);
-    }
-
-    private static List<(object left, object right)> GetPairs(string[] input)
+    private static List<(List<object> left, List<object> right)> GetPairs(string[] input)
     {
-        var pairs = new List<(object left, object right)>();
+        var pairs = new List<(List<object> left, List<object> right)>();
         for (var i = 0; i < input.Length; i += 3)
         {
             pairs.Add((Parse(input[i]), Parse(input[i + 1])));
@@ -74,12 +71,9 @@ public static class Day13
         return pairs;
     }
 
-    public static object Parse(string p0)
+    public static List<object> Parse(string p0)
     {
-        var lexer = new Lexer(p0);
-        var interpreter = new Interpreter(lexer);
-        var result = interpreter.Thing();
-        return result;
+        return (List<object>) new Interpreter(new Lexer(p0)).Interpret();
     }
 
 
@@ -136,18 +130,18 @@ public static class Day13
             _currentToken = lexer.GetNextToken();
         }
 
-        public object Thing()
+        public object Interpret()
         {
             var result = new List<object>();
             if (_currentToken is LParens)
             {
                 Eat(_currentToken);
-                result.Add(Thing());
+                result.Add(Interpret());
                 
                 while (_currentToken is Comma)
                 {
                     Eat(_currentToken);
-                    result.Add(Thing());
+                    result.Add(Interpret());
                 }
                 
                 Eat(new RParens());

@@ -49,5 +49,6 @@ long Day12A() => Day12.CountFewestSteps(File.ReadAllLines("./Day12/input.txt"));
 long Day12B() => Day12.CountShortestWalk(File.ReadAllLines("./Day12/input.txt"));
 
 long Day13A() => Day13.CalculateOrderedIndices(File.ReadAllLines("./Day13/input.txt"));
+// 5845 is too high
 
 Console.WriteLine(Day13A());
