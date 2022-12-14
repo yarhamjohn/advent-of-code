@@ -25,7 +25,7 @@ public class Day13Tests
     [TestCase("[[]]")]
     [TestCase("[[[]]]")]
     [TestCase("[[],[]]")]
-    [TestCase("[[[1]]]")] // Doesn't work
+    [TestCase("[[[1]]]")]
     public void Test(string input)
     {
         var result = Day13.Parse(input);
