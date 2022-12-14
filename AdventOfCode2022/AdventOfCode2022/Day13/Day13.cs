@@ -20,16 +20,15 @@ public static class Day13
         return indexes;
     }
 
-    public static bool CorrectlyOrdered((object[] left, object[] right) pair)
+    public static bool CorrectlyOrdered((List<object> left, List<object> right) pair)
     {
-        
         
         return true;
     }
 
-    private static List<(object[] left, object[] right)> GetPairs(string[] input)
+    private static List<(List<object> left, List<object> right)> GetPairs(string[] input)
     {
-        var pairs = new List<(object[] left, object[] right)>();
+        var pairs = new List<(List<object> left, List<object> right)>();
         for (var i = 0; i < input.Length; i += 3)
         {
             pairs.Add((Parse(input[i]), Parse(input[i + 1])));
@@ -38,11 +37,11 @@ public static class Day13
         return pairs;
     }
 
-    public static object[] Parse(string p0)
+    public static List<object> Parse(string p0)
     {
         var lexer = new Lexer(p0);
         var interpreter = new Interpreter(lexer);
-        var result = interpreter.Thing2();
+        var result = interpreter.Thing();
         return result;
     }
 
@@ -84,6 +83,11 @@ public static class Day13
         public new string GetType() => "termination";
     }
 
+    public class EmptyArray : Token
+    {
+        public new string GetType() => "empty";
+    }
+
     public class Interpreter
     {
         private readonly Lexer _lexer;
@@ -95,36 +99,43 @@ public static class Day13
             _currentToken = lexer.GetNextToken();
         }
 
-        private object[] Thing()
+        public List<object> Thing()
         {
-            var result = Array.Empty<object>();
+            var result = new List<object>();
             if (_currentToken is LParens)
             {
                 Eat(_currentToken);
-                result = Thing2();
+                result.Add(Thing());
+                
+                while (_currentToken is Comma)
+                {
+                    Eat(_currentToken);
+                    result.Add(Thing());
+                }
+
+                // if (result.Count == 1 && ((List<object>)result.Single()).Count == 1)
+                // {
+                //     if (((List<object>)result.Single()).Single() is int)
+                //     {
+                //         result = (List<object>)result.Single();
+                //     }
+                // }
+                
                 Eat(new RParens());
-            } else if (_currentToken is Integer integer)
+            }
+            else if (_currentToken is EmptyArray)
             {
                 Eat(_currentToken);
-                result = new object[] { integer.Value };
+                return new List<object>();
+            }
+            else if (_currentToken is Integer integer)
+            {
+                Eat(_currentToken);
+                return new List<object> {integer.Value};
             }
 
             return result;
         }
-
-        public object[] Thing2()
-        {
-            var result = Thing();
-
-            while (_currentToken is Comma)
-            {
-                Eat(_currentToken);
-                result = result.Concat(Thing()).ToArray();
-            }
-
-            return result;
-        }
-        
 
         private void Eat(Token token)
         {
@@ -168,12 +179,16 @@ public static class Day13
 
             switch (_text[_position])
             {
-                case '[':
+                case '[' when _text[_position + 1] != ']':
                     Advance();
                     return new LParens();
-                case ']':
+                case ']' when _text[_position - 1] != '[':
                     Advance();
                     return new RParens();
+                case '[':
+                    Advance();
+                    Advance();
+                    return new EmptyArray();
                 case ',':
                     Advance();
                     return new Comma();
