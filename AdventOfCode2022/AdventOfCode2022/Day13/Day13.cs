@@ -11,7 +11,7 @@ public static class Day13
         var indexes = 0;
         for (var i = 0; i < pairs.Count; i++)
         {
-            if (IsCorrectOrder(pairs[i].left, pairs[i].right) == State.True)
+            if (IsCorrectOrder(pairs[i].left, pairs[i].right) != State.False)
             {
                 indexes += i + 1;
             }
@@ -29,65 +29,103 @@ public static class Day13
 
     private static State IsCorrectOrder(List<object> left, List<object> right)
     {
+        // Ran out of items on the left side
         if (!left.Any() && right.Any())
         {
             return State.True;
         }
 
+        // Ran out of items on the right side
         if (left.Any() && !right.Any())
         {
             return State.False;
         }
         
+        // Iterate over each item
         for (var i = 0; i < Math.Max(left.Count, right.Count); i++)
         {
+            // Comparing two ints
             if (left[i] is int leftInt && right[i] is int rightInt)
             {
+                // ints match each other
                 if (leftInt == rightInt)
                 {
+                    // End of list reached
+                    if (i + 1 == left.Count && i + 1 == right.Count)
+                    {
+                        return State.Equal;
+                    }
+                    
+                    // Ran out of left list
                     if (i + 1 >= left.Count)
                     {
                         return State.True;
                     }
+                    
+                    // Ran out of right list
                     if (i + 1 >= right.Count)
                     {
                         return State.False;
                     }
                     
+                    // Not reached end of list yet
                     continue;
                 }
 
+                // Ints didn't match so return comparison
                 return leftInt < rightInt ? State.True : State.False;
             }
 
+            var x = State.Equal;
+            
+            // left side is an int but right is a list
             if (left[i] is int l1 && right[i] is List<object> r1)
             {
-                return IsCorrectOrder(new List<object> { l1 }, r1);
+                x = IsCorrectOrder(new List<object> { l1 }, r1);
             }
         
+            // right side is an int but left is a list
             if (left[i] is List<object> l2 && right[i] is int r2)
             {
-                return IsCorrectOrder(l2, new List<object> { r2 });
+                x = IsCorrectOrder(l2, new List<object> { r2 });
             }
 
-            var x = IsCorrectOrder((List<object>)left[i], (List<object>)right[i]);
+            // Both sides are lists
+            if (left[i] is List<object> l3 && right[i] is List<object> r3)
+            {
+                x = IsCorrectOrder(l3, r3);
+            }
 
+            // the lists were equal
             if (x == State.Equal)
             {
+                // There are no more items
+                if (i + 1 == left.Count && i + 1 == right.Count)
+                {
+                    return State.Equal;
+                }
+                
+                // Left side ran out
                 if (i + 1 >= left.Count)
                 {
                     return State.True;
                 }
 
+                // Right side ran out
                 if (i + 1 >= right.Count)
                 {
                     return State.False;
                 }
+
+                // Not reached the end of the list yet
+                continue;
             }
 
+            // Lists comparison returned result
             return x;
         }
 
+        // Order matches so they are equal
         return State.Equal;
     }
 
@@ -108,12 +146,12 @@ public static class Day13
     }
 
 
-    public interface Token
+    public interface IToken
     {
         string GetType();
     }
 
-    public class Integer : Token
+    public class Integer : IToken
     {
         public readonly int Value;
 
@@ -125,27 +163,27 @@ public static class Day13
         public new string GetType() => "integer";
     }
 
-    public class LParens : Token
+    public class LParens : IToken
     {
         public new string GetType() => "lparens";
     }
 
-    public class RParens : Token
+    public class RParens : IToken
     {
         public new string GetType() => "rparens";
     }
 
-    public class Comma : Token
+    public class Comma : IToken
     {
         public new string GetType() => "comma";
     }
 
-    public class Termination : Token
+    public class Termination : IToken
     {
         public new string GetType() => "termination";
     }
 
-    public class EmptyArray : Token
+    public class EmptyArray : IToken
     {
         public new string GetType() => "empty";
     }
@@ -153,7 +191,7 @@ public static class Day13
     public class Interpreter
     {
         private readonly Lexer _lexer;
-        private Token _currentToken;
+        private IToken _currentToken;
             
         public Interpreter(Lexer lexer)
         {
@@ -191,7 +229,7 @@ public static class Day13
             return result;
         }
 
-        private void Eat(Token token)
+        private void Eat(IToken token)
         {
             if (_currentToken.GetType() == token.GetType())
             {
@@ -224,7 +262,7 @@ public static class Day13
             return new Integer(Convert.ToInt32(result.ToString()));
         }
 
-        public Token GetNextToken()
+        public IToken GetNextToken()
         {
             if (_position == _text.Length)
             {
