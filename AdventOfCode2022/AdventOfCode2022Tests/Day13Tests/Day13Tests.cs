@@ -15,6 +15,16 @@ public class Day13Tests
         Assert.That(result, Is.EqualTo(13));
     }
     
+    [Test]
+    public void CalculateDividerIndices()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day13Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath);
+
+        var result = Day13.CalculateDividerIndices(input.ToArray());
+        Assert.That(result, Is.EqualTo(140));
+    }
+
     [TestCase("[]")]
     [TestCase("[1]")]
     [TestCase("[1,2]")]

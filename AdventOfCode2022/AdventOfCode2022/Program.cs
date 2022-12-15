@@ -49,5 +49,6 @@ long Day12A() => Day12.CountFewestSteps(File.ReadAllLines("./Day12/input.txt"));
 long Day12B() => Day12.CountShortestWalk(File.ReadAllLines("./Day12/input.txt"));
 
 long Day13A() => Day13.CalculateOrderedIndices(File.ReadAllLines("./Day13/input.txt"));
+long Day13B() => Day13.CalculateDividerIndices(File.ReadAllLines("./Day13/input.txt"));
 
-Console.WriteLine(Day13A());
+Console.WriteLine(Day13B());

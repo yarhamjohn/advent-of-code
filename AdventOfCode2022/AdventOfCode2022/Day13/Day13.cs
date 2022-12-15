@@ -20,6 +20,84 @@ public static class Day13
         return indexes;
     }
 
+    public static long CalculateDividerIndices(string[] input)
+    {
+        var extendedInput = input.Append("").Append("[[2]]").Append("[[6]]");
+        var pairs = GetPairs(extendedInput.ToArray());
+
+        var orderedPackets = OrderPackets(pairs);
+
+        var result = 1;
+        for (var i = 0; i < orderedPackets.Count; i++)
+        {
+            if (orderedPackets[i] is List<object> { Count: 1 } x && x[0] is List<object> { Count: 1 } y && y[0] is int and (2 or 6))
+            {
+                result *= i + 1;
+            }
+        }
+
+        return result;
+    }
+
+    private static List<object> OrderPackets(List<(List<object> left, List<object> right)> pairs)
+    {
+        var packets = new List<object>();
+        foreach (var (left, right) in pairs)
+        {
+            if (!packets.Any())
+            {
+                if (IsCorrectOrder(left, right) == State.False)
+                {
+                    packets.Add(right);
+                    packets.Add(left);
+                }
+                else
+                {
+                    packets.Add(left);
+                    packets.Add(right);
+                }
+            }
+            else
+            {
+                for (var i = 0; i < packets.Count; i++)
+                {
+                    if (IsCorrectOrder(left, (List<object>)packets[i]) == State.False)
+                    {
+                        if (i == packets.Count - 1)
+                        {
+                            packets.Add(left);
+                            break;
+                        }
+                        
+                        continue;
+                    }
+
+                    packets.Insert(i, left);
+                    break;
+                }
+                
+                for (var i = 0; i < packets.Count; i++)
+                {
+                    if (IsCorrectOrder(right, (List<object>)packets[i]) == State.False)
+                    {
+                        if (i == packets.Count - 1)
+                        {
+                            packets.Add(right);
+                            break;
+                        }
+                        
+                        continue;
+                    }
+
+                    packets.Insert(i, right);
+                    break;
+                }
+            }
+        }
+
+        return packets;
+    }
+
     private enum State
     {
         True,
