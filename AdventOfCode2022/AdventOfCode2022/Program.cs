@@ -53,6 +53,6 @@ long Day13A() => Day13.CalculateOrderedIndices(File.ReadAllLines("./Day13/input.
 long Day13B() => Day13.CalculateDividerIndices(File.ReadAllLines("./Day13/input.txt"));
 
 long Day14A() => Day14.CalculateUnitsOfSand(File.ReadAllLines("./Day14/input.txt"));
-// 283 is too low
+long Day14B() => Day14.CalculateTotalUnitsOfSand(File.ReadAllLines("./Day14/input.txt"));
 
-Console.WriteLine(Day14A());
+Console.WriteLine(Day14B());

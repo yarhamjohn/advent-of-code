@@ -18,11 +18,44 @@ public static class Day14
         return numberUnits;
     }
 
+    public static long CalculateTotalUnitsOfSand(string[] input)
+    {
+        var wallCoordinates = GetWallCoordinates(input);
+        wallCoordinates.UnionWith(GetFloorCoordinates(wallCoordinates));
+
+        var caveLayout = GetCaveLayout(wallCoordinates);
+
+        PrintCave(caveLayout);
+        Console.WriteLine();
+
+        var numberUnits = ReleaseTheSand(caveLayout);
+        
+        PrintCave(caveLayout);
+        Console.WriteLine();
+        
+        return numberUnits;
+    }
+
+    private static HashSet<(int row, int col)> GetFloorCoordinates(HashSet<(int row, int col)> wallCoordinates)
+    {
+        var bottomWall = wallCoordinates.Max(x => x.row);
+        var rowsToFill = bottomWall + 1;
+
+        var floor = new HashSet<(int row, int col)>();
+
+        for (var i = 500 - rowsToFill - 2; i <= 500 + rowsToFill + 2; i++)
+        {
+            floor.Add((bottomWall + 2, i));
+        }
+        
+        return floor;
+    }
+
     private static long ReleaseTheSand(char[][] cave)
     {
         var unitsOfSand = 0;
 
-        while (true)
+        while (cave[0].Contains('+'))
         {
             var finalPosition = GetFinalPosition(cave);
 
