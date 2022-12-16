@@ -3,6 +3,7 @@ using AdventOfCode2022.Day10;
 using AdventOfCode2022.Day11;
 using AdventOfCode2022.Day12;
 using AdventOfCode2022.Day13;
+using AdventOfCode2022.Day14;
 using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
@@ -51,4 +52,7 @@ long Day12B() => Day12.CountShortestWalk(File.ReadAllLines("./Day12/input.txt"))
 long Day13A() => Day13.CalculateOrderedIndices(File.ReadAllLines("./Day13/input.txt"));
 long Day13B() => Day13.CalculateDividerIndices(File.ReadAllLines("./Day13/input.txt"));
 
-Console.WriteLine(Day13B());
+long Day14A() => Day14.CalculateUnitsOfSand(File.ReadAllLines("./Day14/input.txt"));
+// 283 is too low
+
+Console.WriteLine(Day14A());
