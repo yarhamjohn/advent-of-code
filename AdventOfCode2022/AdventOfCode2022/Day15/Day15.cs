@@ -6,15 +6,33 @@ public static class Day15
     {
         var beaconsAndSensors = Parse(input);
         var coveredRowRanges = GetCoveredRowRanges(beaconsAndSensors);
-
-        return coveredRowRanges.ContainsKey(targetRow) ? CalculateCoveredPositions(targetRow, coveredRowRanges) : 0;
+        
+        var x = coveredRowRanges.ContainsKey(targetRow) ? CalculateCoveredPositions(targetRow, coveredRowRanges, beaconsAndSensors) : 0;
+        return x;
     }
 
-    private static long CalculateCoveredPositions(int targetRow, Dictionary<int, List<(int startCol, int endCol)>> coveredRowRanges)
+    private static long CalculateCoveredPositions(int targetRow, Dictionary<int, List<(int startCol, int endCol)>> coveredRowRanges, List<((int col, int row) sensor, (int col, int row) beacon)> sensorsAndBeacons)
     {
         var ranges = coveredRowRanges.Single(x => x.Key == targetRow).Value;
 
-        return ranges.Max(x => x.endCol) - ranges.Min(x => x.startCol) + 1;
+        var startCol = ranges.Min(x => x.startCol);
+        var endCol = ranges.Max(x => x.endCol);
+        var row = Enumerable.Range(0, endCol - startCol + 1).Select(_ => '.').ToArray();
+
+        foreach (var (start, end) in ranges)
+        {
+            for (var i = start; i <= end; i++)
+            {
+                if (!sensorsAndBeacons.Any(x =>
+                        x.sensor.row == targetRow && x.sensor.col == i ||
+                        x.beacon.row == targetRow && x.beacon.col == i))
+                {
+                    row[i - startCol] = '#';
+                }
+            }
+        }
+
+        return row.Count(x => x == '#');
     }
 
     private static Dictionary<int, List<(int startCol, int endCol)>> GetCoveredRowRanges(List<((int col, int row) sensor, (int col, int row) beacon)> beaconsAndSensors)
