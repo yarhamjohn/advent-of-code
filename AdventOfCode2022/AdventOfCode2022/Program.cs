@@ -57,5 +57,6 @@ long Day14A() => Day14.CalculateUnitsOfSand(File.ReadAllLines("./Day14/input.txt
 long Day14B() => Day14.CalculateTotalUnitsOfSand(File.ReadAllLines("./Day14/input.txt"));
 
 long Day15A() => Day15.CountPositionsWithoutBeacons(File.ReadAllLines("./Day15/input.txt"), 2000000);
+long Day15B() => Day15.CalculateTuningFrequency(File.ReadAllLines("./Day15/input.txt"), 4000000);
 
-Console.WriteLine(Day15A());
+Console.WriteLine(Day15B());

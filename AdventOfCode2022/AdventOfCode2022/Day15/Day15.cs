@@ -6,33 +6,70 @@ public static class Day15
     {
         var beaconsAndSensors = Parse(input);
         var coveredRowRanges = GetCoveredRowRanges(beaconsAndSensors);
-        
-        var x = coveredRowRanges.ContainsKey(targetRow) ? CalculateCoveredPositions(targetRow, coveredRowRanges, beaconsAndSensors) : 0;
-        return x;
+
+        return coveredRowRanges.ContainsKey(targetRow) ? CalculateCoveredPositions(targetRow, coveredRowRanges, beaconsAndSensors).Count(x => x == '#') : 0;
     }
 
-    private static long CalculateCoveredPositions(int targetRow, Dictionary<int, List<(int startCol, int endCol)>> coveredRowRanges, List<((int col, int row) sensor, (int col, int row) beacon)> sensorsAndBeacons)
+    public static long CalculateTuningFrequency(string[] input, int maxIndex)
     {
+        var beaconsAndSensors = Parse(input);
+        var coveredRowRanges = GetCoveredRowRanges(beaconsAndSensors);
+
+        var leftEdge = coveredRowRanges.SelectMany(x => x.Value).Min(y => y.startCol);
+        
+        foreach (var rowRange in coveredRowRanges.Where(x => x.Key >= 0 && x.Key <= maxIndex))
+        {
+            var row = CalculateCoveredPositions(rowRange.Key, coveredRowRanges, beaconsAndSensors);
+            var trimmedRow = row[(0 - leftEdge)..(maxIndex - leftEdge)];
+            if (trimmedRow.All(z => z != '.'))
+            {
+                Console.WriteLine(rowRange.Key);
+                continue;
+            }
+                
+            var indexOf = Array.IndexOf(trimmedRow, '.');
+            if (indexOf != -1)
+            {
+                return indexOf * 4000000 + rowRange.Key;
+            }
+        }
+
+        return 0;
+    }
+
+    private static char[] CalculateCoveredPositions(int targetRow, Dictionary<int, List<(int startCol, int endCol)>> coveredRowRanges, List<((int col, int row) sensor, (int col, int row) beacon)> sensorsAndBeacons)
+    {
+        // Index 0 in returned row will be left-most edge
+        var leftEdge = coveredRowRanges.SelectMany(x => x.Value).Min(y => y.startCol);
+        var rightEdge = coveredRowRanges.SelectMany(x => x.Value).Max(y => y.endCol);
+        
         var ranges = coveredRowRanges.Single(x => x.Key == targetRow).Value;
 
         var startCol = ranges.Min(x => x.startCol);
         var endCol = ranges.Max(x => x.endCol);
-        var row = Enumerable.Range(0, endCol - startCol + 1).Select(_ => '.').ToArray();
+        var row = Enumerable.Range(0, rightEdge - leftEdge + 1).Select(_ => '.').ToArray();
 
         foreach (var (start, end) in ranges)
         {
             for (var i = start; i <= end; i++)
             {
-                if (!sensorsAndBeacons.Any(x =>
-                        x.sensor.row == targetRow && x.sensor.col == i ||
-                        x.beacon.row == targetRow && x.beacon.col == i))
+                var adjustedIndex = i - leftEdge;
+                
+                var isSensorOrBeacon = sensorsAndBeacons.Any(x =>
+                    x.sensor.row == targetRow && x.sensor.col == i ||
+                    x.beacon.row == targetRow && x.beacon.col == i);
+                
+                if (!isSensorOrBeacon)
                 {
-                    row[i - startCol] = '#';
+                    row[adjustedIndex] = '#';
+                } else if (isSensorOrBeacon)
+                {
+                    row[adjustedIndex] = 'O';
                 }
             }
         }
 
-        return row.Count(x => x == '#');
+        return row;
     }
 
     private static Dictionary<int, List<(int startCol, int endCol)>> GetCoveredRowRanges(List<((int col, int row) sensor, (int col, int row) beacon)> beaconsAndSensors)
@@ -48,7 +85,7 @@ public static class Day15
             var startRow = sensor.row - manhattanDistance;
             var endRow = sensor.row + manhattanDistance;
 
-            var additionalPlaces = 0; // first row is 1 col wide
+            var additionalPlaces = 0;
             for (var i = startRow; i <= endRow; i++)
             {
                 if (result.ContainsKey(i))
