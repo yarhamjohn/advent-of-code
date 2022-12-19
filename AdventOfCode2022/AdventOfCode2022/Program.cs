@@ -61,5 +61,6 @@ long Day15A() => Day15.CountPositionsWithoutBeacons(File.ReadAllLines("./Day15/i
 long Day15B() => Day15.CalculateTuningFrequency(File.ReadAllLines("./Day15/input.txt"), 4000000);
 
 long Day16A() => Day16.CalculatePressureReleased(File.ReadAllLines("./Day16/input.txt"));
+long Day16B() => Day16.CalculatePressureReleasedWithElephant(File.ReadAllLines("./Day16/input.txt"));
 
-Console.WriteLine(Day16A());
+Console.WriteLine(Day16B());

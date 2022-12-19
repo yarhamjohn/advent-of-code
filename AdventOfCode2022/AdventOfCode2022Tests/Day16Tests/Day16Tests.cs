@@ -14,4 +14,14 @@ public class Day16Tests
         var result = Day16.CalculatePressureReleased(input.ToArray());
         Assert.That(result, Is.EqualTo(1651));
     }
+
+    [Test]
+    public void CalculatePressureReleasedWithElephant()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day16Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath);
+
+        var result = Day16.CalculatePressureReleasedWithElephant(input.ToArray());
+        Assert.That(result, Is.EqualTo(1707));
+    }
 }
