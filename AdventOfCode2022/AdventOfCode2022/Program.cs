@@ -5,6 +5,7 @@ using AdventOfCode2022.Day12;
 using AdventOfCode2022.Day13;
 using AdventOfCode2022.Day14;
 using AdventOfCode2022.Day15;
+using AdventOfCode2022.Day16;
 using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
@@ -59,4 +60,6 @@ long Day14B() => Day14.CalculateTotalUnitsOfSand(File.ReadAllLines("./Day14/inpu
 long Day15A() => Day15.CountPositionsWithoutBeacons(File.ReadAllLines("./Day15/input.txt"), 2000000);
 long Day15B() => Day15.CalculateTuningFrequency(File.ReadAllLines("./Day15/input.txt"), 4000000);
 
-Console.WriteLine(Day15B());
+long Day16A() => Day16.CalculatePressureReleased(File.ReadAllLines("./Day16/input.txt"));
+
+Console.WriteLine(Day16A());
