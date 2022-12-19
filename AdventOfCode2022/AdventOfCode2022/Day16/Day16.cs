@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2022.Day16;
+﻿using System.ComponentModel.Design;
+
+namespace AdventOfCode2022.Day16;
 
 public static class Day16
 {
@@ -6,141 +8,91 @@ public static class Day16
     {
         var valves = GetValves(input);
         var distances = GetDistances(valves);
+        var permutations = GetPermutations(valves);
 
-        var valesWithFlowRates = valves.Where(x => x.Value.FlowRate != 0).Select(x => x.Key).ToArray();
-        var routeCombinations = Enumerable.Range(1, 7).SelectMany(x => GetRoutePermutations(valesWithFlowRates, x)).ToArray(); // Don't bother going to 8 as we can't reach all within 30 mins
-        
-        var pressureReleased = 0;
-        
-        foreach (var routeCombination in routeCombinations)
-        {
-            var totalDistance = 0;
-            for (var i = 0; i < routeCombination.Length - 1; i++)
-            {
-                if (i == 0)
-                {
-                    totalDistance += distances["AA"][routeCombination[i]];
-                }
-                
-                totalDistance += distances[routeCombination[i]][routeCombination[i + 1]];
-            }
-            
-            if (totalDistance + routeCombination.Length > 30)
-            {
-                continue;
-            }
-            
-            var pressure = 0;
-            var time = 30;
-
-            for (var step = 0; step < routeCombination.Length; step++)
-            {
-                var distance = step == 0
-                    ? distances["AA"].Single(x => x.Key == routeCombination[step]).Value
-                    : distances[routeCombination[step - 1]].Single(y => y.Key == routeCombination[step]).Value;
-
-                var timeElapsed = distance + 1; // Movement and opening time
-                
-                time -= timeElapsed;
-                
-                if (time < 0)
-                {
-                    break;
-                }
-
-                pressure += valves[routeCombination[step]].FlowRate * time; // Add total pressure released for period remaining
-            }
-
-            if (pressure > pressureReleased && time >= 0)
-            {
-                pressureReleased = pressure;
-            }
-        }
-        
-        return pressureReleased;
+        return GetPressuresPerRoute(permutations, distances, valves, 30).Max(x => x.Value);
     }
-
     public static long CalculatePressureReleasedWithElephant(string[] input)
     {
         var valves = GetValves(input);
         var distances = GetDistances(valves);
+        var permutations = GetPermutations(valves);
+        var pressures = GetPressuresPerRoute(permutations, distances, valves, 26);
 
-        var valesWithFlowRates = valves.Where(x => x.Value.FlowRate != 0).Select(x => x.Key).ToArray();
-        var routeCombinations = Enumerable.Range(7, 1).SelectMany(x => GetRoutePermutations(valesWithFlowRates, x)).ToArray(); // Don't bother going to 8 as we can't reach all within 30 mins
+        return pressures.Aggregate(0, (current, next) => 
+            (from route in pressures where !next.Key.Intersect(route.Key).Any() select next.Value + route.Value).Prepend(current).Max());
+    }
 
+    private static string[][] GetPermutations(Dictionary<string, Valve> valves)
+    {
+        // Don't bother going to 8 as we can't reach all within 30 mins        
+        return Enumerable.Range(7, 1)
+            .SelectMany(x => GetRoutePermutations(valves.Where(x1 => x1.Value.FlowRate != 0).Select(y => y.Key).ToArray(), x))
+            .ToArray();
+    }
+
+    private static Dictionary<string[], int> GetPressuresPerRoute(string[][] routePermutations, Dictionary<string, Dictionary<string, int>> distances, Dictionary<string, Valve> valves, int mins)
+    {
         var result = new Dictionary<string[], int>();
-        
-        foreach (var routeCombination in routeCombinations)
+
+        foreach (var route in routePermutations)
         {
-            var totalDistance = 0;
-            for (var i = 0; i < routeCombination.Length - 1; i++)
-            {
-                if (i == 0)
-                {
-                    totalDistance += distances["AA"][routeCombination[i]];
-                }
-                
-                totalDistance += distances[routeCombination[i]][routeCombination[i + 1]];
-            }
-            
-            if (totalDistance + routeCombination.Length > 26)
+            if (GetTotalDistance(distances, route) + route.Length > mins)
             {
                 continue;
             }
-            
-            var pressure = 0;
-            var time = 26;
 
-            for (var step = 0; step < routeCombination.Length; step++)
+            var pressure = 0;
+            var time = mins;
+
+            for (var step = 0; step < route.Length; step++)
             {
                 var distance = step == 0
-                    ? distances["AA"].Single(x => x.Key == routeCombination[step]).Value
-                    : distances[routeCombination[step - 1]].Single(y => y.Key == routeCombination[step]).Value;
+                    ? distances["AA"].Single(x => x.Key == route[step]).Value
+                    : distances[route[step - 1]].Single(y => y.Key == route[step]).Value;
 
-                var timeElapsed = distance + 1; // Movement and opening time
-                
-                time -= timeElapsed;
-                
+                time -= distance + 1;
+
                 if (time < 0)
                 {
                     break;
                 }
 
-                pressure += valves[routeCombination[step]].FlowRate * time; // Add total pressure released for period remaining
+                pressure += valves[route[step]].FlowRate * time;
             }
 
             if (time >= 0)
             {
-                result[routeCombination] = pressure;
+                result[route] = pressure;
             }
         }
 
-        var x = new Dictionary<(string[], string[]), int>();
-        foreach (var i in result)
-        {
-            foreach (var j in result)
-            {
-                if (!i.Key.Intersect(j.Key).Any())
-                {
-                    x[(i.Key, j.Key)] = i.Value + j.Value;
-                }
-            }
-        }
-
-        return x.Max(a => a.Value);
+        return result;
     }
 
-    private static Dictionary<string, Dictionary<string, int>> GetDistances(Dictionary<string, Valve> valves)
+    private static int GetTotalDistance(Dictionary<string, Dictionary<string, int>> distances, string[] routeCombination)
     {
-        var distances = new Dictionary<string, Dictionary<string, int>>();
-        foreach (var (key, value) in valves)
+        var totalDistance = 0;
+        for (var i = 0; i < routeCombination.Length - 1; i++)
         {
-            distances[key] = valves.Where(v => v.Value.Id != key)
-                .ToDictionary(w => w.Key, w => GetShortestDistance(value, w.Value, valves));
+            if (i == 0)
+            {
+                totalDistance += distances["AA"][routeCombination[i]];
+            }
+
+            totalDistance += distances[routeCombination[i]][routeCombination[i + 1]];
         }
 
-        return distances;
+        return totalDistance;
     }
+
+    private static Dictionary<string, Dictionary<string, int>> GetDistances(Dictionary<string, Valve> valves) =>
+        valves.ToDictionary(
+            x => x.Key,
+            x => valves.Where(v => v.Value.Id != x.Key)
+                .ToDictionary(
+                    y => y.Key,
+                    y => GetShortestDistance(x.Value, y.Value, valves)));
 
     private static int GetShortestDistance(Valve valveOne, Valve valveTwo, Dictionary<string, Valve> valves)
     {
@@ -159,10 +111,8 @@ public static class Day16
         while (queue.Any())
         {
             currentValve = queue.Dequeue();
-            
-            var unvisitedNeighbours = valves[currentValve].ConnectedValves.Where(x => distances[x] == int.MaxValue);
 
-            foreach (var neighbor in unvisitedNeighbours)
+            foreach (var neighbor in valves[currentValve].ConnectedValves.Where(x => distances[x] == int.MaxValue))
             {
                 distances[neighbor] = distances[currentValve] + 1;
                 queue.Enqueue(neighbor);
