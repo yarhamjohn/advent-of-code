@@ -5,36 +5,56 @@ public static class Day16
     public static long CalculatePressureReleased(string[] input)
     {
         var valves = GetValves(input);
+        var distances = GetDistances(valves);
 
         var valesWithFlowRates = valves.Where(x => x.Value.FlowRate != 0).Select(x => x.Key).ToArray();
-        var routeCombinations = Enumerable.Range(1, valesWithFlowRates.Length).SelectMany(x => GetRoutePermutations(valesWithFlowRates, x));
-
+        var routeCombinations = Enumerable.Range(1, 6).SelectMany(x => GetRoutePermutations(valesWithFlowRates, x));
+        Console.WriteLine(routeCombinations.Count());
+        
         var pressureReleased = 0;
         
         foreach (var routeCombination in routeCombinations)
         {
             var pressure = 0;
-            var currentPressure = 0;
             var time = 30;
 
             for (var step = 0; step < routeCombination.Length; step++)
             {
-                var distance = GetShortestDistance(step == 0 ? valves["AA"] : valves[routeCombination[step - 1]], valves[routeCombination[step]], valves);
+                var distance = step == 0
+                    ? distances["AA"].Single(x => x.Key == routeCombination[step]).Value
+                    : distances[routeCombination[step - 1]].Single(y => y.Key == routeCombination[step]).Value;
 
                 var timeElapsed = distance + 1; // Movement and opening time
                 
                 time -= timeElapsed;
                 
+                if (time < 0)
+                {
+                    break;
+                }
+
                 pressure += valves[routeCombination[step]].FlowRate * time; // Add total pressure released for period remaining
             }
 
-            if (pressure > pressureReleased)
+            if (pressure > pressureReleased && time >= 0)
             {
                 pressureReleased = pressure;
             }
         }
         
         return pressureReleased;
+    }
+
+    private static Dictionary<string, Dictionary<string, int>> GetDistances(Dictionary<string, Valve> valves)
+    {
+        var distances = new Dictionary<string, Dictionary<string, int>>();
+        foreach (var (key, value) in valves)
+        {
+            distances[key] = valves.Where(v => v.Value.Id != key)
+                .ToDictionary(w => w.Key, w => GetShortestDistance(value, w.Value, valves));
+        }
+
+        return distances;
     }
 
     private static int GetShortestDistance(Valve valveOne, Valve valveTwo, Dictionary<string, Valve> valves)
