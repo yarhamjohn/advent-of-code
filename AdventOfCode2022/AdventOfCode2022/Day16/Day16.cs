@@ -6,7 +6,8 @@ public static class Day16
     {
         var valves = GetValves(input);
 
-        var routeCombinations = GetRouteCombinations(valves.Where(x => x.Value.FlowRate != 0).Select(x => x.Key).ToArray());
+        var valesWithFlowRates = valves.Where(x => x.Value.FlowRate != 0).Select(x => x.Key).ToArray();
+        var routeCombinations = Enumerable.Range(1, valesWithFlowRates.Length).SelectMany(x => GetRoutePermutations(valesWithFlowRates, x));
 
         var pressureReleased = 0;
         
@@ -66,11 +67,15 @@ public static class Day16
         return distances[valveTwo.Id];
     }
 
-    private static IEnumerable<string[]> GetRouteCombinations(string[] valveIds)
+    private static IEnumerable<string[]> GetRoutePermutations(string[] valveIds, int length)
     {
-        // https://stackoverflow.com/questions/7802822/all-possible-combinations-of-a-list-of-values
-        return Enumerable.Range(0, 1 << valveIds.Length)
-            .Select(index => valveIds.Where((_, i) => (index & (1 << i)) != 0).ToArray());
+        if (length == 1)
+        {
+            return valveIds.Select(x => new [] { x }).ToList();
+        }
+
+        return GetRoutePermutations(valveIds, length - 1)
+            .SelectMany(x => valveIds.Where(n => !x.Contains(n)), (x2, n2) => x2.Concat(new [] { n2 }).ToArray());
     }
 
     private static Dictionary<string, Valve> GetValves(string[] input)
