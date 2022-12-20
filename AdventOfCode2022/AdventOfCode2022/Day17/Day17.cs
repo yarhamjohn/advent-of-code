@@ -71,7 +71,7 @@ public static class Day17
             if (i is 0 or 10 or 100 or 1000 or 10000 or 100000 or 1000000 or 10000000 or 100000000 or 1000000000 or 10000000000 or 100000000000)
             {
                 Console.WriteLine(height);
-                Console.WriteLine(grid.Count);
+                Console.WriteLine(i);
                 PrintGrid(grid);
             }
 
@@ -136,27 +136,8 @@ public static class Day17
 
     private static int GetNewBottomRow(List<List<string>> grid)
     {
-        var positionsFilled = new Dictionary<int, bool> { { 0, false }, { 1, false }, { 2, false }, { 3, false }, {4, false}, {5, false}, {6, false} };
+        return Enumerable.Range(0, 7).Min(x => Array.LastIndexOf(grid.Select(y => y[x]).ToArray(), "#"));
 
-        var row = grid.Count;
-        while (!positionsFilled.All(x => x.Value))
-        {
-            row--;
-            if (row == 0)
-            {
-                break;
-            }
-            
-            for (var i = 0; i < 7; i++)
-            {
-                if (grid[row][i] == "#")
-                {
-                    positionsFilled[i] = true;
-                }
-            }
-        }
-
-        return row;
     }
 
     private static int GetMaxHeightOfGrid()

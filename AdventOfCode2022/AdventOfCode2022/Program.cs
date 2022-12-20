@@ -67,4 +67,4 @@ long Day16B() => Day16.CalculatePressureReleasedWithElephant(File.ReadAllLines("
 long Day17A() => Day17.CalculateHeight(File.ReadAllText("./Day17/input.txt"));
 long Day17B() => Day17.CalculateHeightHuge(File.ReadAllText("./Day17/input.txt"));
 
-Console.WriteLine(Day17A());
+Console.WriteLine(Day17B());
