@@ -6,6 +6,7 @@ using AdventOfCode2022.Day13;
 using AdventOfCode2022.Day14;
 using AdventOfCode2022.Day15;
 using AdventOfCode2022.Day16;
+using AdventOfCode2022.Day17;
 using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
@@ -63,4 +64,6 @@ long Day15B() => Day15.CalculateTuningFrequency(File.ReadAllLines("./Day15/input
 long Day16A() => Day16.CalculatePressureReleased(File.ReadAllLines("./Day16/input.txt"));
 long Day16B() => Day16.CalculatePressureReleasedWithElephant(File.ReadAllLines("./Day16/input.txt"));
 
-Console.WriteLine(Day16B());
+long Day17A() => Day17.CalculateHeight(File.ReadAllText("./Day17/input.txt"));
+
+Console.WriteLine(Day17A());
