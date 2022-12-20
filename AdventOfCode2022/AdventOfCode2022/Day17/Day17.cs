@@ -77,7 +77,7 @@ public static class Day17
 
             var newBottomRow = GetNewBottomRow(grid);
             grid = TruncateGrid(grid, newBottomRow);
-            height += newBottomRow;
+            height += newBottomRow == -1 ? 0 : newBottomRow;
 
             var spaceNeeded = GetNewRockEntryRow(grid) + 4; // Include space for the new rock
             if (spaceNeeded >= grid.Count)
