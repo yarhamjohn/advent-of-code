@@ -2,9 +2,6 @@
 
 public static class Day17
 {
-    // Rolling window from last complete row
-    
-    
     public static long CalculateHeight(string input)
     {
         var grid = Enumerable.Range(0, GetMaxHeightOfGrid()).Select(_ => Enumerable.Range(0, 7).Select(_ => ".").ToList()).ToList();
@@ -13,15 +10,26 @@ public static class Day17
         
         for (var i = 0; i < 2022; i++)
         {
+            // PrintGrid(grid);
+
             var rockPositions = AddNewRockToGrid(grid, i);
 
-            jetIndex = HandleJetBlast(input, jetIndex, grid, ref rockPositions);
+            // PrintGrid(grid);
+
+            if (CanMove(input[jetIndex], grid, rockPositions))
+            {
+                rockPositions = Move(input[jetIndex], grid, rockPositions);
+            }
+
+            jetIndex = ++jetIndex >= input.Length ? 0 : jetIndex;
 
             while (true)
             {
-                if (CanMoveDown(grid, rockPositions))
+                // PrintGrid(grid);
+
+                if (CanMove('v', grid, rockPositions))
                 {
-                    rockPositions = MoveDown(grid, rockPositions);
+                    rockPositions = Move('v', grid, rockPositions);
                 }
                 else
                 {
@@ -33,21 +41,122 @@ public static class Day17
                     break;
                 }
 
-                jetIndex = HandleJetBlast(input, jetIndex, grid, ref rockPositions);
+                // PrintGrid(grid);
+
+                if (CanMove(input[jetIndex], grid, rockPositions))
+                {
+                    rockPositions = Move(input[jetIndex], grid, rockPositions);
+                }
+
+                jetIndex = ++jetIndex >= input.Length ? 0 : jetIndex;
             }
         }
         
-        return GetStartRow(grid) - 3;
+        PrintGrid(grid);
+
+        return GetHighestRow(grid) + 1; // 0-based index
     }
 
-    private static int HandleJetBlast(string input, int jetIndex, List<List<string>> grid, ref List<(int row, int col)> rockPositions)
+    public static long CalculateHeightHuge(string input)
     {
-        if (CanMoveDirection(input[jetIndex], grid, rockPositions))
+        var grid = Enumerable.Range(0, 10).Select(_ => Enumerable.Range(0, 7).Select(_ => ".").ToList()).ToList();
+        
+        var jetIndex = 0;
+
+        // Rolling window from last complete row
+        var height = 0L;
+
+        for (var i = 0L; i < 1000000000000; i++)
         {
-            rockPositions = MoveDirection(input[jetIndex], grid, rockPositions);
+            if (i is 0 or 10 or 100 or 1000 or 10000 or 100000 or 1000000 or 10000000 or 100000000 or 1000000000 or 10000000000 or 100000000000)
+            {
+                Console.WriteLine(height);
+                Console.WriteLine(grid.Count);
+                PrintGrid(grid);
+            }
+
+            var newBottomRow = GetNewBottomRow(grid);
+            grid = TruncateGrid(grid, newBottomRow);
+            height += newBottomRow;
+
+            var spaceNeeded = GetNewRockEntryRow(grid) + 4; // Include space for the new rock
+            if (spaceNeeded >= grid.Count)
+            {
+                grid = grid.Concat(Enumerable.Range(0, spaceNeeded - grid.Count).Select(_ => Enumerable.Range(0, 7).Select(_ => ".").ToList()))
+                    .ToList();
+            }
+
+            var rockPositions = AddNewRockToGrid(grid, i);
+
+            if (CanMove(input[jetIndex], grid, rockPositions))
+            {
+                rockPositions = Move(input[jetIndex], grid, rockPositions);
+            }
+
+            jetIndex = ++jetIndex >= input.Length ? 0 : jetIndex;
+
+            while (true)
+            {
+                if (CanMove('v', grid, rockPositions))
+                {
+                    rockPositions = Move('v', grid, rockPositions);
+                }
+                else
+                {
+                    foreach (var rock in rockPositions)
+                    {
+                        FixRockPosition(grid, rock);
+                    }
+
+                    break;
+                }
+
+                if (CanMove(input[jetIndex], grid, rockPositions))
+                {
+                    rockPositions = Move(input[jetIndex], grid, rockPositions);
+                }
+
+                jetIndex = ++jetIndex >= input.Length ? 0 : jetIndex;
+            }
         }
 
-        return ++jetIndex >= input.Length ? 0 : jetIndex;
+        Console.WriteLine(height);
+        Console.WriteLine(grid.Count);
+        PrintGrid(grid);
+        
+        height += GetHighestRow(grid) + 1; // 0-based index
+
+        return height;
+    }
+
+    private static List<List<string>> TruncateGrid(List<List<string>> grid, int newBottomRow)
+    {
+        return grid.Where((_, i) => i >= newBottomRow).ToList();
+    }
+
+    private static int GetNewBottomRow(List<List<string>> grid)
+    {
+        var positionsFilled = new Dictionary<int, bool> { { 0, false }, { 1, false }, { 2, false }, { 3, false }, {4, false}, {5, false}, {6, false} };
+
+        var row = grid.Count;
+        while (!positionsFilled.All(x => x.Value))
+        {
+            row--;
+            if (row == 0)
+            {
+                break;
+            }
+            
+            for (var i = 0; i < 7; i++)
+            {
+                if (grid[row][i] == "#")
+                {
+                    positionsFilled[i] = true;
+                }
+            }
+        }
+
+        return row;
     }
 
     private static int GetMaxHeightOfGrid()
@@ -84,63 +193,46 @@ public static class Day17
         grid[rock.row][rock.col] = ".";
     }
 
-    private static bool CanMoveDown(List<List<string>> grid, List<(int row, int col)> rockPositions)
+    private static bool CanMove(char direction, List<List<string>> grid, List<(int row, int col)> rockPositions)
     {
-        return rockPositions.All(x => x.row != 0 && grid[x.row - 1][x.col] != "#");
-    }
-    
-    private static bool CanMoveDirection(char c, List<List<string>> grid, List<(int row, int col)> rockPositions)
-    {
-        return c switch
+        return direction switch
         {
-            '>' when rockPositions.All(x => x.col < 6) => rockPositions.All(x =>
-                grid[x.row][x.col + 1] == "." || grid[x.row][x.col + 1] == "@"),
-            '<' when rockPositions.All(x => x.col > 0) => rockPositions.All(x =>
-                grid[x.row][x.col - 1] == "." || grid[x.row][x.col - 1] == "@"),
-            _ => false
+            '>' => rockPositions.All(x => x.col < 6 && grid[x.row][x.col + 1] != "#"),
+            '<' => rockPositions.All(x => x.col > 0 && grid[x.row][x.col - 1] != "#"),
+            _ => rockPositions.All(x => x.row != 0 && grid[x.row - 1][x.col] != "#")
         };
     }
 
-    private static List<(int row, int col)> MoveDown(List<List<string>> grid, List<(int row, int col)> rockPositions)
+    private static List<(int row, int col)> Move(char direction, List<List<string>> grid, List<(int row, int col)> rockPositions)
     {
-        var orderedPositions = rockPositions.OrderBy(x => x.row).ToArray();
-        for (var i = 0; i < orderedPositions.Length; i++)
+        foreach (var position in rockPositions)
         {
-            SetPositionToEmpty(grid, orderedPositions[i]);
-            SetPositionToRock(grid, (orderedPositions[i].row - 1, orderedPositions[i].col));
+            SetPositionToEmpty(grid, position);
         }
 
-        return rockPositions.Select(x => (x.row - 1, x.col)).ToList();
+        var newPositions = GetNewPositions(direction, rockPositions);
+        foreach (var position in newPositions)
+        {
+            SetPositionToRock(grid, position);
+        }
+
+        return newPositions;
     }
-
-    private static List<(int row, int col)> MoveDirection(char c, List<List<string>> grid, List<(int row, int col)> rockPositions)
+    
+    private static List<(int row, int col)> GetNewPositions(char direction, List<(int row, int col)> rockPositions)
     {
-        if (c == '>')
+        return direction switch
         {
-            var orderedPositions = rockPositions.OrderByDescending(x => x.col).ToArray();
-            for (var i = 0; i < orderedPositions.Length; i++)
-            {
-                SetPositionToEmpty(grid, orderedPositions[i]);
-                SetPositionToRock(grid, (orderedPositions[i].row, orderedPositions[i].col + 1));
-            }
-            
-            return rockPositions.Select(x => (x.row, x.col + 1)).ToList();
-        }
-
-        var orderedPositionsTwo = rockPositions.OrderBy(x => x.col).ToArray();
-        for (var i = 0; i < orderedPositionsTwo.Length; i++)
-        {
-            SetPositionToEmpty(grid, orderedPositionsTwo[i]);
-            SetPositionToRock(grid, (orderedPositionsTwo[i].row, orderedPositionsTwo[i].col - 1));
-        }
-            
-        return rockPositions.Select(x => (x.row, x.col - 1)).ToList();
+            '>' => rockPositions.Select(x => (x.row, x.col + 1)).ToList(),
+            '<' => rockPositions.Select(x => (x.row, x.col - 1)).ToList(),
+            _ => rockPositions.Select(x => (x.row - 1, x.col)).ToList()
+        };
     }
 
     private static List<(int row, int col)> GetRockStartingPositions(List<List<string>> grid, long iteration)
     {
         const int startCol = 2;
-        var row = GetStartRow(grid);
+        var row = GetNewRockEntryRow(grid);
 
         return (iteration % 5) switch
         {
@@ -204,9 +296,24 @@ public static class Day17
         };
     }
 
-    private static int GetStartRow(List<List<string>> grid)
+    private static int GetNewRockEntryRow(List<List<string>> grid)
     {
-        return grid.Select((x, i) => x.Any(y => y != ".") ? i + 4 : 3).Max();
+        // Ensure there is the necessary space above the current highest row
+        var highestRow = GetHighestRow(grid);
+        return highestRow == -1 ? 3 : highestRow + 4;
+    }
+
+    private static int GetHighestRow(List<List<string>> grid)
+    {
+        for (var i = grid.Count - 1; i >= 0; i--)
+        {
+            if (grid[i].Any(x => x == "#"))
+            {
+                return i;
+            }
+        }
+
+        return -1; // Floor
     }
 
     private static void PrintGrid(List<List<string>> grid)
