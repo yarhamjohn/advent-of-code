@@ -4,87 +4,44 @@ public static class Day17
 {
     public static long CalculateHeight(string input)
     {
-        var grid = Enumerable.Range(0, GetMaxHeightOfGrid()).Select(_ => Enumerable.Range(0, 7).Select(_ => ".").ToList()).ToList();
-        
-        var jetIndex = 0;
-        
-        for (var i = 0; i < 2022; i++)
-        {
-            // PrintGrid(grid);
-
-            var rockPositions = AddNewRockToGrid(grid, i);
-
-            // PrintGrid(grid);
-
-            if (CanMove(input[jetIndex], grid, rockPositions))
-            {
-                rockPositions = Move(input[jetIndex], grid, rockPositions);
-            }
-
-            jetIndex = ++jetIndex >= input.Length ? 0 : jetIndex;
-
-            while (true)
-            {
-                // PrintGrid(grid);
-
-                if (CanMove('v', grid, rockPositions))
-                {
-                    rockPositions = Move('v', grid, rockPositions);
-                }
-                else
-                {
-                    foreach (var rock in rockPositions)
-                    {
-                        FixRockPosition(grid, rock);
-                    }
-
-                    break;
-                }
-
-                // PrintGrid(grid);
-
-                if (CanMove(input[jetIndex], grid, rockPositions))
-                {
-                    rockPositions = Move(input[jetIndex], grid, rockPositions);
-                }
-
-                jetIndex = ++jetIndex >= input.Length ? 0 : jetIndex;
-            }
-        }
-        
-        PrintGrid(grid);
-
-        return GetHighestRow(grid) + 1; // 0-based index
+        return Calculate(input, 2022);
     }
 
     public static long CalculateHeightHuge(string input)
     {
-        var grid = Enumerable.Range(0, 10).Select(_ => Enumerable.Range(0, 7).Select(_ => ".").ToList()).ToList();
+        // Find repeating pattern or rocks and jets
+        // Calculate height of repeating pattern
+        // Calculate height of starting section (before repeating pattern)
+        // Calculate height of remaining section (after last complete pattern)
         
+        /*
+         * A total of 277 rocks were placed before the first repeating section with a height of 417
+         * Each repeating section is 1755 rocks adding a height of 2768
+         *
+         * The first repeat adds 2767 because the first row overlaps with the last of the non-repeating section
+         * The non-repeating section height can therefore be adjusted to 416 to keep all repeating sections constant
+         *
+         * Total rocks in complete repeating sections: (1000000000000 - 277) / 1755 = 569800569
+         * Total height of complete repeating sections: 569800569 * 2768 = 1577207974992
+         *
+         * Total rocks in remaining incomplete section: (1000000000000 - 277) % 1755 = 1128
+         * Total height of rocks in remaining incomplete section: 1778
+         *
+         * Total height: 416 + 1577207974992 + 1778 = 1577207977186
+         */
+
+        return Calculate(input, 1000000000000);
+    }
+
+    private static long Calculate(string input, long size)
+    {
+        var grid = Enumerable.Range(0, 10).Select(_ => Enumerable.Range(0, 7).Select(_ => ".").ToList()).ToList();
+
         var jetIndex = 0;
 
-        // Rolling window from last complete row
-        var height = 0L;
-
-        for (var i = 0L; i < 1000000000000; i++)
+        for (var i = 0L; i < size; i++)
         {
-            if (i is 0 or 10 or 100 or 1000 or 10000 or 100000 or 1000000 or 10000000 or 100000000 or 1000000000 or 10000000000 or 100000000000)
-            {
-                Console.WriteLine(height);
-                Console.WriteLine(i);
-                PrintGrid(grid);
-            }
-
-            var newBottomRow = GetNewBottomRow(grid);
-            grid = TruncateGrid(grid, newBottomRow);
-            height += newBottomRow;
-
-            var spaceNeeded = GetNewRockEntryRow(grid) + 4; // Include space for the new rock
-            if (spaceNeeded >= grid.Count)
-            {
-                grid = grid.Concat(Enumerable.Range(0, spaceNeeded - grid.Count).Select(_ => Enumerable.Range(0, 7).Select(_ => ".").ToList()))
-                    .ToList();
-            }
+            grid = ExtendGrid(grid);
 
             var rockPositions = AddNewRockToGrid(grid, i);
 
@@ -120,31 +77,20 @@ public static class Day17
             }
         }
 
-        Console.WriteLine(height);
-        Console.WriteLine(grid.Count);
-        PrintGrid(grid);
-        
-        height += GetHighestRow(grid) + 1; // 0-based index
-
-        return height;
+        return GetHighestRow(grid) + 1; // 0-based index
     }
 
-    private static List<List<string>> TruncateGrid(List<List<string>> grid, int newBottomRow)
+    private static List<List<string>> ExtendGrid(List<List<string>> grid)
     {
-        return grid.Where((_, i) => i >= newBottomRow).ToList();
-    }
+        var spaceNeeded = GetNewRockEntryRow(grid) + 4; // Include space for the new rock
+        if (spaceNeeded >= grid.Count)
+        {
+            grid = grid.Concat(Enumerable.Range(0, spaceNeeded - grid.Count)
+                    .Select(_ => Enumerable.Range(0, 7).Select(_ => ".").ToList()))
+                .ToList();
+        }
 
-    private static int GetNewBottomRow(List<List<string>> grid)
-    {
-        return Enumerable.Range(0, 7).Min(x => Array.LastIndexOf(grid.Select(y => y[x]).ToArray(), "#"));
-
-    }
-
-    private static int GetMaxHeightOfGrid()
-    {
-        const int maxHeightOfOneSetOfRocks = 13;
-        const int maxHeightOfAllRocks = 2022 / 5 * maxHeightOfOneSetOfRocks + 4; // Because 2022 % 5 is 2, and the first 2 rocks have a possible height of 4
-        return maxHeightOfAllRocks + 3 + 4; // New rocks appear 3 lines above and tallest rock is 4.
+        return grid;
     }
 
     private static List<(int row, int col)> AddNewRockToGrid(List<List<string>> grid, long iteration)
@@ -302,10 +248,12 @@ public static class Day17
         var rowsToInclude = grid.Select((x, i) => x.Any(y => y != ".") ? i : 3).Max();
         for (var row = rowsToInclude; row >= 0; row--)
         {
+            // File.AppendAllLines("test.txt", new[] {$"|{string.Join("", grid[row])}|"});
             Console.WriteLine($"|{string.Join("", grid[row])}|");
 
             if (row == 0)
             {
+                // File.AppendAllLines("test.txt", new [] {$"+-------+"});
                 Console.WriteLine("+-------+");
             }
         }
