@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2022.Day18;
+﻿using System.Runtime.CompilerServices;
+
+namespace AdventOfCode2022.Day18;
 
 public static class Day18
 {
@@ -48,8 +50,44 @@ public static class Day18
             matrix[cube.x][cube.y][cube.z] = "#";
         }
 
+        SetExternalSurfaceArea(matrix, (0, 0, 0));
+        
         PrintMatrix(matrix);
+        
+        var internalSurfaceArea = GetInternalSurfaceArea(matrix);
+        
+        return surfaceArea - internalSurfaceArea;
+    }
 
+    private static void SetExternalSurfaceArea(string[][][] matrix, (int x, int y, int z) cube)
+    {
+        var neighbours = GetNeighbourCubes(cube);
+        
+        if (IsExternal(matrix, cube.x, cube.y, cube.z) || neighbours.Any(c => matrix[c.Item1][c.Item2][c.Item3] == "~"))
+        {
+            matrix[cube.x][cube.y][cube.z] = "~";
+        }
+        
+        var nextNeighbours = neighbours.Where(c => InMatrix(matrix, c) && matrix[c.Item1][c.Item2][c.Item3] == ".").ToArray();
+
+        if (!nextNeighbours.Any())
+        {
+            return;
+        }
+
+        foreach (var neighbour in nextNeighbours)
+        {
+            SetExternalSurfaceArea(matrix, neighbour);
+        }
+    }
+
+    private static bool InMatrix(string[][][] matrix, (int, int, int) c)
+    {
+        return c.Item1 >= 0 && c.Item2 >= 0 && c.Item3 >= 0 && c.Item1 < matrix.Length && c.Item2 < matrix[c.Item1].Length && c.Item3 < matrix[c.Item1][c.Item2].Length;
+    }
+
+    private static int GetInternalSurfaceArea(string[][][] matrix)
+    {
         var internalSurfaceArea = 0;
         for (var x = 0; x < matrix.Length; x++)
         {
@@ -59,29 +97,22 @@ public static class Day18
                 {
                     if (matrix[x][y][z] == ".")
                     {
-                        if (IsInternal(matrix, x, y, z))
-                        {
-                            internalSurfaceArea += CountNeighbours(matrix, x, y, z);
-                        }
+                        internalSurfaceArea += CountNeighbours(matrix, x, y, z);
                     }
                 }
             }
         }
 
-        return surfaceArea - internalSurfaceArea;
+        return internalSurfaceArea;
     }
 
-    private static bool IsInternal(string[][][] matrix, int x, int y, int z)
+    private static bool IsExternal(string[][][] matrix, int x, int y, int z)
     {
-        // Needs to check if neighbours are external
-        return IsInternalInX(matrix, x, y, z) && IsInternalInY(matrix, x, y, z) && IsInternalInZ(matrix, x, y, z);
+        return !IsInternalInX(matrix, x, y, z) || !IsInternalInY(matrix, x, y, z) || !IsInternalInZ(matrix, x, y, z);
     }
 
     private static bool IsInternalInX(string[][][] matrix, int x, int y, int z)
     {
-        // return Enumerable.Range(0, x).Select((_, i) => matrix[i][y][z]).Any(c => c == "#") && Enumerable
-            // .Range(x, matrix.Length - x).Select((_, i) => matrix[i][y][z]).Any(c => c == "#");
-
         var internalOne = false;
         for (var position = x; position >= 0; position--)
         {
@@ -105,9 +136,6 @@ public static class Day18
 
     private static bool IsInternalInY(string[][][] matrix, int x, int y, int z)
     {
-                // return Enumerable.Range(0, y).Select((_, i) => matrix[x][i][z]).Any(c => c == "#") && Enumerable
-                    // .Range(y, matrix[x].Length - y).Select((_, i) => matrix[x][i][z]).Any(c => c == "#");
-                    
         var internalOne = false;
         for (var position = y; position >= 0; position--)
         {
@@ -132,9 +160,6 @@ public static class Day18
 
     private static bool IsInternalInZ(string[][][] matrix, int x, int y, int z)
     {
-        // return Enumerable.Range(0, z).Select((_, i) => matrix[x][y][i]).Any(c => c == "#") && Enumerable
-            // .Range(z, matrix[x][y].Length - z).Select((_, i) => matrix[x][y][i]).Any(c => c == "#");
-        
         var internalOne = false;
         for (var position = z; position >= 0; position--)
         {
@@ -159,7 +184,7 @@ public static class Day18
     
     private static int CountNeighbours(string[][][] matrix, int x, int y, int z)
     {
-        return GetNeighbourCubes((x, y, z)).Count(c => matrix[c.Item1][c.Item2][c.Item3] == "#");
+        return GetNeighbourCubes((x, y, z)).Where(c => InMatrix(matrix, c)).Count(c => matrix[c.Item1][c.Item2][c.Item3] == "#");
     }
 
     private static void PrintMatrix(string[][][] matrix)
@@ -170,16 +195,7 @@ public static class Day18
             {
                 for (var z = 0; z < matrix[x][y].Length; z++)
                 {
-                    if (matrix[x][y][z] == "#")
-                    {
-                        Console.Write("#");
-                    }
-                    else
-                    {
-                        var isInternal = IsInternalInX(matrix, x, y, z) && IsInternalInY(matrix, x, y, z) &&
-                                         IsInternalInZ(matrix, x, y, z);
-                        Console.Write(isInternal ? "~" : ".");
-                    }
+                    Console.Write(matrix[x][y][z]);
                 }
 
                 Console.WriteLine();
