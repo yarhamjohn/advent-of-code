@@ -8,6 +8,7 @@ using AdventOfCode2022.Day15;
 using AdventOfCode2022.Day16;
 using AdventOfCode2022.Day17;
 using AdventOfCode2022.Day18;
+using AdventOfCode2022.Day19;
 using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
@@ -70,7 +71,8 @@ long Day17B() => Day17.CalculateHeightHuge(File.ReadAllText("./Day17/input.txt")
 
 long Day18A() => Day18.CalculateSurfaceArea(File.ReadAllLines("./Day18/input.txt"));
 long Day18B() => Day18.CalculateExternalSurfaceArea(File.ReadAllLines("./Day18/input.txt"));
-// 607 is too low
-// 2451 is too low
 
-Console.WriteLine(Day18B());
+long Day19A() => Day19.CalculateQualityLevels(File.ReadAllLines("./Day19/input.txt"));
+// 1898 is too low
+
+Console.WriteLine(Day19A());

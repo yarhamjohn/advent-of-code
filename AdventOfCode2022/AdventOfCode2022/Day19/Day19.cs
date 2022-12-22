@@ -1,48 +1,169 @@
-﻿using System.Runtime.InteropServices.ComTypes;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace AdventOfCode2022.Day19;
 
 public static class Day19
 {
+    private static int HighestScore = 0;
+    
     public static long CalculateQualityLevels(string[] input)
     {
-        return 0;
+        return ParseInput(input).Select(x =>
+        {
+            HighestScore = 0;
+            var result = CalculateQualityLevel(x) * x.Id;
+            Console.WriteLine($"--------------------{result}----------------");
+            return result;
+        }).Sum();
     }
 
-    public class Me
+    private static int CalculateQualityLevel(Blueprint blueprint)
     {
-        private Dictionary<Type, int> NumMinerals = new() { { Type.Ore, 0 }, { Type.Clay, 0 }, { Type.Obsidian, 0 }, { Type.Geode, 0 }};
-        private Dictionary<Type, int> NumRobots = new() { { Type.Ore, 0 }, { Type.Clay, 0 }, { Type.Obsidian, 0 }, { Type.Geode, 0 }};
+        var minerals = new Dictionary<Type, int> { { Type.Ore, 0 }, { Type.Clay, 0 }, { Type.Obsidian, 0 }, { Type.Geode, 0 }};
+        var robots = new Dictionary<Type, int> { { Type.Ore, 1 }, { Type.Clay, 0 }, { Type.Obsidian, 0 }, { Type.Geode, 0 }};
 
-        public void BuildRobot(Type robot)
+        var turnsToSkipAtStart = Math.Min(blueprint.Costs[Type.Ore].Values.Single(), blueprint.Costs[Type.Clay].Values.Single());
+
+        minerals[Type.Ore] += turnsToSkipAtStart;
+        
+        return Thing(blueprint, turnsToSkipAtStart, robots, minerals);
+    }
+
+    private static int Thing(Blueprint blueprint, int timeElapsed, Dictionary<Type, int> robots, Dictionary<Type, int> minerals)
+    {
+        // Console.WriteLine($"Time: {timeElapsed}; HighestScore: {HighestScore}; Robots: {string.Join(",", robots.Select(x => $"{x.Key}: {x.Value}"))}; Minerals: {string.Join(",", minerals.Select(x => $"{x.Key}: {x.Value}"))}");
+        
+        if (timeElapsed >= 24)
         {
-            NumRobots[robot]++;
+            HighestScore = HighestScore < minerals[Type.Geode] ? minerals[Type.Geode] : HighestScore;
+            
+            return minerals[Type.Geode];
         }
         
-        public void CollectOres()
+        // Cannot collect any geodes in time
+        if (robots[Type.Geode] == 0 && robots[Type.Obsidian] == 0 && robots[Type.Clay] == 0 && timeElapsed >= 21)
         {
-            foreach (var robot in NumRobots)
+            return 0;
+        }
+        
+        if (robots[Type.Geode] == 0 && robots[Type.Obsidian] == 0 && timeElapsed >= 22)
+        {
+            return 0;
+        }
+        
+        if (robots[Type.Geode] == 0 && timeElapsed >= 23)
+        {
+            return 0;
+        }
+        
+        var options = OptionsForPurchase(blueprint, minerals);
+        
+        CollectOres(robots, minerals);
+
+        var geodeTotals = new List<int> { 0 };
+        foreach (var option in options)
+        {
+            if (option is null)
             {
-                NumMinerals[robot.Key] += robot.Value;
+                geodeTotals.Add(Thing(blueprint, timeElapsed + 1, CloneDictionary(robots), CloneDictionary(minerals)));
+            }
+            else
+            {
+                var newRobots = CloneDictionary(robots);
+                newRobots[(Type)option]++;
+                
+                var newMinerals = CloneDictionary(minerals);
+                foreach (var mineral in blueprint.Costs[(Type)option])
+                {
+                    newMinerals[mineral.Key] -= mineral.Value;
+                }
+                
+                geodeTotals.Add(Thing(blueprint, timeElapsed + 1, newRobots, newMinerals));
             }
         }
 
-        public List<Type?> OptionsForPurchase(Blueprint blueprint)
+        return geodeTotals.Max();
+    }
+
+    private static Dictionary<Type, int> CloneDictionary(Dictionary<Type, int> dict)
+    {
+        return dict.ToDictionary(x => x.Key, x => x.Value);
+    }
+
+    private static IEnumerable<Blueprint> ParseInput(string[] input)
+    {
+        foreach (var line in input)
         {
-            var options = new List<Type?> { null }; // There is always the option to not buy a robot at all
-            foreach (var robot in blueprint.Costs)
+            var segments = line.Split(" ");
+            var id = Convert.ToInt32(segments[1].Replace(":", ""));
+            var costs = new Dictionary<Type, Dictionary<Type, int>>
             {
-                foreach (var mineral in robot.Value)
+                {Type.Ore, new Dictionary<Type, int>
                 {
-                    if (NumMinerals[mineral.Key] >= mineral.Value)
-                    {
-                        options.Add(robot.Key);
-                    }
-                }
-            }
+                    {Type.Ore, Convert.ToInt32(segments[6])}
+                }},
+                {Type.Clay, new Dictionary<Type, int>
+                {
+                    {Type.Ore, Convert.ToInt32(segments[12])}
+                }},
+                {Type.Obsidian, new Dictionary<Type, int>
+                {
+                    {Type.Ore, Convert.ToInt32(segments[18])},
+                    {Type.Clay, Convert.ToInt32(segments[21])}
+                }},
+                {Type.Geode, new Dictionary<Type, int>
+                {
+                    {Type.Ore, Convert.ToInt32(segments[27])},
+                    {Type.Obsidian, Convert.ToInt32(segments[30])}
+                }}
+            };
             
-            return options;
+            yield return new Blueprint(id, costs);
         }
+    }
+
+    private static void CollectOres(Dictionary<Type, int> robots, Dictionary<Type, int> minerals)
+    {
+        foreach (var robot in robots)
+        {
+            minerals[robot.Key] += robot.Value;
+        }
+    }
+    
+    private static List<Type?> OptionsForPurchase(Blueprint blueprint, Dictionary<Type, int> minerals)
+    {
+        if (CanBuy(blueprint.Costs[Type.Geode], minerals))
+        {
+            return new List<Type?> { Type.Geode };
+        }
+        
+        if (CanBuy(blueprint.Costs[Type.Obsidian], minerals))
+        {
+            return new List<Type?> { Type.Obsidian };
+        }
+
+        var options = new List<Type?>();
+        foreach (var robot in blueprint.Costs)
+        {
+            if (robot.Value.All(x => minerals[x.Key] >= x.Value))
+            {
+                options.Add(robot.Key);
+            }
+        }
+
+        // If you can't buy 1+ of the robots, then waiting is a valid option
+        if (!CanBuy(blueprint.Costs[Type.Ore], minerals)
+            || !CanBuy(blueprint.Costs[Type.Clay], minerals))
+        {
+            options.Add(null);
+        }
+        
+        return options;
+    }
+
+    private static bool CanBuy(Dictionary<Type,int> blueprintCost, Dictionary<Type, int> mineral)
+    {
+        return blueprintCost.All(x => x.Value < mineral[x.Key]);
     }
 
     public record Blueprint(int Id, Dictionary<Type, Dictionary<Type, int>> Costs);
