@@ -56,7 +56,7 @@ public static class Day19
             return 0;
         }
         
-        var options = OptionsForPurchase(blueprint, minerals);
+        var options = OptionsForPurchase(blueprint, robots, minerals);
         
         CollectOres(robots, minerals);
 
@@ -130,27 +130,40 @@ public static class Day19
         }
     }
     
-    private static List<Type?> OptionsForPurchase(Blueprint blueprint, Dictionary<Type, int> minerals)
+    private static List<Type?> OptionsForPurchase(Blueprint blueprint, Dictionary<Type, int> robots, Dictionary<Type, int> minerals)
     {
         if (CanBuy(blueprint.Costs[Type.Geode], minerals))
         {
             return new List<Type?> { Type.Geode };
         }
-        
-        if (CanBuy(blueprint.Costs[Type.Obsidian], minerals))
-        {
-            return new List<Type?> { Type.Obsidian };
-        }
 
         var options = new List<Type?>();
         foreach (var robot in blueprint.Costs)
-        {
+        {        
+            // If we own enough ore robots to fully regenerate ore after any purchase (i.e. 4 or more) then don't offer it as an option
+            if (robot.Key == Type.Ore && robots[Type.Ore] > 4)
+            {
+                continue;
+            }
+            
             if (robot.Value.All(x => minerals[x.Key] >= x.Value))
             {
                 options.Add(robot.Key);
             }
         }
 
+        if (!options.Any())
+        {
+            return new List<Type?> { null };
+        }
+        
+        if (CanBuy(blueprint.Costs[Type.Ore], minerals) &&
+            CanBuy(blueprint.Costs[Type.Clay], minerals) &&
+            CanBuy(blueprint.Costs[Type.Obsidian], minerals))
+        {
+            return new List<Type?> { Type.Obsidian };
+        }
+        
         // If you can't buy 1+ of the robots, then waiting is a valid option
         if (!CanBuy(blueprint.Costs[Type.Ore], minerals)
             || !CanBuy(blueprint.Costs[Type.Clay], minerals))
@@ -159,6 +172,23 @@ public static class Day19
         }
         
         return options;
+
+        // // If buying something doesn't prevent buying next round (same options) then don't include null option
+        // if (options.All(x =>
+        //         minerals[Type.Ore] - blueprint.Costs[(Type) x!][Type.Ore] + robots[Type.Ore] >=
+        //         options.Max(y => blueprint.Costs[(Type) y!][Type.Ore])))
+        // {
+        //     return options;
+        // }
+        //
+        // // If can buy obsidian after waiting, then add wait option
+        // if (minerals[Type.Ore] + robots[Type.Ore] >= blueprint.Costs[Type.Obsidian][Type.Ore] &&
+        //     minerals[Type.Clay] + robots[Type.Clay] >= blueprint.Costs[Type.Obsidian][Type.Clay])
+        // {
+        //     options.Add(null);
+        // }
+        //
+        // return options;
     }
 
     private static bool CanBuy(Dictionary<Type,int> blueprintCost, Dictionary<Type, int> mineral)
