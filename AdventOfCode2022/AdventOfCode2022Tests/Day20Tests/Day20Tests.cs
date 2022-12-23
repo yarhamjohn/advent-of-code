@@ -14,4 +14,14 @@ public class Day20Tests
         var result = Day20.CalculateGroveCoordinates(input);
         Assert.That(result, Is.EqualTo(3));
     }
+    
+    [Test]
+    public void CalculateGroveCoordinatesHuge()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day20Tests/Input/example.txt");
+        var input = File.ReadAllLines(inputPath);
+
+        var result = Day20.CalculateGroveCoordinatesHuge(input);
+        Assert.That(result, Is.EqualTo(1623178306));
+    }
 }

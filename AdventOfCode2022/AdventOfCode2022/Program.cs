@@ -77,5 +77,6 @@ long Day19A() => Day19.CalculateQualityLevels(File.ReadAllLines("./Day19/input.t
 // 1898 is too low
 
 long Day20A() => Day20.CalculateGroveCoordinates(File.ReadAllLines("./Day20/input.txt"));
+long Day20B() => Day20.CalculateGroveCoordinatesHuge(File.ReadAllLines("./Day20/input.txt"));
 
-Console.WriteLine(Day20A());
+Console.WriteLine(Day20B());
