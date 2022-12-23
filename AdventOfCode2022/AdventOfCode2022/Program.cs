@@ -81,5 +81,6 @@ long Day20A() => Day20.CalculateGroveCoordinates(File.ReadAllLines("./Day20/inpu
 long Day20B() => Day20.CalculateGroveCoordinatesHuge(File.ReadAllLines("./Day20/input.txt"));
 
 long Day21A() => Day21.NumberYelledByRoot(File.ReadAllLines("./Day21/input.txt"));
+long Day21B() => Day21.NumberYelledByRootPartTwo(File.ReadAllLines("./Day21/input.txt"));
 
-Console.WriteLine(Day21A());
+Console.WriteLine(Day21B());

@@ -7,8 +7,28 @@ public static class Day21
         var monkeys = GetMonkeys(input);
         return monkeys["root"].GetNumber(monkeys);
     }
+    
+    public static long NumberYelledByRootPartTwo(string[] input)
+    {
+        var monkeys = GetMonkeys(input, true);
 
-    private static Dictionary<string, IMonkey> GetMonkeys(string[] input)
+        var numShouted = 0;
+        while (true)
+        {
+            ((NumberMonkey) monkeys["humn"]).UpdateNum(numShouted);
+            
+            if (monkeys["root"].GetNumber(monkeys) == 1)
+            {
+                break;
+            }
+            
+            numShouted++;
+        }
+
+        return numShouted;
+    }
+
+    private static Dictionary<string, IMonkey> GetMonkeys(string[] input, bool newRootOperator = false)
     {
         var monkeys = new Dictionary<string, IMonkey>();
         foreach (var line in input)
@@ -23,7 +43,15 @@ public static class Day21
             else
             {
                 var formulaSegments = segments[1].Split(" ");
-                monkeys[id] = new FormulaMonkey(formulaSegments[0], formulaSegments[2], formulaSegments[1]);
+
+                if (id == "root" && newRootOperator)
+                {
+                    monkeys[id] = new FormulaMonkey(formulaSegments[0], formulaSegments[2], "=");
+                }
+                else
+                {
+                    monkeys[id] = new FormulaMonkey(formulaSegments[0], formulaSegments[2], formulaSegments[1]);
+                }
             }
         }
 
@@ -37,7 +65,7 @@ public static class Day21
 
     public class NumberMonkey : IMonkey
     {
-        private readonly int _num;
+        private int _num;
 
         public NumberMonkey(int num)
         {
@@ -45,6 +73,8 @@ public static class Day21
         }
 
         public long GetNumber(Dictionary<string, IMonkey> _) => _num;
+
+        public void UpdateNum(int num) => _num = num;
     }
     
     public class FormulaMonkey : IMonkey
@@ -68,8 +98,9 @@ public static class Day21
                 "+" => monkeys[_monkeyOneId].GetNumber(monkeys) + monkeys[_monkeyTwoId].GetNumber(monkeys),
                 "-" => monkeys[_monkeyOneId].GetNumber(monkeys) - monkeys[_monkeyTwoId].GetNumber(monkeys),
                 "/" => monkeys[_monkeyOneId].GetNumber(monkeys) / monkeys[_monkeyTwoId].GetNumber(monkeys),
+                "=" => monkeys[_monkeyOneId].GetNumber(monkeys) == monkeys[_monkeyTwoId].GetNumber(monkeys) ? 1 : 0,
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
-    }
+    }   
 }
