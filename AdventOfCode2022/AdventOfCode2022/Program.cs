@@ -10,6 +10,7 @@ using AdventOfCode2022.Day17;
 using AdventOfCode2022.Day18;
 using AdventOfCode2022.Day19;
 using AdventOfCode2022.Day2;
+using AdventOfCode2022.Day20;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
 using AdventOfCode2022.Day5;
@@ -75,4 +76,6 @@ long Day18B() => Day18.CalculateExternalSurfaceArea(File.ReadAllLines("./Day18/i
 long Day19A() => Day19.CalculateQualityLevels(File.ReadAllLines("./Day19/input.txt"));
 // 1898 is too low
 
-Console.WriteLine(Day19A());
+long Day20A() => Day20.CalculateGroveCoordinates(File.ReadAllLines("./Day20/input.txt"));
+
+Console.WriteLine(Day20A());
