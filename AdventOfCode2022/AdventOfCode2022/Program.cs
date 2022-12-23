@@ -11,6 +11,7 @@ using AdventOfCode2022.Day18;
 using AdventOfCode2022.Day19;
 using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day20;
+using AdventOfCode2022.Day21;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
 using AdventOfCode2022.Day5;
@@ -79,4 +80,6 @@ long Day19A() => Day19.CalculateQualityLevels(File.ReadAllLines("./Day19/input.t
 long Day20A() => Day20.CalculateGroveCoordinates(File.ReadAllLines("./Day20/input.txt"));
 long Day20B() => Day20.CalculateGroveCoordinatesHuge(File.ReadAllLines("./Day20/input.txt"));
 
-Console.WriteLine(Day20B());
+long Day21A() => Day21.NumberYelledByRoot(File.ReadAllLines("./Day21/input.txt"));
+
+Console.WriteLine(Day21A());
