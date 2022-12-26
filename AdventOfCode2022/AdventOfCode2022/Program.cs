@@ -82,6 +82,5 @@ long Day20B() => Day20.CalculateGroveCoordinatesHuge(File.ReadAllLines("./Day20/
 
 long Day21A() => Day21.NumberYelledByRoot(File.ReadAllLines("./Day21/input.txt"));
 long Day21B() => Day21.NumberYelledByRootPartTwo(File.ReadAllLines("./Day21/input.txt"));
-// 7790594759045 is too high
 
-Console.WriteLine(Day21A());
+Console.WriteLine(Day21B());

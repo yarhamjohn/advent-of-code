@@ -95,8 +95,8 @@ public static class Day21
 
         if (json[2].Type is JTokenType.String && (string)json[2] == "humn" && json[0].Type is JTokenType.Array)
         {
-            var num2 = SolveJson((JArray)json[0]);
-            return ResolveLeftSideNumber((string)json[1], num2, targetNum);
+            var num = SolveJson((JArray)json[0]);
+            return ResolveLeftSideNumber((string)json[1], num, targetNum);
         }
 
         throw new InvalidOperationException("Interesting...");
@@ -194,7 +194,7 @@ public static class Day21
                 targetNum -= leftSide;
                 break;
             case "-":
-                targetNum += leftSide;
+                targetNum = leftSide - targetNum;
                 break;
         }
 
