@@ -56,3 +56,5 @@ Second, you got the wrong monkey for the job starting with `humn`:. It isn't a m
 In the above example, the number you need to yell to pass `root`'s equality test is `301`. (This causes root to get the same number, `150`, from both of its monkeys.)
 
 What number do you yell to pass `root`'s equality test?
+
+`Your puzzle answer was 3769668716709.`

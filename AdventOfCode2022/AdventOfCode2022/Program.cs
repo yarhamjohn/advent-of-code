@@ -12,6 +12,7 @@ using AdventOfCode2022.Day19;
 using AdventOfCode2022.Day2;
 using AdventOfCode2022.Day20;
 using AdventOfCode2022.Day21;
+using AdventOfCode2022.Day22;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
 using AdventOfCode2022.Day5;
@@ -83,4 +84,6 @@ long Day20B() => Day20.CalculateGroveCoordinatesHuge(File.ReadAllLines("./Day20/
 long Day21A() => Day21.NumberYelledByRoot(File.ReadAllLines("./Day21/input.txt"));
 long Day21B() => Day21.NumberYelledByRootPartTwo(File.ReadAllLines("./Day21/input.txt"));
 
-Console.WriteLine(Day21B());
+long Day22A() => Day22.CalculatePassword(File.ReadAllLines("./Day22/input.txt"));
+
+Console.WriteLine(Day22A());
