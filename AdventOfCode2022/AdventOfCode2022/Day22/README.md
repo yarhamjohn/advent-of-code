@@ -42,18 +42,18 @@ If a movement instruction would take you off of the map, you wrap around to the 
 For example, if you are at `A` and facing to the right, the tile in front of you is marked `B`; if you are at `C` and facing down, the tile in front of you is marked `D`:
 
 ```
-        ...#
-        .#..
-        #...
-        ....
-...#.D.....#
-........#...
-B.#....#...A
-.....C....#.
-...#....
-.....#..
-.#......
-......#.
+        >>v#    
+        .#v.    
+        #.v.    
+        ..v.    
+...#...v..v#    
+>>>v...>#.>>    
+..#v...#....    
+...>>>>v..#.    
+        ...#....
+        .....#..
+        .#......
+        ......#.
 ```
 
 It is possible for the next tile (after wrapping around) to be a wall; this still counts as there being a wall in front of you, and so movement stops before you actually wrap to the other side of the board.
@@ -65,14 +65,14 @@ By drawing the last facing you had with an arrow on each tile you visit, the ful
         .#v.    
         #.v.    
         ..v.    
-...#...v..v#
+...#...v..v#    
 >>>v...>#.>>    
 ..#v...#....    
 ...>>>>v..#.    
-...#....
-.....#..
-.#......
-......#.
+        ...#....
+        .....#..
+        .#......
+        ......#.
 ```
 
 To finish providing the password to this strange input device, you need to determine numbers for your final row, column, and facing as your final position appears from the perspective of the original map. Rows start from `1` at the top and count downward; columns start from `1` at the left and count rightward. (In the above example, row 1, column 1 refers to the empty space with no tile on it in the top-left corner.) Facing is `0` for right (`>`), `1` for down (`v`), `2` for left (`<`), and `3` for up (`^`). The final password is the sum of 1000 times the row, 4 times the column, and the facing.
@@ -102,10 +102,10 @@ In the example above, the six (smaller, 4x4) faces of the cube are:
 222233334444
 222233334444
 222233334444
-55556666
-55556666
-55556666
-55556666
+        55556666
+        55556666
+        55556666
+        55556666
 ```
 
 You still start in the same position and with the same facing as before, but the wrapping rules are different. Now, if you would walk off the board, you instead proceed around the cube. From the perspective of the map, this can look a little strange. In the above example, if you are at A and move to the right, you would arrive at B facing down; if you are at C and move down, you would arrive at D facing up:
@@ -119,10 +119,10 @@ You still start in the same position and with the same facing as before, but the
 ........#..A
 ..#....#....
 .D........#.
-...#..B.
-.....#..
-.#......
-..C...#.
+        ...#..B.
+        .....#..
+        .#......
+        ..C...#.
 ```
 
 Walls still block your path, even if they are on a different face of the cube. If you are at E facing up, your movement is blocked by the wall marked by the arrow:
@@ -136,10 +136,10 @@ Walls still block your path, even if they are on a different face of the cube. I
 ........#...
 ..#....#....
 ..........#.
-...#....
-.....#..
-.#......
-......#.
+        ...#....
+        .....#..
+        .#......
+        ......#.
 ```
 
 Using the same method of drawing the last facing you had with an arrow on each tile you visit, the full path taken by the above example now looks like this:
@@ -153,10 +153,10 @@ Using the same method of drawing the last facing you had with an arrow on each t
 .>>>>>^.#.>>    
 .^#....#....    
 .^........#.    
-...#..v.
-.....#v.
-.#v<<<<.
-..v...#.
+        ...#..v.
+        .....#v.
+        .#v<<<<.
+        ..v...#.
 ```
 
 The final password is still calculated from your final position and facing from the perspective of the map. In this example, the final row is `5`, the final column is `7`, and the final facing is `3`, so the final password is 1000 * 5 + 4 * 7 + 3 = `5031`.
