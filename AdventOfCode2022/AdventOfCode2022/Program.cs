@@ -88,5 +88,6 @@ long Day21B() => Day21.NumberYelledByRootPartTwo(File.ReadAllLines("./Day21/inpu
 long Day22A() => Day22.CalculatePassword(File.ReadAllLines("./Day22/input.txt"));
 
 long Day23A() => Day23.CountEmptyGroundTiles(File.ReadAllLines("./Day23/input.txt"));
+long Day23B() => Day23.CountRoundsRequired(File.ReadAllLines("./Day23/input.txt"));
 
-Console.WriteLine(Day23A());
+Console.WriteLine(Day23B());
