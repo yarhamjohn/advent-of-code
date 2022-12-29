@@ -14,6 +14,8 @@ using AdventOfCode2022.Day20;
 using AdventOfCode2022.Day21;
 using AdventOfCode2022.Day22;
 using AdventOfCode2022.Day23;
+using AdventOfCode2022.Day24;
+using AdventOfCode2022.Day25;
 using AdventOfCode2022.Day3;
 using AdventOfCode2022.Day4;
 using AdventOfCode2022.Day5;
@@ -90,4 +92,8 @@ long Day22A() => Day22.CalculatePassword(File.ReadAllLines("./Day22/input.txt"))
 long Day23A() => Day23.CountEmptyGroundTiles(File.ReadAllLines("./Day23/input.txt"));
 long Day23B() => Day23.CountRoundsRequired(File.ReadAllLines("./Day23/input.txt"));
 
-Console.WriteLine(Day23B());
+long Day24A() => Day24.CountMinutesTaken(File.ReadAllLines("./Day24/input.txt"));
+
+string Day25A() => Day25.CalculateSnafuNumber(File.ReadAllLines("./Day25/input.txt"));
+
+Console.WriteLine(Day25A());
