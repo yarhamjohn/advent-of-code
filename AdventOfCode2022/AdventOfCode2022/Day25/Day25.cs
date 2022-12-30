@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2022.Day25;
+﻿using System.Text;
+
+namespace AdventOfCode2022.Day25;
 
 public static class Day25
 {
@@ -9,132 +11,94 @@ public static class Day25
         return CalculateSnafu(fuel);
     }
 
-    public static string CalculateSnafu(int sum)
+    public static string CalculateSnafu(long num)
     {
-        if (sum < 3)
-        {
-            return sum.ToString();
-        }
+        var biggestPower = GetBiggestConsumablePower(num);
 
-        var maxValuesByIndex = new[] { 2, 12, 62, 312, 937, 4062 };
+        var temp = GetNaiveSnafu(num, biggestPower);
 
-        var idx = GetMaxIndex(sum, maxValuesByIndex);
-
-        var a = Math.Pow(5, idx) - maxValuesByIndex[idx - 1];
-        var quantity = sum > maxValuesByIndex[idx - 1] &&
-                       sum < Math.Pow(5, idx) + a ? 1 : 2;
-
-        var z = (int) Math.Pow(5, idx) - sum;
-        var z1 = z / (int) Math.Pow(5, idx - 1);
-
-        var sixHundredAndTwentyFives = "";
-        if (idx == 5)
-        {
-            sixHundredAndTwentyFives = z1 == 2
-                ? "="
-                : z1 == 1
-                    ? "-"
-                    : z1.ToString();
-            
-            idx--;
-        }
-        
-        var oneHundredAndTwentyFives = "";
-        if (idx == 4)
-        {
-            oneHundredAndTwentyFives = z1 == 2
-                ? "="
-                : z1 == 1
-                    ? "-"
-                    : z1.ToString();
-            
-            idx--;
-        }
-        
-        var twentyFives = "";
-
-        if (idx == 3)
-        {
-            twentyFives = z1 == 2
-                ? "="
-                : z1 == 1
-                    ? "-"
-                    : z1.ToString();
-            
-            idx--;
-        }
-
-        var fives = "";
-        if (idx == 2)
-        {
-            fives = z1 == 2
-                ? "="
-                : z1 == 1
-                    ? "-"
-                    : z1.ToString();
-        }
-
-        if (idx == 1)
-        {
-            fives = sum - 5 <= 2
-                ? "1"
-                : "2";
-        }
-
-        var ones = GetOnes(sum);
-
-        return (idx > 1 ? quantity : "") + sixHundredAndTwentyFives + oneHundredAndTwentyFives + twentyFives +  fives + ones;
+        return FixSnafu(temp);
     }
 
-    private static string GetOnes(int sum)
+    private static string FixSnafu(string temp)
     {
-        var y = sum % 5;
-        return y switch
+        var workingString = string.Join("", temp.Reverse());
+        
+        while (!workingString.All(x => new [] { '=', '-', '0', '1', '2'}.Contains(x)))
         {
-            3 => "=",
-            4 => "-",
-            _ => y.ToString()
+            for (var i = workingString.Length - 1; i >= 0; i--)
+            {
+                var tooBig = workingString[i] != '=' && workingString[i] != '-' && workingString[i] - '0' > 2;
+                
+                if (i == workingString.Length - 1 && tooBig)
+                {
+                    workingString = workingString[..^1] + GetNewLowerValue(i, workingString) + "1";
+                    break;
+                }
+
+                if (tooBig)
+                {
+                    workingString = workingString[..i] + GetNewLowerValue(i, workingString) + GetNewUpperValue(i, workingString) + workingString[(i + 2)..];
+                    break;
+                }
+            }
+        }
+
+        return string.Join("", workingString.Reverse());
+    }
+
+    private static string GetNewUpperValue(int i, string workingString)
+    {
+        var val = workingString[i + 1];
+        return val switch
+        {
+            '-' => "0",
+            '=' => "-",
+            _ => (val - '0' + 1).ToString()
         };
     }
 
-    private static int GetMaxIndex(int sum, int[] maxValuesByIndex)
+    private static string GetNewLowerValue(int i, string workingString)
     {
-        var idx = 0;
+        var valueProvided = (long) Math.Pow(5, i) * (workingString[i] - '0');
+
+        var extraValue = (long) Math.Pow(5, i + 1) - valueProvided;
+
+        return extraValue / (long) Math.Pow(5, i) == 1 ? "-" : "=";
+    }
+
+    private static string GetNaiveSnafu(long num, int biggestPower)
+    {
+        var temp = new StringBuilder();
+        for (var i = biggestPower; i >= 0; i--)
+        {
+            var total = num / (long) Math.Pow(5, i);
+            temp.Append(total);
+            
+            num -= total * (long) Math.Pow(5, i);
+        }
+
+        return temp.ToString();
+    }
+
+    private static int GetBiggestConsumablePower(long num)
+    {
+        var biggestPower = 0;
         while (true)
         {
-            if (sum <= maxValuesByIndex[idx])
+            if (num < Math.Pow(5, biggestPower))
             {
+                biggestPower--;
                 break;
             }
 
-            idx++;
+            biggestPower++;
         }
 
-        return idx;
+        return biggestPower;
     }
 
-    private static (int biggestUsedPower, int quantity) GetBiggestUsedPowerAndQuantity(int sum)
-    {
-        var maxValuesByIndex = new[] { 2, 12, 62, 312, 937, 4062 };
-
-        var idx = 0;
-        while (true)
-        {
-            if (sum <= maxValuesByIndex[idx])
-            {
-                break;
-            }
-
-            idx++;
-        }
-        
-        var quantity = sum >= Math.Pow(5, idx) - maxValuesByIndex[idx - 1] &&
-                       sum <= Math.Pow(5, idx) + maxValuesByIndex[idx - 1] ? 1 : 2;
-
-        return (idx, quantity);
-    }
-
-    private static int CalculateDecimal(string snafu)
+    private static long CalculateDecimal(string snafu)
     {
         var powers = CalculatePowers(snafu);
 
@@ -149,8 +113,8 @@ public static class Day25
             .Sum();
     }
 
-    private static int[] CalculatePowers(string snafu)
+    private static long[] CalculatePowers(string snafu)
     {
-        return snafu.Select((_, i) => (int)Math.Pow(5, i)).Reverse().ToArray();
+        return snafu.Select((_, i) => (long) Math.Pow(5, i)).Reverse().ToArray();
     }
 }
