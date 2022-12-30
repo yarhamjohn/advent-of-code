@@ -1,20 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace AdventOfCode2022.Day19;
+﻿namespace AdventOfCode2022.Day19;
 
 public static class Day19
 {
-    private static int HighestScore = 0;
-    
     public static long CalculateQualityLevels(string[] input)
     {
-        return ParseInput(input).Select(x =>
-        {
-            HighestScore = 0;
-            var result = CalculateQualityLevel(x) * x.Id;
-            Console.WriteLine($"--------------------{result}----------------");
-            return result;
-        }).Sum();
+        return ParseInput(input).Select(x => CalculateQualityLevel(x) * x.Id).Sum();
     }
 
     private static int CalculateQualityLevel(Blueprint blueprint)
@@ -31,12 +21,8 @@ public static class Day19
 
     private static int Thing(Blueprint blueprint, int timeElapsed, Dictionary<Type, int> robots, Dictionary<Type, int> minerals)
     {
-        // Console.WriteLine($"Time: {timeElapsed}; HighestScore: {HighestScore}; Robots: {string.Join(",", robots.Select(x => $"{x.Key}: {x.Value}"))}; Minerals: {string.Join(",", minerals.Select(x => $"{x.Key}: {x.Value}"))}");
-        
         if (timeElapsed >= 24)
         {
-            HighestScore = HighestScore < minerals[Type.Geode] ? minerals[Type.Geode] : HighestScore;
-            
             return minerals[Type.Geode];
         }
         
@@ -95,7 +81,6 @@ public static class Day19
         foreach (var line in input)
         {
             var segments = line.Split(" ");
-            var id = Convert.ToInt32(segments[1].Replace(":", ""));
             var costs = new Dictionary<Type, Dictionary<Type, int>>
             {
                 {Type.Ore, new Dictionary<Type, int>
@@ -118,7 +103,7 @@ public static class Day19
                 }}
             };
             
-            yield return new Blueprint(id, costs);
+            yield return new Blueprint(Convert.ToInt32(segments[1].Replace(":", "")), costs);
         }
     }
 
@@ -172,33 +157,16 @@ public static class Day19
         }
         
         return options;
-
-        // // If buying something doesn't prevent buying next round (same options) then don't include null option
-        // if (options.All(x =>
-        //         minerals[Type.Ore] - blueprint.Costs[(Type) x!][Type.Ore] + robots[Type.Ore] >=
-        //         options.Max(y => blueprint.Costs[(Type) y!][Type.Ore])))
-        // {
-        //     return options;
-        // }
-        //
-        // // If can buy obsidian after waiting, then add wait option
-        // if (minerals[Type.Ore] + robots[Type.Ore] >= blueprint.Costs[Type.Obsidian][Type.Ore] &&
-        //     minerals[Type.Clay] + robots[Type.Clay] >= blueprint.Costs[Type.Obsidian][Type.Clay])
-        // {
-        //     options.Add(null);
-        // }
-        //
-        // return options;
     }
 
     private static bool CanBuy(Dictionary<Type,int> blueprintCost, Dictionary<Type, int> mineral)
     {
-        return blueprintCost.All(x => x.Value < mineral[x.Key]);
+        return blueprintCost.All(x => x.Value <= mineral[x.Key]);
     }
 
-    public record Blueprint(int Id, Dictionary<Type, Dictionary<Type, int>> Costs);
+    private record Blueprint(int Id, Dictionary<Type, Dictionary<Type, int>> Costs);
 
-    public enum Type
+    private enum Type
     {
         Ore,
         Clay,

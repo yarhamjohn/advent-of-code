@@ -79,7 +79,6 @@ long Day18A() => Day18.CalculateSurfaceArea(File.ReadAllLines("./Day18/input.txt
 long Day18B() => Day18.CalculateExternalSurfaceArea(File.ReadAllLines("./Day18/input.txt"));
 
 long Day19A() => Day19.CalculateQualityLevels(File.ReadAllLines("./Day19/input.txt"));
-// 1898 is too low
 
 long Day20A() => Day20.CalculateGroveCoordinates(File.ReadAllLines("./Day20/input.txt"));
 long Day20B() => Day20.CalculateGroveCoordinatesHuge(File.ReadAllLines("./Day20/input.txt"));
@@ -96,4 +95,4 @@ long Day24A() => Day24.CountMinutesTaken(File.ReadAllLines("./Day24/input.txt"))
 
 string Day25A() => Day25.CalculateSnafuNumber(File.ReadAllLines("./Day25/input.txt"));
 
-Console.WriteLine(Day25A());
+Console.WriteLine(Day19A());
