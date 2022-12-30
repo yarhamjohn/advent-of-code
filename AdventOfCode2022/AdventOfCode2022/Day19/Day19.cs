@@ -130,7 +130,16 @@ public static class Day19
         {
             return new List<Type?> { null };
         }
+
+        // Seems ot be required for the part a test to pass in a meaningful time, but not the real data or part b :/
+        // if (CanBuy(blueprint.Costs[Type.Ore], minerals) &&
+        //     CanBuy(blueprint.Costs[Type.Clay], minerals) &&
+        //     CanBuy(blueprint.Costs[Type.Obsidian], minerals))
+        // {
+        //     return new List<Type?> { Type.Obsidian };
+        // }
         
+        // If you can't buy 1+ of the robots, then waiting is a valid option
         if (!CanBuy(blueprint.Costs[Type.Ore], minerals)
             || !CanBuy(blueprint.Costs[Type.Clay], minerals))
         {
