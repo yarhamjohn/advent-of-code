@@ -130,25 +130,7 @@ public static class Day19
         {
             return new List<Type?> { null };
         }
-
-        // TODO: Is this true? Probably really need to check whether buying obsidian slows down buying geode or not
-        // Similar applies to buying clay - does buying clay slow down buying obsidian? If not, then we _should_ buy clay or ore
-        // Trouble is its too slow to simply remove this and add !CanBuy for obsidian
         
-        // remove any option that slows purchase of geode
-        // - when is next geode purchase in mins
-        // - if purchase of obsidian makes next geode purchase later then don't do it?
-
-
-
-        // if (CanBuy(blueprint.Costs[Type.Ore], minerals) &&
-        //     CanBuy(blueprint.Costs[Type.Clay], minerals) &&
-        //     CanBuy(blueprint.Costs[Type.Obsidian], minerals))
-        // {
-        //     return new List<Type?> { Type.Obsidian };
-        // }
-        
-        // If you can't buy 1+ of the robots, then waiting is a valid option
         if (!CanBuy(blueprint.Costs[Type.Ore], minerals)
             || !CanBuy(blueprint.Costs[Type.Clay], minerals))
         {
