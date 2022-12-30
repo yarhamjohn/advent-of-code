@@ -79,6 +79,7 @@ long Day18A() => Day18.CalculateSurfaceArea(File.ReadAllLines("./Day18/input.txt
 long Day18B() => Day18.CalculateExternalSurfaceArea(File.ReadAllLines("./Day18/input.txt"));
 
 long Day19A() => Day19.CalculateQualityLevels(File.ReadAllLines("./Day19/input.txt"));
+long Day19B() => Day19.CalculateNumGeodes(File.ReadAllLines("./Day19/input.txt"));
 
 long Day20A() => Day20.CalculateGroveCoordinates(File.ReadAllLines("./Day20/input.txt"));
 long Day20B() => Day20.CalculateGroveCoordinatesHuge(File.ReadAllLines("./Day20/input.txt"));

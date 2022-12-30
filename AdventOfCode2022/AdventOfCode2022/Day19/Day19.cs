@@ -4,10 +4,15 @@ public static class Day19
 {
     public static long CalculateQualityLevels(string[] input)
     {
-        return ParseInput(input).Select(x => CalculateQualityLevel(x) * x.Id).Sum();
+        return ParseInput(input).Select(x => CountGeodes(x, 24) * x.Id).Sum();
+    }
+    
+    public static long CalculateNumGeodes(string[] input)
+    {
+        return ParseInput(input.Take(3).ToArray()).Aggregate(1, (current, next) => current * CountGeodes(next, 32));
     }
 
-    private static int CalculateQualityLevel(Blueprint blueprint)
+    private static int CountGeodes(Blueprint blueprint, int time)
     {
         var minerals = new Dictionary<Type, int> { { Type.Ore, 0 }, { Type.Clay, 0 }, { Type.Obsidian, 0 }, { Type.Geode, 0 }};
         var robots = new Dictionary<Type, int> { { Type.Ore, 1 }, { Type.Clay, 0 }, { Type.Obsidian, 0 }, { Type.Geode, 0 }};
@@ -16,32 +21,16 @@ public static class Day19
 
         minerals[Type.Ore] += turnsToSkipAtStart;
         
-        return Thing(blueprint, turnsToSkipAtStart, robots, minerals);
+        return Thing(blueprint, turnsToSkipAtStart, robots, minerals, time);
     }
 
-    private static int Thing(Blueprint blueprint, int timeElapsed, Dictionary<Type, int> robots, Dictionary<Type, int> minerals)
+    private static int Thing(Blueprint blueprint, int timeElapsed, Dictionary<Type, int> robots, Dictionary<Type, int> minerals, int time)
     {
-        if (timeElapsed >= 24)
+        if (timeElapsed >= time)
         {
             return minerals[Type.Geode];
         }
-        
-        // Cannot collect any geodes in time
-        if (robots[Type.Geode] == 0 && robots[Type.Obsidian] == 0 && robots[Type.Clay] == 0 && timeElapsed >= 21)
-        {
-            return 0;
-        }
-        
-        if (robots[Type.Geode] == 0 && robots[Type.Obsidian] == 0 && timeElapsed >= 22)
-        {
-            return 0;
-        }
-        
-        if (robots[Type.Geode] == 0 && timeElapsed >= 23)
-        {
-            return 0;
-        }
-        
+
         var options = OptionsForPurchase(blueprint, robots, minerals);
         
         CollectOres(robots, minerals);
@@ -51,7 +40,7 @@ public static class Day19
         {
             if (option is null)
             {
-                geodeTotals.Add(Thing(blueprint, timeElapsed + 1, CloneDictionary(robots), CloneDictionary(minerals)));
+                geodeTotals.Add(Thing(blueprint, timeElapsed + 1, CloneDictionary(robots), CloneDictionary(minerals), time));
             }
             else
             {
@@ -64,7 +53,7 @@ public static class Day19
                     newMinerals[mineral.Key] -= mineral.Value;
                 }
                 
-                geodeTotals.Add(Thing(blueprint, timeElapsed + 1, newRobots, newMinerals));
+                geodeTotals.Add(Thing(blueprint, timeElapsed + 1, newRobots, newMinerals, time));
             }
         }
 
@@ -141,13 +130,23 @@ public static class Day19
         {
             return new List<Type?> { null };
         }
+
+        // TODO: Is this true? Probably really need to check whether buying obsidian slows down buying geode or not
+        // Similar applies to buying clay - does buying clay slow down buying obsidian? If not, then we _should_ buy clay or ore
+        // Trouble is its too slow to simply remove this and add !CanBuy for obsidian
         
-        if (CanBuy(blueprint.Costs[Type.Ore], minerals) &&
-            CanBuy(blueprint.Costs[Type.Clay], minerals) &&
-            CanBuy(blueprint.Costs[Type.Obsidian], minerals))
-        {
-            return new List<Type?> { Type.Obsidian };
-        }
+        // remove any option that slows purchase of geode
+        // - when is next geode purchase in mins
+        // - if purchase of obsidian makes next geode purchase later then don't do it?
+
+
+
+        // if (CanBuy(blueprint.Costs[Type.Ore], minerals) &&
+        //     CanBuy(blueprint.Costs[Type.Clay], minerals) &&
+        //     CanBuy(blueprint.Costs[Type.Obsidian], minerals))
+        // {
+        //     return new List<Type?> { Type.Obsidian };
+        // }
         
         // If you can't buy 1+ of the robots, then waiting is a valid option
         if (!CanBuy(blueprint.Costs[Type.Ore], minerals)
