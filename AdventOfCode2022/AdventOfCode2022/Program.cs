@@ -88,6 +88,7 @@ long Day21A() => Day21.NumberYelledByRoot(File.ReadAllLines("./Day21/input.txt")
 long Day21B() => Day21.NumberYelledByRootPartTwo(File.ReadAllLines("./Day21/input.txt"));
 
 long Day22A() => Day22.CalculatePassword(File.ReadAllLines("./Day22/input.txt"));
+long Day22B() => Day22.CalculateCubePassword(File.ReadAllLines("./Day22/input.txt"));
 
 long Day23A() => Day23.CountEmptyGroundTiles(File.ReadAllLines("./Day23/input.txt"));
 long Day23B() => Day23.CountRoundsRequired(File.ReadAllLines("./Day23/input.txt"));
@@ -96,4 +97,4 @@ long Day24A() => Day24.CountMinutesTaken(File.ReadAllLines("./Day24/input.txt"))
 
 string Day25A() => Day25.CalculateSnafuNumber(File.ReadAllLines("./Day25/input.txt"));
 
-Console.WriteLine(Day19A());
+Console.WriteLine(Day22B());
