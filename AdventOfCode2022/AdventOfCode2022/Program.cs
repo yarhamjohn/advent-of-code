@@ -97,4 +97,4 @@ long Day24A() => Day24.CountMinutesTaken(File.ReadAllLines("./Day24/input.txt"))
 
 string Day25A() => Day25.CalculateSnafuNumber(File.ReadAllLines("./Day25/input.txt"));
 
-Console.WriteLine(Day22B());
+Console.WriteLine(Day24A());
