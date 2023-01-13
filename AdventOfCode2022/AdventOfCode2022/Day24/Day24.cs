@@ -2,41 +2,77 @@
 
 public static class Day24
 {
+    public static long CountMinutesTakenRoundTrip(string[] input)
+    {
+        var grid = Parse(input);
+
+        var startingLocation = (0, 1);
+        var targetLocation = (grid.Length - 1, grid.First().Length - 2);
+
+        var blizzardPositions = ComputeAllBlizzards(grid);
+
+        var tripOne = CountMinutes(grid, blizzardPositions, startingLocation, targetLocation, 0);
+
+        var tripTwo = CountMinutes(
+            GetGridAtTime(grid, blizzardPositions, tripOne),
+            blizzardPositions, 
+            targetLocation,
+            startingLocation,
+            tripOne);
+
+        return CountMinutes(
+            GetGridAtTime(grid, blizzardPositions, tripTwo),
+            blizzardPositions,
+            startingLocation,
+            targetLocation,
+            tripTwo);
+    }
+
     public static long CountMinutesTaken(string[] input)
     {
         var grid = Parse(input);
 
-        var queue = new Queue<(int mins, int x, int y)>();
-        queue.Enqueue((mins: 0, x: 0, y: 1));
-
-        var history = new List<(int mins, int x, int y)>();
-
-        var blizzardPositions = ComputeAllBlizzards(grid);
+        var startingLocation = (0, 1);
+        var targetLocation = (grid.Length - 1, grid.First().Length - 1);
         
+        var blizzardPositions = ComputeAllBlizzards(grid);
+
+        return CountMinutes(grid, blizzardPositions, startingLocation, targetLocation, 0);
+    }
+
+    private static int CountMinutes(
+        IReadOnlyCollection<Place[]> grid,
+        IReadOnlyDictionary<int, Place[][]> blizzardPositions,
+        (int x, int y) start,
+        (int x, int y) end,
+        int startMinutes)
+    {
+        var queue = new Queue<(int mins, int x, int y)>();
+        queue.Enqueue((mins: startMinutes, start.x, start.y));
+
         while (queue.Any())
         {
             var currentLocation = queue.Dequeue();
-            history.Add(currentLocation);
-
-            if (currentLocation.x == grid.Length - 1)
+            
+            if (currentLocation.x == end.x)
             {
                 return currentLocation.mins;
             }
 
-            var workingGrid = GetNextGrid(grid, currentLocation, blizzardPositions);
+            var workingGrid = GetGridAtTime(grid, blizzardPositions, currentLocation.mins + 1);
 
             foreach (var loc in GetPossibleLocations(workingGrid, currentLocation.x, currentLocation.y))
             {
                 var nextLocation = (mins: currentLocation.mins + 1, loc.x, loc.y);
-                
-                if (loc.x == grid.Length - 1)
+
+                if (loc.x == end.x)
                 {
                     queue.Clear();
                     queue.Enqueue(nextLocation);
                     break;
                 }
 
-                if (!queue.Contains(nextLocation) && !WouldBeRepeatVisit(nextLocation, grid, history))
+                if (!queue.Contains(nextLocation))
                 {
                     queue.Enqueue(nextLocation);
                 }
@@ -46,15 +82,15 @@ public static class Day24
         return 0;
     }
 
-    private static Place[][] GetNextGrid(
+    private static Place[][] GetGridAtTime(
         IReadOnlyCollection<Place[]> grid,
-        (int mins, int x, int y) currentLocation,
-        IReadOnlyDictionary<int, Place[][]> blizzardPositions)
+        IReadOnlyDictionary<int, Place[][]> blizzardPositions,
+        int minutes)
     {
         var repeatTime = (grid.Count - 2) * (grid.First().Length - 2);
-        var currentLocationMinutes = currentLocation.mins < repeatTime
-            ? currentLocation.mins + 1
-            : currentLocation.mins % repeatTime + 1;
+        var currentLocationMinutes = minutes < repeatTime
+            ? minutes
+            : minutes % repeatTime;
 
         return blizzardPositions[currentLocationMinutes];
     }
@@ -77,23 +113,6 @@ public static class Day24
     private static Place[][] CloneGrid(IEnumerable<Place[]> grid)
         => grid.Select(x => x.Select(y => y).ToArray()).ToArray();
 
-    private static bool WouldBeRepeatVisit(
-        (int mins, int x, int y) nextLocation,
-        Place[][] grid,
-        ICollection<(int mins, int x, int y)> history)
-    {
-        var remainder = nextLocation.mins % (grid.First().Length - 2);
-        for (var i = remainder; i <= nextLocation.mins; i += grid.First().Length - 2)
-        {
-            if (history.Contains((i, nextLocation.x, nextLocation.y)))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private static List<(int x, int y)> GetPossibleLocations(IReadOnlyList<Place[]> grid, int x, int y)
     {
         var result = new List<(int x, int y)>();
@@ -108,6 +127,16 @@ public static class Day24
             if (!grid[1][y].Blizzards.Any())
             {
                 result.Add((1, y));
+            }
+
+            return result;
+        }
+        
+        if (x == grid.Count - 1)
+        {
+            if (!grid[^2][y].Blizzards.Any())
+            {
+                result.Add((grid.Count - 2, y));
             }
 
             return result;

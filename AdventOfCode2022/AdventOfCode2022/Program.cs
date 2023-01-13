@@ -94,7 +94,8 @@ long Day23A() => Day23.CountEmptyGroundTiles(File.ReadAllLines("./Day23/input.tx
 long Day23B() => Day23.CountRoundsRequired(File.ReadAllLines("./Day23/input.txt"));
 
 long Day24A() => Day24.CountMinutesTaken(File.ReadAllLines("./Day24/input.txt"));
+long Day24B() => Day24.CountMinutesTakenRoundTrip(File.ReadAllLines("./Day24/input.txt"));
 
 string Day25A() => Day25.CalculateSnafuNumber(File.ReadAllLines("./Day25/input.txt"));
 
-Console.WriteLine(Day24A());
+Console.WriteLine(Day24B());
