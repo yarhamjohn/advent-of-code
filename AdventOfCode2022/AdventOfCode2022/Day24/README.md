@@ -253,3 +253,5 @@ Minute 18, move down:
 ```
 
 What is the fewest number of minutes required to avoid the blizzards and reach the goal?
+
+`Your puzzle answer was 228.`

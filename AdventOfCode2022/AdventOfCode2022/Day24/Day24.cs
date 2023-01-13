@@ -4,99 +4,132 @@ public static class Day24
 {
     public static long CountMinutesTaken(string[] input)
     {
-        Mins = int.MaxValue;
-        
         var grid = Parse(input);
 
-        var location = (x: 0, y: 1);
+        var queue = new Queue<(int mins, int x, int y)>();
+        queue.Enqueue((mins: 0, x: 0, y: 1));
 
-        PrintGrid(grid, location);
+        var history = new List<(int mins, int x, int y)>();
+
+        var blizzardPositions = ComputeAllBlizzards(grid);
         
-        Thing(grid, location, 0);
-
-        return Mins;
-    }
-
-    public static int Mins;
-
-    private static void Thing(IThing[][] grid, (int x, int y) location, int minsElapsed)
-    {
-        // Console.WriteLine($"Minute {minsElapsed}");
-        // PrintGrid(grid, location);
-        
-        if (minsElapsed >= Mins)
+        while (queue.Any())
         {
-            Console.WriteLine($"Minute {minsElapsed}");
-            PrintGrid(grid, location);
-            
-            return;
-        }
+            var currentLocation = queue.Dequeue();
+            history.Add(currentLocation);
 
-        if (((Place)grid[location.x][location.y]).TimesVisited >= grid.First().Length)
-        {
-            Console.WriteLine($"Minute {minsElapsed}");
-            PrintGrid(grid, location);
-            
-            return;
-        }
-        
-        if (location.x == grid.Length - 1)
-        {
-            Console.WriteLine($"Minute {minsElapsed}");
-            PrintGrid(grid, location);
-            
-            if (minsElapsed < Mins)
+            if (currentLocation.x == grid.Length - 1)
             {
-                Mins = minsElapsed;
+                return currentLocation.mins;
             }
-            
-            return;
-        }
-        
-        grid = MoveBlizzards(grid);
-        
-        var possibleLocations = GetPossibleLocations(grid, location);
 
-        foreach (var loc in possibleLocations)
-        {
-            Thing(grid, loc, minsElapsed + 1);
+            var workingGrid = GetNextGrid(grid, currentLocation, blizzardPositions);
+
+            foreach (var loc in GetPossibleLocations(workingGrid, currentLocation.x, currentLocation.y))
+            {
+                var nextLocation = (mins: currentLocation.mins + 1, loc.x, loc.y);
+                
+                if (loc.x == grid.Length - 1)
+                {
+                    queue.Clear();
+                    queue.Enqueue(nextLocation);
+                    break;
+                }
+
+                if (!queue.Contains(nextLocation) && !WouldBeRepeatVisit(nextLocation, grid, history))
+                {
+                    queue.Enqueue(nextLocation);
+                }
+            }
         }
+
+        return 0;
     }
 
-    private static List<(int x, int y)> GetPossibleLocations(IThing[][] grid, (int x, int y) location)
+    private static IThing[][] GetNextGrid(
+        IReadOnlyCollection<IThing[]> grid,
+        (int mins, int x, int y) currentLocation,
+        IReadOnlyDictionary<int, IThing[][]> blizzardPositions)
     {
-        ((Place)grid[location.x][location.y]).TimesVisited++;
+        var repeatTime = (grid.Count - 2) * (grid.First().Length - 2);
+        var currentLocationMinutes = currentLocation.mins < repeatTime
+            ? currentLocation.mins + 1
+            : currentLocation.mins % repeatTime + 1;
+
+        return blizzardPositions[currentLocationMinutes];
+    }
+
+    private static Dictionary<int, IThing[][]> ComputeAllBlizzards(IThing[][] grid)
+    {
+        var result = new Dictionary<int, IThing[][]> { { 0, CloneGrid(grid)}};
         
+        var workingGrid = CloneGrid(grid);
+        var repeatSize = (grid.Length - 2) * (grid.First().Length - 2);
+        for (var i = 1; i <= repeatSize; i++)
+        {
+            workingGrid = MoveBlizzards(workingGrid);
+            result.Add(i, CloneGrid(workingGrid));
+        }
+
+        return result;
+    }
+
+    private static IThing[][] CloneGrid(IThing[][] grid)
+    {
+        return grid.Select(x => x.Select(y => y).ToArray()).ToArray();
+    }
+
+    private static bool WouldBeRepeatVisit((int mins, int x, int y) nextLocation, IThing[][] grid, List<(int mins, int x, int y)> history)
+    {
+        var remainder = nextLocation.mins % (grid.First().Length - 2);
+        for (var i = remainder; i <= nextLocation.mins; i += grid.First().Length - 2)
+        {
+            if (history.Contains((i, nextLocation.x, nextLocation.y)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static List<(int x, int y)> GetPossibleLocations(IThing[][] grid, int x, int y)
+    {
         var result = new List<(int x, int y)>();
-
-        if (location.x != 0 && !((Place)grid[location.x][location.y]).Blizzards.Any())
+        
+        if (!((Place)grid[x][y]).Blizzards.Any())
         {
-            result.Add(location);
-        }
-
-        if (location.x == 0 && ((Place)grid[location.x + 1][location.y]).Blizzards.Any())
-        {
-            result.Add(location);
-        }
-
-        if (location.x > 1 && grid[location.x - 1][location.y] is Place up && !up.Blizzards.Any())
-        {
-            result.Add((location.x - 1, location.y));
+            result.Add((x, y));
         }
         
-        if (grid[location.x + 1][location.y] is Place down && !down.Blizzards.Any())
+        if (x == 0)
         {
-            result.Add((location.x + 1, location.y));
+            if (!((Place)grid[1][y]).Blizzards.Any())
+            {
+                result.Add((1, y));
+            }
+
+            return result;
+        }
+
+        if (grid[x - 1][y] is Place up && !up.Blizzards.Any())
+        {
+            result.Add((x - 1, y));
         }
         
-        if (grid[location.x][location.y - 1] is Place left && !left.Blizzards.Any())
+        if (grid[x + 1][y] is Place down && !down.Blizzards.Any())
         {
-            result.Add((location.x, location.y - 1));
+            result.Add((x + 1, y));
         }
         
-        if (grid[location.x][location.y + 1] is Place right && !right.Blizzards.Any())
+        if (grid[x][y - 1] is Place left && !left.Blizzards.Any())
         {
-            result.Add((location.x, location.y + 1));
+            result.Add((x, y - 1));
+        }
+        
+        if (grid[x][y + 1] is Place right && !right.Blizzards.Any())
+        {
+            result.Add((x, y + 1));
         }
 
         return result;
@@ -104,18 +137,12 @@ public static class Day24
 
     private static IThing[][] MoveBlizzards(IThing[][] grid)
     {
-        var nextGrid = grid.Select(x => x.Select(y =>
-        {
-            if (y is Wall)
-            {
-                return y;
-            }
-            
-            var newPlace = new Place();
-            newPlace.TimesVisited = ((Place)y).TimesVisited;
-
-            return newPlace;
-        }).ToArray()).ToArray();
+        var nextGrid = grid.Select(x =>
+                x.Select(y => y is Wall
+                        ? y
+                        : new Place { TimesVisited = ((Place)y).TimesVisited })
+                    .ToArray())
+            .ToArray();
         
         for (var row = 1; row < grid.Length - 1; row++)
         {
@@ -150,9 +177,9 @@ public static class Day24
         };
     }
 
-    private static void PrintGrid(IThing[][] grid, (int x, int y) location)
+    private static void PrintGrid(IReadOnlyList<IThing[]> grid, (int x, int y) location)
     {
-        for (var row = 0; row < grid.Length; row++)
+        for (var row = 0; row < grid.Count; row++)
         {
             for (var col = 0; col < grid[row].Length; col++)
             {
@@ -195,56 +222,27 @@ public static class Day24
         return grid;
     }
 
-    public interface IThing
+    private interface IThing { }
+
+    private class Place : IThing
     {
-        string ToString();
-    }
+        public List<char> Blizzards { get; } = new();
 
-    public class Place : IThing
-    {
-        public List<char> Blizzards { get; }
-        
-        public int MinsTaken { get; set; }
-        
-        public int TimesVisited { get; set; }
+        public int TimesVisited { get; init; }
 
-        public Place()
-        {
-            Blizzards = new List<char>();
-            MinsTaken = 0;
-        }
-        
-        public void AddBlizzard(char direction)
-        {
-            Blizzards.Add(direction);
-        }
-
-        public void RemoveBlizzard(char direction)
-        {
-            Blizzards.Remove(direction);
-        }
+        public void AddBlizzard(char direction) => Blizzards.Add(direction);
 
         public override string ToString()
-        {
-            if (!Blizzards.Any())
+            => Blizzards.Count switch
             {
-                return ".";
-            }
-
-            if (Blizzards.Count == 1)
-            {
-                return Blizzards.Single().ToString();
-            }
-
-            return Blizzards.Count.ToString();
-        }
+                0 => ".",
+                1 => Blizzards.Single().ToString(),
+                _ => Blizzards.Count.ToString()
+            };
     }
-    
-    public class Wall : IThing
+
+    private class Wall : IThing
     {
-        public override string ToString()
-        {
-            return "#";
-        }
+        public override string ToString() => "#";
     }
 }
