@@ -46,10 +46,10 @@ public static class Day24
         return 0;
     }
 
-    private static IThing[][] GetNextGrid(
-        IReadOnlyCollection<IThing[]> grid,
+    private static Place[][] GetNextGrid(
+        IReadOnlyCollection<Place[]> grid,
         (int mins, int x, int y) currentLocation,
-        IReadOnlyDictionary<int, IThing[][]> blizzardPositions)
+        IReadOnlyDictionary<int, Place[][]> blizzardPositions)
     {
         var repeatTime = (grid.Count - 2) * (grid.First().Length - 2);
         var currentLocationMinutes = currentLocation.mins < repeatTime
@@ -59,9 +59,9 @@ public static class Day24
         return blizzardPositions[currentLocationMinutes];
     }
 
-    private static Dictionary<int, IThing[][]> ComputeAllBlizzards(IThing[][] grid)
+    private static Dictionary<int, Place[][]> ComputeAllBlizzards(Place[][] grid)
     {
-        var result = new Dictionary<int, IThing[][]> { { 0, CloneGrid(grid)}};
+        var result = new Dictionary<int, Place[][]> { { 0, CloneGrid(grid)}};
         
         var workingGrid = CloneGrid(grid);
         var repeatSize = (grid.Length - 2) * (grid.First().Length - 2);
@@ -74,12 +74,13 @@ public static class Day24
         return result;
     }
 
-    private static IThing[][] CloneGrid(IThing[][] grid)
-    {
-        return grid.Select(x => x.Select(y => y).ToArray()).ToArray();
-    }
+    private static Place[][] CloneGrid(IEnumerable<Place[]> grid)
+        => grid.Select(x => x.Select(y => y).ToArray()).ToArray();
 
-    private static bool WouldBeRepeatVisit((int mins, int x, int y) nextLocation, IThing[][] grid, List<(int mins, int x, int y)> history)
+    private static bool WouldBeRepeatVisit(
+        (int mins, int x, int y) nextLocation,
+        Place[][] grid,
+        ICollection<(int mins, int x, int y)> history)
     {
         var remainder = nextLocation.mins % (grid.First().Length - 2);
         for (var i = remainder; i <= nextLocation.mins; i += grid.First().Length - 2)
@@ -93,18 +94,18 @@ public static class Day24
         return false;
     }
 
-    private static List<(int x, int y)> GetPossibleLocations(IThing[][] grid, int x, int y)
+    private static List<(int x, int y)> GetPossibleLocations(IReadOnlyList<Place[]> grid, int x, int y)
     {
         var result = new List<(int x, int y)>();
         
-        if (!((Place)grid[x][y]).Blizzards.Any())
+        if (!grid[x][y].Blizzards.Any())
         {
             result.Add((x, y));
         }
         
         if (x == 0)
         {
-            if (!((Place)grid[1][y]).Blizzards.Any())
+            if (!grid[1][y].Blizzards.Any())
             {
                 result.Add((1, y));
             }
@@ -112,22 +113,22 @@ public static class Day24
             return result;
         }
 
-        if (grid[x - 1][y] is Place up && !up.Blizzards.Any())
+        if (IsEmpty(grid[x - 1][y]))
         {
             result.Add((x - 1, y));
         }
         
-        if (grid[x + 1][y] is Place down && !down.Blizzards.Any())
+        if (IsEmpty(grid[x + 1][y]))
         {
             result.Add((x + 1, y));
         }
         
-        if (grid[x][y - 1] is Place left && !left.Blizzards.Any())
+        if (IsEmpty(grid[x][y - 1]))
         {
             result.Add((x, y - 1));
         }
         
-        if (grid[x][y + 1] is Place right && !right.Blizzards.Any())
+        if (IsEmpty(grid[x][y + 1]))
         {
             result.Add((x, y + 1));
         }
@@ -135,12 +136,12 @@ public static class Day24
         return result;
     }
 
-    private static IThing[][] MoveBlizzards(IThing[][] grid)
+    private static bool IsEmpty(Place target) => !target.IsWall() && !target.Blizzards.Any();
+
+    private static Place[][] MoveBlizzards(Place[][] grid)
     {
         var nextGrid = grid.Select(x =>
-                x.Select(y => y is Wall
-                        ? y
-                        : new Place { TimesVisited = ((Place)y).TimesVisited })
+                x.Select(y => y.IsWall() ? y : new Place())
                     .ToArray())
             .ToArray();
         
@@ -148,12 +149,12 @@ public static class Day24
         {
             for (var col = 1; col < grid[row].Length - 1; col++)
             {
-                var blizzards = ((Place)grid[row][col]).Blizzards;
+                var blizzards = grid[row][col].Blizzards;
 
                 foreach (var blizzard in blizzards)
                 {
                     var (x, y) = GetNextPosition(blizzard, row, col, grid);
-                    ((Place)nextGrid[x][y]).AddBlizzard(blizzard);
+                    nextGrid[x][y].AddBlizzard(blizzard);
                 }
             }
         }
@@ -161,9 +162,8 @@ public static class Day24
         return nextGrid;
     }
 
-    private static (int x, int y) GetNextPosition(char blizzard, int row, int col, IThing[][] grid)
-    {
-        return blizzard switch
+    private static (int x, int y) GetNextPosition(char blizzard, int row, int col, Place[][] grid)
+        => blizzard switch
         {
             '^' when row == 1 => (grid.Length - 2, col),
             '^' => (row - 1, col),
@@ -175,9 +175,8 @@ public static class Day24
             '<' => (row, col - 1),
             _ => throw new Exception($"Not a valid blizzard: {blizzard}")
         };
-    }
 
-    private static void PrintGrid(IReadOnlyList<IThing[]> grid, (int x, int y) location)
+    private static void PrintGrid(IReadOnlyList<Place[]> grid, (int x, int y) location)
     {
         for (var row = 0; row < grid.Count; row++)
         {
@@ -199,50 +198,57 @@ public static class Day24
         Console.WriteLine();
     }
 
-    private static IThing[][] Parse(string[] input)
+    private static Place[][] Parse(string[] input)
+        => Enumerable.Range(0, input.Length).Select(x => 
+                Enumerable.Range(0, input.First().Length)
+                    .Select(y => BuildPlace(input[x][y]))
+                    .ToArray())
+            .ToArray();
+
+    private static Place BuildPlace(char input)
     {
-        var grid = Enumerable.Range(0, input.Length)
-            .Select(_ => Enumerable.Range(0, input.First().Length).Select(_ => (IThing) new Place()).ToArray()).ToArray();
-        
-        for (var x = 0; x < input.Length; x++)
+        if (input == '#')
         {
-            for (var y = 0; y < input[x].Length; y++)
-            {
-                if (input[x][y] == '#')
-                {
-                    grid[x][y] = new Wall();
-                } 
-                else if (input[x][y] != '.')
-                {
-                    ((Place)grid[x][y]).AddBlizzard(input[x][y]);
-                }
-            }
+            return new Place(true);
         }
 
-        return grid;
+        var place = new Place();
+        if (input != '.')
+        {
+            place.AddBlizzard(input);
+        }
+            
+        return place;
     }
 
-    private interface IThing { }
-
-    private class Place : IThing
+    private class Place
     {
+        private readonly bool _isWall;
+
         public List<char> Blizzards { get; } = new();
 
-        public int TimesVisited { get; init; }
+        public Place(bool isWall = false)
+        {
+            _isWall = isWall;
+        }
 
         public void AddBlizzard(char direction) => Blizzards.Add(direction);
 
         public override string ToString()
-            => Blizzards.Count switch
+        {
+            if (_isWall)
+            {
+                return "#";
+            }
+
+            return Blizzards.Count switch
             {
                 0 => ".",
                 1 => Blizzards.Single().ToString(),
                 _ => Blizzards.Count.ToString()
             };
-    }
+        }
 
-    private class Wall : IThing
-    {
-        public override string ToString() => "#";
+        public bool IsWall() => _isWall;
     }
 }
