@@ -1,3 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using AdventOfCode2023.Day1;
 
-Console.WriteLine("Hello, World!");
+long Day1A() => Day1.GetCalibrationSum(File.ReadAllLines("./Day1/input.txt"));
+long Day1B() => Day1.GetCalibrationSum(File.ReadAllLines("./Day1/input.txt"));
+
+Console.WriteLine(Day1B());
