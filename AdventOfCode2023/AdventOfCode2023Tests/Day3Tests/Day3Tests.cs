@@ -21,7 +21,7 @@ public class Day3Tests
         var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day3Tests/Input/example.txt");
         var input = File.ReadLines(inputPath);
         
-        var result = Day3.SumPartNumbers(input);
+        var result = Day3.SumGearNumbers(input);
         Assert.That(result, Is.EqualTo(467835));
     }
 }

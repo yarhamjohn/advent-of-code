@@ -1,23 +1,57 @@
-﻿namespace AdventOfCode2023.Day3;
+﻿using System.Text;
+
+namespace AdventOfCode2023.Day3;
 
 public static class Day3
 {
+    public static int SumPartNumbers(IEnumerable<string> input)
+    {
+        var grid = input.Select(l => l.ToCharArray()).ToArray();
+        
+        return GetSymbolCoords(grid)
+            .Select(symbol => GetNeighbouringNums(symbol, GetNumCoords(grid)))
+            .Where(symbolNums => symbolNums.Count >= 1)
+            .SelectMany(symbolNums => symbolNums)
+            .Select(x => GetNum(x, grid))
+            .Sum();
+    }
+    
     public static int SumGearNumbers(IEnumerable<string> input)
     {
         var grid = input.Select(l => l.ToCharArray()).ToArray();
 
-        var gearCoords = new List<(int x, int y)>();
-        for (var row = 0; row < grid.Length; row++)
+        return GetGearCoords(grid)
+            .Select(gear => GetNeighbouringNums(gear, GetNumCoords(grid)))
+            .Where(gearNums => gearNums.Count == 2)
+            .Sum(gearNums => gearNums
+                .Select(x => GetNum(x, grid))
+                .Aggregate((a, b) => a * b));
+    }
+    
+    private static int GetNum(List<(int x, int y)> numCoords, char[][] grid)
+    {
+        var builder = new StringBuilder();
+        foreach (var coord in numCoords)
         {
-            for (var col = 0; col < grid[0].Length; col++)
-            {
-                if (grid[row][col] == '*')
-                {
-                    gearCoords.Add((row, col));
-                }
-            }
+            builder.Append(grid[coord.x][coord.y]);
         }
+        return int.Parse(builder.ToString());
+    }
 
+    private static List<List<(int x, int y)>> GetNeighbouringNums((int x, int y) target, List<List<(int x, int y)>> numCoords)
+    {
+        return numCoords
+            .Where(num => num
+                .Any(coord =>
+                    coord.x >= target.x - 1 &&
+                    coord.x <= target.x + 1 &&
+                    coord.y >= target.y - 1 &&
+                    coord.y <= target.y + 1))
+            .ToList();
+    }
+
+    private static List<List<(int x, int y)>> GetNumCoords(char[][] grid)
+    {
         var numCoords = new List<List<(int x, int y)>>();
         for (var row = 0; row < grid.Length; row++)
         {
@@ -47,93 +81,40 @@ public static class Day3
             }
         }
 
-        return gearCoords
-            .Select(gear => CalculateGearNums(gear, grid))
-            .Where(nums => nums.Count == 2)
-            .Sum(nums => nums.Aggregate((a, b) => a * b));
+        return numCoords;
     }
 
-    private static List<int> CalculateGearNums((int x, int y) gear, char[][] grid)
+    private static List<(int x, int y)> GetGearCoords(char[][] grid)
     {
-        throw new NotImplementedException();
-    }
-
-    public static int SumPartNumbers(IEnumerable<string> input)
-    {
-        var grid = input.Select(l => l.ToCharArray()).ToArray();
-
-        var partNumbers = new List<int>();
+        var gearCoords = new List<(int x, int y)>();
         for (var row = 0; row < grid.Length; row++)
         {
-            var inNum = false;
-            var numStart = 0;
-            var numEnd = 0;
-            var numStr = "";
             for (var col = 0; col < grid[0].Length; col++)
             {
-                var isDigit = char.IsDigit(grid[row][col]);
-                if (isDigit && inNum)
+                if (grid[row][col] == '*')
                 {
-                    numEnd = col;
-                    numStr += grid[row][col].ToString();
-                }
-
-                if (isDigit & !inNum)
-                {
-                    inNum = true;
-                    numStart = col;
-                    numEnd = col;
-                    numStr += grid[row][col].ToString();
-                }
-
-                if (!isDigit)
-                {
-                    inNum = false;
-
-                    if (numStr.Length == 0)
-                    {
-                        continue;
-                    }
-
-                    if (IsPartNumber(row, numStart, numEnd, grid))
-                    {
-                        partNumbers.Add(int.Parse(numStr));
-                    }
-
-                    numStr = "";
-                }
-            }
-            
-            if (numStr.Length > 0)
-            {
-                if (IsPartNumber(row, numStart, numEnd, grid))
-                {
-                    partNumbers.Add(int.Parse(numStr));
+                    gearCoords.Add((row, col));
                 }
             }
         }
-        
-        return partNumbers.Sum();
+
+        return gearCoords;
     }
 
-    private static bool IsPartNumber(int row, int numStart, int numEnd, char[][] grid)
+    private static List<(int x, int y)> GetSymbolCoords(char[][] grid)
     {
-        for (var c = numStart - 1; c <= numEnd + 1; c++)
+        var symbolCoords = new List<(int x, int y)>();
+        for (var row = 0; row < grid.Length; row++)
         {
-            for (var r = row - 1; r <= row + 1; r++)
+            for (var col = 0; col < grid[0].Length; col++)
             {
-                var inEngine = r >= 0 && c >= 0 && r < grid.Length && c < grid[0].Length;
-                if (inEngine)
+                if (grid[row][col] != '.' && !char.IsDigit(grid[row][col]))
                 {
-                    var isSymbol = grid[r][c] != '.' && !char.IsDigit(grid[r][c]);
-                    if (isSymbol)
-                    {
-                        return true;
-                    }
+                    symbolCoords.Add((row, col));
                 }
             }
         }
 
-        return false;
+        return symbolCoords;
     }
 }
