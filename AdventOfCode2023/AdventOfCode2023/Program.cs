@@ -13,6 +13,7 @@ long Day3A() => Day3.SumPartNumbers(File.ReadAllLines("./Day3/input.txt"));
 long Day3B() => Day3.SumGearNumbers(File.ReadAllLines("./Day3/input.txt"));
 
 long Day4A() => Day4.CountCardPoints(File.ReadAllLines("./Day4/input.txt"));
+long Day4B() => Day4.CountCards(File.ReadAllLines("./Day4/input.txt"));
 
 Console.WriteLine(Day4A());
-//Console.WriteLine(Day3B());
+Console.WriteLine(Day4B());

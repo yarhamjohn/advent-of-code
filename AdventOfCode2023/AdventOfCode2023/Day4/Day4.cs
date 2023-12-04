@@ -4,27 +4,30 @@ public static class Day4
 {
     public static int CountCardPoints(IEnumerable<string> input)
     {
+        return ParseInput(input).Aggregate(0, (sum, kvp) => sum + CalculateCardPoints(kvp.Value));
+    }
+
+    public static int CountCards(IEnumerable<string> input)
+    {
         var parsedInput = ParseInput(input);
 
-        var result = 0;
-        foreach (var (_, value) in parsedInput)
+        var results = parsedInput.Keys.ToDictionary(x => x, _ => 1);
+        foreach (var (card, value) in parsedInput)
         {
             var numMatches = value.winningNumbers.Intersect(value.playedNumbers).Count();
-            if (numMatches == 0)
+            for (var i = 1; i <= numMatches; i++)
             {
-                continue;
+                results[card + i] += results[card];
             }
-
-            if (numMatches == 1)
-            {
-                result += 1;
-                continue;
-            }
-
-            result += (int) Math.Pow(2, numMatches - 1);
         }
         
-        return result;
+        return results.Values.Sum();
+    }
+
+    private static int CalculateCardPoints((IEnumerable<int> winningNumbers, IEnumerable<int> playedNumbers) value)
+    {
+        var numMatches = value.winningNumbers.Intersect(value.playedNumbers).Count();
+        return numMatches switch { _ => numMatches == 0 ? 0 : (int)Math.Pow(2, numMatches - 1) };
     }
 
     private static Dictionary<int, (IEnumerable<int> winningNumbers, IEnumerable<int> playedNumbers)>
@@ -36,20 +39,9 @@ public static class Day4
             var splitOne = line.Split(":");
             var splitTwo = splitOne[1].Split("|");
             
-            var cardNum = int.Parse(splitOne[0].Split("Card")[1].Trim());
-
-            var winningNumbers =
-                splitTwo[0]
-                    .Trim()
-                    .Split(" ")
-                    .Where(x => x != "")
-                    .Select(int.Parse);
-            var playedNumbers =
-                splitTwo[1]
-                    .Trim()
-                    .Split(" ")
-                    .Where(x => x != "")
-                    .Select(int.Parse);
+            var cardNum = int.Parse(splitOne[0].Split("Card")[1]);
+            var winningNumbers = splitTwo[0].Split(" ").Where(x => x != "").Select(int.Parse);
+            var playedNumbers = splitTwo[1].Split(" ").Where(x => x != "").Select(int.Parse);
 
             result[cardNum] = (winningNumbers, playedNumbers);
         }
