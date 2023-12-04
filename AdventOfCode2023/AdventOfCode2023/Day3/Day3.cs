@@ -18,9 +18,46 @@ public static class Day3
             }
         }
 
-        return 0;
+        var numCoords = new List<List<(int x, int y)>>();
+        for (var row = 0; row < grid.Length; row++)
+        {
+            var coords = new List<(int x, int y)>();
+            
+            for (var col = 0; col < grid[0].Length; col++)
+            {
+                var isDigit = char.IsDigit(grid[row][col]);
+                if (isDigit)
+                {
+                    coords.Add((row, col));
+                }
+                else
+                {
+                    if (coords.Count > 0)
+                    {
+                        numCoords.Add(coords);
+                    }
+
+                    coords = [];
+                }
+            }
+            
+            if (coords.Count > 0)
+            {
+                numCoords.Add(coords);
+            }
+        }
+
+        return gearCoords
+            .Select(gear => CalculateGearNums(gear, grid))
+            .Where(nums => nums.Count == 2)
+            .Sum(nums => nums.Aggregate((a, b) => a * b));
     }
-    
+
+    private static List<int> CalculateGearNums((int x, int y) gear, char[][] grid)
+    {
+        throw new NotImplementedException();
+    }
+
     public static int SumPartNumbers(IEnumerable<string> input)
     {
         var grid = input.Select(l => l.ToCharArray()).ToArray();

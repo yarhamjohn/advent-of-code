@@ -16,12 +16,12 @@ public class Day3Tests
     }
     
     [Test]
-    public void SumPartNumbers2()
+    public void SumGearNumbers()
     {
-        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day3Tests/Input/example2.txt");
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day3Tests/Input/example.txt");
         var input = File.ReadLines(inputPath);
         
         var result = Day3.SumPartNumbers(input);
-        Assert.That(result, Is.EqualTo(15386));
+        Assert.That(result, Is.EqualTo(467835));
     }
 }
