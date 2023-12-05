@@ -3,7 +3,7 @@
 namespace AdventOfCode2023Tests.Day4Tests;
 
 [TestFixture]
-public class Day3Tests
+public class Day4Tests
 {
     [Test]
     public void CountCardPoint()
