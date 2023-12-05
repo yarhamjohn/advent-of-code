@@ -59,15 +59,61 @@ public static class Day5
         return mappings;
     }
 
+    private static Dictionary<long, long> soilToLocationMap = new Dictionary<long, long>();
+    private static Dictionary<long, long> fertilizerToLocationMap = new Dictionary<long, long>();
+    private static Dictionary<long, long> waterToLocationMap = new Dictionary<long, long>();
+    private static Dictionary<long, long> lightToLocationMap = new Dictionary<long, long>();
+    private static Dictionary<long, long> temperatureToLocationMap = new Dictionary<long, long>();
+    private static Dictionary<long, long> humidityToLocationMap = new Dictionary<long, long>();
+
     private static long GetLocation(long seed, Dictionary<string,List<Mapping>> mappings)
     {
         var soil = GetNextCategoryNum(seed, mappings["seed-to-soil"]);
+        if (soilToLocationMap.TryGetValue(soil, out var soilToLocation))
+        {
+            return soilToLocation;
+        }
+        
         var fertilizer = GetNextCategoryNum(soil, mappings["soil-to-fertilizer"]);
+        if (fertilizerToLocationMap.TryGetValue(fertilizer, out var fertilizerToLocation))
+        {
+            return fertilizerToLocation;
+        }
+        
         var water = GetNextCategoryNum(fertilizer, mappings["fertilizer-to-water"]);
+        if (waterToLocationMap.TryGetValue(water, out var waterToLocation))
+        {
+            return waterToLocation;
+        }
+        
         var light = GetNextCategoryNum(water, mappings["water-to-light"]);
+        if (lightToLocationMap.TryGetValue(light, out var lightToLocation))
+        {
+            return lightToLocation;
+        }
+        
         var temperature = GetNextCategoryNum(light, mappings["light-to-temperature"]);
+        if (temperatureToLocationMap.TryGetValue(temperature, out var temperatureToLocation))
+        {
+            return temperatureToLocation;
+        }
+        
         var humidity = GetNextCategoryNum(temperature, mappings["temperature-to-humidity"]);
-        return GetNextCategoryNum(humidity, mappings["humidity-to-location"]);
+        if (humidityToLocationMap.TryGetValue(humidity, out var humidityToLocation))
+        {
+            return humidityToLocation;
+        }
+        
+        var location = GetNextCategoryNum(humidity, mappings["humidity-to-location"]);
+
+        soilToLocationMap[soil] = location;
+        fertilizerToLocationMap[fertilizer] = location;
+        waterToLocationMap[water] = location;
+        lightToLocationMap[light] = location;
+        temperatureToLocationMap[temperature] = location;
+        humidityToLocationMap[humidity] = location;
+
+        return location;
     }
 
     private static long GetNextCategoryNum(long seed, IEnumerable<Mapping> mappings)
