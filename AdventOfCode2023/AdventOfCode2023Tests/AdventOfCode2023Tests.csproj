@@ -37,7 +37,7 @@
       <Content Include="Day4Tests\Input\example.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <Content Update="Day5Tests\Input\example.txt">
+      <Content Include="Day5Tests\Input\example.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
