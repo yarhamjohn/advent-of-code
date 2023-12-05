@@ -2,27 +2,43 @@
 
 public static class Day5
 {
-    public static long GetLowestLocationNumber(IEnumerable<string> input)
+    public static long GetLowestLocationNumber(string[]input)
     {
-        var (seeds, mappings) = ParseInput(input);
+        var seeds = input.First().Split(": ")[1].Split(" ").Select(long.Parse).ToList();
+        
+        var mappings = ParseInput(input[1..]);
 
         return seeds.Min(seed => GetLocation(seed, mappings));
     }
 
-    private static (List<long> seeds, Dictionary<string, List<Mapping>> mappings) ParseInput(IEnumerable<string> input)
+    public static long GetLowestLocationNumberRange(string[] input)
     {
-        var seeds = new List<long>();
+        var seeds = GetSeedsFromRange(input.First());
+
+        var mappings = ParseInput(input[1..]);
+
+        return seeds.Min(seed => GetLocation(seed, mappings));
+    }
+
+    private static IEnumerable<long> GetSeedsFromRange(string line)
+    {
+        var seeds = line.Split(": ")[1].Split(" ").Select(long.Parse).ToArray();
+        for (var i = 0; i < seeds.Length; i += 2)
+        {
+            for (var j = 0; j < seeds[i + 1]; j++)
+            {
+                yield return seeds[i] + j;
+            }
+        }
+    }
+
+    private static Dictionary<string, List<Mapping>> ParseInput(IEnumerable<string> input)
+    {
         var mappings = new Dictionary<string, List<Mapping>>();
         
         var name = "";
         foreach (var line in input)
         {
-            if (line.Contains("seeds"))
-            {
-                seeds = line.Split(": ")[1].Split(" ").Select(long.Parse).ToList();
-                continue;
-            }
-            
             if (string.IsNullOrWhiteSpace(line))
             {
                 continue;
@@ -40,7 +56,7 @@ public static class Day5
             }
         }
 
-        return (seeds, mappings);
+        return mappings;
     }
 
     private static long GetLocation(long seed, Dictionary<string,List<Mapping>> mappings)
