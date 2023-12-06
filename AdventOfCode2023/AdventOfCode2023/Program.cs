@@ -23,5 +23,5 @@ long Day5B() => Day5.GetLowestLocationNumberRange(File.ReadAllLines("./Day5/inpu
 long Day6A() => Day6.GetRecords(File.ReadAllLines("./Day6/input.txt"));
 long Day6B() => Day6.GetRecordsBig(File.ReadAllLines("./Day6/input.txt"));
 
-Console.WriteLine(Day6A());
-Console.WriteLine(Day6B());
+Console.WriteLine(Day5A());
+Console.WriteLine(Day5B());

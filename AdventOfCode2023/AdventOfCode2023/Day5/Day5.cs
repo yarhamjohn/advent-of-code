@@ -5,37 +5,21 @@ public static class Day5
     public static long GetLowestLocationNumber(string[]input)
     {
         var seeds = input.First().Split(": ")[1].Split(" ").Select(long.Parse).ToList();
-        
-        var mappings = ParseInput(input[1..]);
-
-        return seeds.Min(seed => GetLocation(seed, mappings));
+        return seeds.Min(seed => GetLocation(seed, ParseInput(input[1..])));
     }
 
     public static long GetLowestLocationNumberRange(string[] input)
     {
         var initialSeeds = input.First().Split(": ")[1].Split(" ").Select(long.Parse).Chunk(2).Select(x => (x.First(), x.Last())).ToList();
         var mappings = ParseInput(input[1..]);
-        
-        var soilMaps = mappings["seed-to-soil"].OrderBy(x => x.SourceStart);
-        var soilSeeds = CalculateRanges(initialSeeds, soilMaps);
 
-        var fertilizerMaps = mappings["soil-to-fertilizer"].OrderBy(x => x.SourceStart);
-        var fertilizerSeeds = CalculateRanges(soilSeeds, fertilizerMaps);
-        
-        var waterMaps = mappings["fertilizer-to-water"].OrderBy(x => x.SourceStart);
-        var waterSeeds = CalculateRanges(fertilizerSeeds, waterMaps);
-        
-        var lightMaps = mappings["water-to-light"].OrderBy(x => x.SourceStart);
-        var lightSeeds = CalculateRanges(waterSeeds, lightMaps);
-        
-        var temperatureMaps = mappings["light-to-temperature"].OrderBy(x => x.SourceStart);
-        var temperatureSeeds = CalculateRanges(lightSeeds, temperatureMaps);
-        
-        var humidityMaps = mappings["temperature-to-humidity"].OrderBy(x => x.SourceStart);
-        var humiditySeeds = CalculateRanges(temperatureSeeds, humidityMaps);
-        
-        var locationMaps = mappings["humidity-to-location"].OrderBy(x => x.SourceStart);
-        var locationSeeds = CalculateRanges(humiditySeeds, locationMaps);
+        var soilSeeds = CalculateRanges(initialSeeds, mappings["seed-to-soil"].OrderBy(x => x.SourceStart));
+        var fertilizerSeeds = CalculateRanges(soilSeeds, mappings["soil-to-fertilizer"].OrderBy(x => x.SourceStart));
+        var waterSeeds = CalculateRanges(fertilizerSeeds, mappings["fertilizer-to-water"].OrderBy(x => x.SourceStart));
+        var lightSeeds = CalculateRanges(waterSeeds, mappings["water-to-light"].OrderBy(x => x.SourceStart));
+        var temperatureSeeds = CalculateRanges(lightSeeds, mappings["light-to-temperature"].OrderBy(x => x.SourceStart));
+        var humiditySeeds = CalculateRanges(temperatureSeeds, mappings["temperature-to-humidity"].OrderBy(x => x.SourceStart));
+        var locationSeeds = CalculateRanges(humiditySeeds, mappings["humidity-to-location"].OrderBy(x => x.SourceStart));
         
         return locationSeeds.Min(x => x.start);
     }
@@ -47,8 +31,8 @@ public static class Day5
         {
             var mutantSeed = seed;
             var nonMatchedSeeds = new List<(long start, long length)>();
-            
             var matchedRanges = new List<(long start, long length)>();
+
             var mapArray = maps.ToArray();
             for (var i = 0L; i < mapArray.Length; i++)
             {
@@ -121,34 +105,22 @@ public static class Day5
     }
 
     private static bool OverlapsRangeEnd(Mapping mapping, (long start, long length) seed)
-    {
-        return mapping.IsInRange(seed.start) && !mapping.IsInRange(seed.start + seed.length - 1L);
-    }
+        => mapping.IsInRange(seed.start) && !mapping.IsInRange(seed.start + seed.length - 1L);
         
     private static bool OverlapsRangeStart(Mapping mapping, (long start, long length) seed)
-    {
-        return !mapping.IsInRange(seed.start) && mapping.IsInRange(seed.start + seed.length - 1L);
-    }
+        => !mapping.IsInRange(seed.start) && mapping.IsInRange(seed.start + seed.length - 1L);
 
     private static bool OverlapsEntireRange(Mapping mapping, (long start, long length) seed)
-    {
-        return mapping.SourceStart > seed.start && mapping.SourceStart + mapping.Length < seed.start + seed.length;
-    }
+        => mapping.SourceStart > seed.start && mapping.SourceStart + mapping.Length < seed.start + seed.length;
         
     private static bool IsEntirelyAfterRange(Mapping mapping, (long start, long length) seed)
-    {
-        return mapping.SourceStart + mapping.Length < seed.start;
-    }
+        => mapping.SourceStart + mapping.Length < seed.start;
         
     private static bool IsEntirelyBeforeRange(Mapping mapping, (long start, long length) seed)
-    {
-        return seed.start + seed.length < mapping.SourceStart;
-    }
+        => seed.start + seed.length < mapping.SourceStart;
 
     private static bool IsEntirelyInRange(Mapping mapping, (long start, long length) seed)
-    {
-        return mapping.IsInRange(seed.start) && mapping.IsInRange(seed.start + seed.length - 1L);
-    }
+        => mapping.IsInRange(seed.start) && mapping.IsInRange(seed.start + seed.length - 1L);
 
     private static Dictionary<string, List<Mapping>> ParseInput(IEnumerable<string> input)
     {
@@ -184,7 +156,7 @@ public static class Day5
     private static readonly Dictionary<long, long> TemperatureToLocationMap = new();
     private static readonly Dictionary<long, long> HumidityToLocationMap = new();
 
-    private static long GetLocation(long seed, Dictionary<string,List<Mapping>> mappings)
+    private static long GetLocation(long seed, IReadOnlyDictionary<string, List<Mapping>> mappings)
     {
         var soil = GetNextCategoryNum(seed, mappings["seed-to-soil"]);
         if (SoilToLocationMap.TryGetValue(soil, out var soilToLocation))
@@ -235,11 +207,7 @@ public static class Day5
     }
 
     private static long GetNextCategoryNum(long seed, IEnumerable<Mapping> mappings)
-    {
-        return mappings
-            .SingleOrDefault(map => map.IsInRange(seed))?.GetDestinationNumber(seed)
-               ?? seed;
-    }
+        => mappings.SingleOrDefault(map => map.IsInRange(seed))?.GetDestinationNumber(seed) ?? seed;
 }
 
 public class Mapping(long sourceStart, long destinationStart, long length)
@@ -248,12 +216,8 @@ public class Mapping(long sourceStart, long destinationStart, long length)
     public readonly long Length = length;
 
     public bool IsInRange(long sourceNumber)
-    {
-        return sourceNumber >= SourceStart && sourceNumber < SourceStart + Length;
-    }
+        => sourceNumber >= SourceStart && sourceNumber < SourceStart + Length;
 
     public long GetDestinationNumber(long sourceNumber)
-    {
-        return sourceNumber - SourceStart + destinationStart;
-    }
+        => sourceNumber - SourceStart + destinationStart;
 }
