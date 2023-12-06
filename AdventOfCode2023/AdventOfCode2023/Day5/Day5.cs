@@ -16,169 +16,138 @@ public static class Day5
         var initialSeeds = input.First().Split(": ")[1].Split(" ").Select(long.Parse).Chunk(2).Select(x => (x.First(), x.Last())).ToList();
         var mappings = ParseInput(input[1..]);
         
-        // Intersect the seed with all the ranges. 
-        // -----SSSSSSSS-------
-        // -----------22222222-
+        var soilMaps = mappings["seed-to-soil"].OrderBy(x => x.SourceStart);
+        var soilSeeds = CalculateRanges(initialSeeds, soilMaps);
 
-        var soilSeeds = new List<(long start, long length)>();
-        var maps = mappings["seed-to-soil"].OrderBy(x => x.SourceStart);
-        foreach (var seed in initialSeeds)
+        var fertilizerMaps = mappings["soil-to-fertilizer"].OrderBy(x => x.SourceStart);
+        var fertilizerSeeds = CalculateRanges(soilSeeds, fertilizerMaps);
+        
+        var waterMaps = mappings["fertilizer-to-water"].OrderBy(x => x.SourceStart);
+        var waterSeeds = CalculateRanges(fertilizerSeeds, waterMaps);
+        
+        var lightMaps = mappings["water-to-light"].OrderBy(x => x.SourceStart);
+        var lightSeeds = CalculateRanges(waterSeeds, lightMaps);
+        
+        var temperatureMaps = mappings["light-to-temperature"].OrderBy(x => x.SourceStart);
+        var temperatureSeeds = CalculateRanges(lightSeeds, temperatureMaps);
+        
+        var humidityMaps = mappings["temperature-to-humidity"].OrderBy(x => x.SourceStart);
+        var humiditySeeds = CalculateRanges(temperatureSeeds, humidityMaps);
+        
+        var locationMaps = mappings["humidity-to-location"].OrderBy(x => x.SourceStart);
+        var locationSeeds = CalculateRanges(humiditySeeds, locationMaps);
+        
+        return locationSeeds.Min(x => x.start);
+    }
+
+    private static List<(long start, long length)> CalculateRanges(List<(long, long)> seeds, IOrderedEnumerable<Mapping> maps)
+    {
+        var newSeeds = new List<(long start, long length)>();
+        foreach (var seed in seeds)
         {
+            var mutantSeed = seed;
+            var nonMatchedSeeds = new List<(long start, long length)>();
+            
             var matchedRanges = new List<(long start, long length)>();
-            foreach (var map in maps)
+            var mapArray = maps.ToArray();
+            for (var i = 0L; i < mapArray.Length; i++)
             {
+                var map = mapArray[i];
+                
                 // ----SSSS----
-                // XX--------YY
-                if (DoesNotOverlapRange(map, seed))
+                // ----------XX
+                if (IsEntirelyBeforeRange(map, mutantSeed))
                 {
-                    continue;
+                    nonMatchedSeeds.Add(mutantSeed);
+                    break;
                 }
 
                 // ----SSSS----
                 // ------XXXX--
-                if (OverlapsRangeStart(map, seed))
+                if (OverlapsRangeStart(map, mutantSeed))
                 {
                     var overlapStart = map.SourceStart;
-                    var overlapLength = seed.Item1 + seed.Item2 - map.SourceStart;
+                    var overlapLength = mutantSeed.Item1 + mutantSeed.Item2 - map.SourceStart;
                     matchedRanges.Add((map.GetDestinationNumber(overlapStart), overlapLength));
+                    nonMatchedSeeds.Add((mutantSeed.Item1, mutantSeed.Item2 - overlapLength));
+                    break;
                 }
                 
-                if (OverlapsRangeEnd(map, seed))
+                // ----SSSS----
+                // --XXXX------
+                if (OverlapsRangeEnd(map, mutantSeed))
                 {
+                    var overlapLength = map.SourceStart + map.Length - mutantSeed.Item1;
+                    matchedRanges.Add((map.GetDestinationNumber(mutantSeed.Item1), overlapLength));
+                    mutantSeed = (mutantSeed.Item1 + overlapLength, mutantSeed.Item2 - overlapLength);
+                }
+                
+                // ----SSSS----
+                // -----XX-----
+                if (OverlapsEntireRange(map, mutantSeed))
+                {
+                    matchedRanges.Add((map.GetDestinationNumber(map.SourceStart), map.Length));
+
+                    nonMatchedSeeds.Add((mutantSeed.Item1, map.SourceStart - mutantSeed.Item1));
+                    mutantSeed = (map.SourceStart + map.Length, mutantSeed.Item1 + mutantSeed.Item2 - (map.SourceStart + map.Length));
+                }
+                
+                // ----SSSS----
+                // --XXXXXXXX--
+                if (IsEntirelyInRange(map, mutantSeed))
+                {
+                    matchedRanges.Add((map.GetDestinationNumber(mutantSeed.Item1), mutantSeed.Item2));
                     break;
+                }
+                
+                // ----SSSS----
+                // XX----------
+                if (IsEntirelyAfterRange(map, mutantSeed))
+                {
+                    // For completeness, but nothing needs doing
+                }
+
+                if (i == mapArray.Length - 1L)
+                {
+                    nonMatchedSeeds.Add(mutantSeed);
                 }
             }
             
-            // Add non-bits
+            newSeeds.AddRange(matchedRanges);
+            newSeeds.AddRange(nonMatchedSeeds);
         }
 
-        return 0;
+        return newSeeds;
     }
 
     private static bool OverlapsRangeEnd(Mapping mapping, (long start, long length) seed)
     {
-        return mapping.IsInRange(seed.start) && !mapping.IsInRange(seed.start + seed.length - 1);
+        return mapping.IsInRange(seed.start) && !mapping.IsInRange(seed.start + seed.length - 1L);
     }
         
     private static bool OverlapsRangeStart(Mapping mapping, (long start, long length) seed)
     {
-        return !mapping.IsInRange(seed.start) && mapping.IsInRange(seed.start + seed.length - 1);
+        return !mapping.IsInRange(seed.start) && mapping.IsInRange(seed.start + seed.length - 1L);
     }
 
-    private bool OverlapsEntireRange(Mapping mapping)
+    private static bool OverlapsEntireRange(Mapping mapping, (long start, long length) seed)
     {
-        return mapping.SourceStart > Start && mapping.SourceStart + mapping.Length < Start + Length;
+        return mapping.SourceStart > seed.start && mapping.SourceStart + mapping.Length < seed.start + seed.length;
     }
         
-    private static bool DoesNotOverlapRange(Mapping mapping, (long start, long length) seed)
+    private static bool IsEntirelyAfterRange(Mapping mapping, (long start, long length) seed)
     {
-        return mapping.SourceStart + mapping.Length < seed.start || mapping.SourceStart > seed.start + seed.length;
+        return mapping.SourceStart + mapping.Length < seed.start;
     }
-
-    private bool IsEntirelyInRange(Mapping mapping)
-    {
-        return mapping.IsInRange(Start) && mapping.IsInRange(Start + Length - 1);
-    }
-    private class SeedRange
-    {
-        public long Start { get; }
-        public long Length { get; }
-
-        private long _soilStart;
-        private long _soilLength;
-
-        public SeedRange(long start, long length)
-        {
-            Start = start;
-            Length = length;
-        }
-
-        public SeedRange(long start, long length, long soilStart, long soilLength)
-        {
-            Start = start;
-            Length = length;
-            _soilStart = soilStart;
-            _soilLength = soilLength;
-        }
-
-        public List<SeedRange> GetSoilRange(Mapping mapping)
-        {
-            if (IsEntirelyInRange(mapping))
-            {
-                _soilStart = mapping.DestinationStart;
-                _soilLength = mapping.Length;
-
-                return new List<SeedRange> { new SeedRange(Start, Length, _soilStart, _soilLength) };
-            }
-
-            if (OverlapsRangeEnd(mapping))
-            {
-                return new List<SeedRange>
-                {
-                    new SeedRange(mapping.DestinationStart, _soilLength,_soilStart, _soilLength),
-                    new SeedRange(Start + Length, Start + Length - (_soilStart + _soilLength), Start + Length, Start + Length - (_soilStart + _soilLength))
-                };
-            }
-            
-            if (OverlapsRangeStart(mapping))
-            {
-                return new List<SeedRange>
-                {
-                    new SeedRange(Start, _soilStart - Start, Start, _soilStart - Start),
-                    new SeedRange(mapping.DestinationStart, _soilLength,_soilStart, _soilLength)
-                };
-            }
-            
-            if (OverlapsEntireRange(mapping))
-            {
-                return new List<SeedRange>
-                {
-                    new SeedRange(Start, _soilStart - Start, Start, _soilStart - Start),
-                    new SeedRange(mapping.DestinationStart, _soilLength,_soilStart, _soilLength),
-                    new SeedRange(Start + Length, Start + Length - (_soilStart + _soilLength), Start + Length, Start + Length - (_soilStart + _soilLength))
-                };
-            }
-            
-            if (DoesNotOverlapRange(mapping))
-            {
-                return new List<SeedRange> { new SeedRange(Start, Length, Start, Length) };
-            }
-
-            return [];
-        }
-
-        private bool OverlapsRangeEnd(Mapping mapping)
-        {
-            return mapping.IsInRange(Start) && !mapping.IsInRange(Start + Length - 1);
-        }
         
-        private bool OverlapsRangeStart(Mapping mapping)
-        {
-            return !mapping.IsInRange(Start) && mapping.IsInRange(Start + Length - 1);
-        }
-
-        private bool OverlapsEntireRange(Mapping mapping)
-        {
-            return mapping.SourceStart > Start && mapping.SourceStart + mapping.Length < Start + Length;
-        }
-        
-        private bool DoesNotOverlapRange(Mapping mapping)
-        {
-            return mapping.SourceStart + mapping.Length < Start || mapping.SourceStart > Start + Length;
-        }
-
-        private bool IsEntirelyInRange(Mapping mapping)
-        {
-            return mapping.IsInRange(Start) && mapping.IsInRange(Start + Length - 1);
-        }
+    private static bool IsEntirelyBeforeRange(Mapping mapping, (long start, long length) seed)
+    {
+        return seed.start + seed.length < mapping.SourceStart;
     }
 
-    private static IEnumerable<long> GetSeedsFromRange(long start, long length)
+    private static bool IsEntirelyInRange(Mapping mapping, (long start, long length) seed)
     {
-        for (var i = 0; i < length; i++)
-        {
-            yield return start + i;
-        }
+        return mapping.IsInRange(seed.start) && mapping.IsInRange(seed.start + seed.length - 1L);
     }
 
     private static Dictionary<string, List<Mapping>> ParseInput(IEnumerable<string> input)
@@ -201,66 +170,66 @@ public static class Day5
             else
             {
                 var mapNums = line.Split(" ").Select(long.Parse).ToArray();
-                mappings[name].Add(new Mapping(name, mapNums[1], mapNums[0], mapNums[2]));
+                mappings[name].Add(new Mapping(mapNums[1], mapNums[0], mapNums[2]));
             }
         }
 
         return mappings;
     }
 
-    private static Dictionary<long, long> soilToLocationMap = new Dictionary<long, long>();
-    private static Dictionary<long, long> fertilizerToLocationMap = new Dictionary<long, long>();
-    private static Dictionary<long, long> waterToLocationMap = new Dictionary<long, long>();
-    private static Dictionary<long, long> lightToLocationMap = new Dictionary<long, long>();
-    private static Dictionary<long, long> temperatureToLocationMap = new Dictionary<long, long>();
-    private static Dictionary<long, long> humidityToLocationMap = new Dictionary<long, long>();
+    private static readonly Dictionary<long, long> SoilToLocationMap = new();
+    private static readonly Dictionary<long, long> FertilizerToLocationMap = new();
+    private static readonly Dictionary<long, long> WaterToLocationMap = new();
+    private static readonly Dictionary<long, long> LightToLocationMap = new();
+    private static readonly Dictionary<long, long> TemperatureToLocationMap = new();
+    private static readonly Dictionary<long, long> HumidityToLocationMap = new();
 
     private static long GetLocation(long seed, Dictionary<string,List<Mapping>> mappings)
     {
         var soil = GetNextCategoryNum(seed, mappings["seed-to-soil"]);
-        if (soilToLocationMap.TryGetValue(soil, out var soilToLocation))
+        if (SoilToLocationMap.TryGetValue(soil, out var soilToLocation))
         {
             return soilToLocation;
         }
         
         var fertilizer = GetNextCategoryNum(soil, mappings["soil-to-fertilizer"]);
-        if (fertilizerToLocationMap.TryGetValue(fertilizer, out var fertilizerToLocation))
+        if (FertilizerToLocationMap.TryGetValue(fertilizer, out var fertilizerToLocation))
         {
             return fertilizerToLocation;
         }
         
         var water = GetNextCategoryNum(fertilizer, mappings["fertilizer-to-water"]);
-        if (waterToLocationMap.TryGetValue(water, out var waterToLocation))
+        if (WaterToLocationMap.TryGetValue(water, out var waterToLocation))
         {
             return waterToLocation;
         }
         
         var light = GetNextCategoryNum(water, mappings["water-to-light"]);
-        if (lightToLocationMap.TryGetValue(light, out var lightToLocation))
+        if (LightToLocationMap.TryGetValue(light, out var lightToLocation))
         {
             return lightToLocation;
         }
         
         var temperature = GetNextCategoryNum(light, mappings["light-to-temperature"]);
-        if (temperatureToLocationMap.TryGetValue(temperature, out var temperatureToLocation))
+        if (TemperatureToLocationMap.TryGetValue(temperature, out var temperatureToLocation))
         {
             return temperatureToLocation;
         }
         
         var humidity = GetNextCategoryNum(temperature, mappings["temperature-to-humidity"]);
-        if (humidityToLocationMap.TryGetValue(humidity, out var humidityToLocation))
+        if (HumidityToLocationMap.TryGetValue(humidity, out var humidityToLocation))
         {
             return humidityToLocation;
         }
         
         var location = GetNextCategoryNum(humidity, mappings["humidity-to-location"]);
 
-        soilToLocationMap[soil] = location;
-        fertilizerToLocationMap[fertilizer] = location;
-        waterToLocationMap[water] = location;
-        lightToLocationMap[light] = location;
-        temperatureToLocationMap[temperature] = location;
-        humidityToLocationMap[humidity] = location;
+        SoilToLocationMap[soil] = location;
+        FertilizerToLocationMap[fertilizer] = location;
+        WaterToLocationMap[water] = location;
+        LightToLocationMap[light] = location;
+        TemperatureToLocationMap[temperature] = location;
+        HumidityToLocationMap[humidity] = location;
 
         return location;
     }
@@ -273,11 +242,9 @@ public static class Day5
     }
 }
 
-public class Mapping(string type, long sourceStart, long destinationStart, long length)
+public class Mapping(long sourceStart, long destinationStart, long length)
 {
-    public readonly string Type = type;
     public readonly long SourceStart = sourceStart;
-    public readonly long DestinationStart = destinationStart;
     public readonly long Length = length;
 
     public bool IsInRange(long sourceNumber)
@@ -287,6 +254,6 @@ public class Mapping(string type, long sourceStart, long destinationStart, long 
 
     public long GetDestinationNumber(long sourceNumber)
     {
-        return sourceNumber - SourceStart + DestinationStart;
+        return sourceNumber - SourceStart + destinationStart;
     }
 }
