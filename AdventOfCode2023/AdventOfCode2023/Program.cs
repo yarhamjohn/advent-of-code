@@ -19,5 +19,5 @@ long Day4B() => Day4.CountCards(File.ReadAllLines("./Day4/input.txt"));
 long Day5A() => Day5.GetLowestLocationNumber(File.ReadAllLines("./Day5/input.txt"));
 long Day5B() => Day5.GetLowestLocationNumberRange(File.ReadAllLines("./Day5/input.txt"));
 
-Console.WriteLine(Day5A());
+// Console.WriteLine(Day5A());
 Console.WriteLine(Day5B());
