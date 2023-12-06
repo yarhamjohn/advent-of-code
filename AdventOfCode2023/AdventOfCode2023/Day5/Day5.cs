@@ -13,23 +13,72 @@ public static class Day5
 
     public static long GetLowestLocationNumberRange(string[] input)
     {
-        var initialSeeds = input.First().Split(": ")[1].Split(" ").Select(long.Parse).Chunk(2).Select(x => new SeedRange(x.First(), x.Last())).ToList();
+        var initialSeeds = input.First().Split(": ")[1].Split(" ").Select(long.Parse).Chunk(2).Select(x => (x.First(), x.Last())).ToList();
         var mappings = ParseInput(input[1..]);
+        
+        // Intersect the seed with all the ranges. 
+        // -----SSSSSSSS-------
+        // -----------22222222-
 
-        var seedsWithSoil = new List<SeedRange>();
-        for (var i = 0; i < initialSeeds.Count; i++)
+        var soilSeeds = new List<(long start, long length)>();
+        var maps = mappings["seed-to-soil"].OrderBy(x => x.SourceStart);
+        foreach (var seed in initialSeeds)
         {
-            var maps = mappings["seed-to-soil"];
+            var matchedRanges = new List<(long start, long length)>();
             foreach (var map in maps)
             {
-                // TODO: Need to be aware of all the maps before adding any ranges that have no soil match :/
-                seedsWithSoil.AddRange(initialSeeds[i].GetSoilRange(map));
+                // ----SSSS----
+                // XX--------YY
+                if (DoesNotOverlapRange(map, seed))
+                {
+                    continue;
+                }
+
+                // ----SSSS----
+                // ------XXXX--
+                if (OverlapsRangeStart(map, seed))
+                {
+                    var overlapStart = map.SourceStart;
+                    var overlapLength = seed.Item1 + seed.Item2 - map.SourceStart;
+                    matchedRanges.Add((map.GetDestinationNumber(overlapStart), overlapLength));
+                }
+                
+                if (OverlapsRangeEnd(map, seed))
+                {
+                    break;
+                }
             }
+            
+            // Add non-bits
         }
 
-        return seedsWithSoil.Min(x => x.Start);
+        return 0;
     }
 
+    private static bool OverlapsRangeEnd(Mapping mapping, (long start, long length) seed)
+    {
+        return mapping.IsInRange(seed.start) && !mapping.IsInRange(seed.start + seed.length - 1);
+    }
+        
+    private static bool OverlapsRangeStart(Mapping mapping, (long start, long length) seed)
+    {
+        return !mapping.IsInRange(seed.start) && mapping.IsInRange(seed.start + seed.length - 1);
+    }
+
+    private bool OverlapsEntireRange(Mapping mapping)
+    {
+        return mapping.SourceStart > Start && mapping.SourceStart + mapping.Length < Start + Length;
+    }
+        
+    private static bool DoesNotOverlapRange(Mapping mapping, (long start, long length) seed)
+    {
+        return mapping.SourceStart + mapping.Length < seed.start || mapping.SourceStart > seed.start + seed.length;
+    }
+
+    private bool IsEntirelyInRange(Mapping mapping)
+    {
+        return mapping.IsInRange(Start) && mapping.IsInRange(Start + Length - 1);
+    }
     private class SeedRange
     {
         public long Start { get; }
