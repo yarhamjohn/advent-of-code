@@ -3,6 +3,7 @@ using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
 using AdventOfCode2023.Day5;
+using AdventOfCode2023.Day6;
 
 long Day1A() => Day1.GetCalibrationSum(File.ReadAllLines("./Day1/input.txt"));
 long Day1B() => Day1.GetCalibrationSum(File.ReadAllLines("./Day1/input.txt"));
@@ -19,5 +20,8 @@ long Day4B() => Day4.CountCards(File.ReadAllLines("./Day4/input.txt"));
 long Day5A() => Day5.GetLowestLocationNumber(File.ReadAllLines("./Day5/input.txt"));
 long Day5B() => Day5.GetLowestLocationNumberRange(File.ReadAllLines("./Day5/input.txt"));
 
-Console.WriteLine(Day5A());
-Console.WriteLine(Day5B());
+long Day6A() => Day6.GetRecords(File.ReadAllLines("./Day6/input.txt"));
+long Day6B() => Day6.GetRecordsBig(File.ReadAllLines("./Day6/input.txt"));
+
+Console.WriteLine(Day6A());
+Console.WriteLine(Day6B());
