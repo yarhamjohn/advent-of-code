@@ -14,4 +14,14 @@ public class Day7Tests
         var result = Day7.CalculateTotalWinnings(input);
         Assert.That(result, Is.EqualTo(6440));
     }
+    
+    [Test]
+    public void CalculateTotalWinningsJoker()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day7Tests/Input/example.txt");
+        var input = File.ReadAllLines(inputPath);
+        
+        var result = Day7.CalculateTotalWinningsJoker(input);
+        Assert.That(result, Is.EqualTo(5905));
+    }
 }
