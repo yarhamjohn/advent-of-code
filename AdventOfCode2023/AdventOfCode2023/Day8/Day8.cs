@@ -29,30 +29,50 @@ public static class Day8
 
     public static long CalculateNumStepsGhosts(string[] input)
     {
-        var instructions = input.First();
-        var nodes = ParseNodes(input);
+        return CalculateAllPathSteps(input.First(), ParseNodes(input))
+            .Select(CalculatePrimeFactor)
+            .SelectMany(primeFactors => primeFactors
+                .GroupBy(factor => factor)
+                .Select(group => (group.Key, group.Count())))
+            .GroupBy(y => y.Key)
+            .Select(grp => (grp.Key, grp.Max(x => x.Item2)))
+            .Aggregate(1L, (x, y) => x * (long)Math.Pow(y.Key, y.Item2));
+    }
 
-        var count = 0;
-        
-        var nextInstruction = 0;
-        var inPlayNodes = nodes.Keys.Where(x => x.EndsWith('A')).ToArray();
-        while (inPlayNodes.Any(x => !x.EndsWith('Z')))
+    private static IEnumerable<int> CalculateAllPathSteps(string instructions, Dictionary<string, (string left, string right)> nodes)
+    {
+        foreach (var node in nodes.Keys.Where(x => x.EndsWith('A')))
         {
-            count++;
-            
-            for (var i = 0; i < inPlayNodes.Length; i++)
+            var fullCycles = 0;
+            var nextNode = node;
+            while (!nextNode.EndsWith('Z'))
             {
-                inPlayNodes[i] = instructions[nextInstruction] == 'L' ? nodes[inPlayNodes[i]].left : nodes[inPlayNodes[i]].right;
+                nextNode = instructions.Aggregate(nextNode, (current, opt) => opt == 'L'
+                    ? nodes[current].left
+                    : nodes[current].right);
+
+                fullCycles++;
             }
-            
-            nextInstruction++;
-            if (nextInstruction == instructions.Length)
-            {
-                nextInstruction = 0;
-            }
+
+            yield return fullCycles * instructions.Length;
         }
-        
-        return count;
+    }
+
+    private static IEnumerable<int> CalculatePrimeFactor(int number)
+    {
+        var factor = 2;
+        while (number != 1)
+        {
+            if (number % factor != 0)
+            {
+                factor++;
+                continue;
+            }
+
+            number /= factor;
+
+            yield return factor;
+        }
     }
 
     private static Dictionary<string, (string left, string right)> ParseNodes(string[] input)
