@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2023.Day1;
+using AdventOfCode2023.Day10;
 using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
@@ -35,5 +36,7 @@ long Day8B() => Day8.CalculateNumStepsGhosts(File.ReadAllLines("./Day8/input.txt
 long Day9A() => Day9.SumExtrapolatedValues(File.ReadAllLines("./Day9/input.txt"));
 long Day9B() => Day9.SumExtrapolatedValuesReverse(File.ReadAllLines("./Day9/input.txt"));
 
-Console.WriteLine(Day9A());
-Console.WriteLine(Day9B());
+long Day10A() => Day10.CountSteps(File.ReadAllLines("./Day10/input.txt"));
+
+Console.WriteLine(Day10A());
+// Console.WriteLine(Day10B());
