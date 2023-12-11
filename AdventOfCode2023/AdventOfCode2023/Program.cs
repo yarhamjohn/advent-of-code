@@ -6,6 +6,7 @@ using AdventOfCode2023.Day5;
 using AdventOfCode2023.Day6;
 using AdventOfCode2023.Day7;
 using AdventOfCode2023.Day8;
+using AdventOfCode2023.Day9;
 
 long Day1A() => Day1.GetCalibrationSum(File.ReadAllLines("./Day1/input.txt"));
 long Day1B() => Day1.GetCalibrationSum(File.ReadAllLines("./Day1/input.txt"));
@@ -31,5 +32,8 @@ long Day7B() => Day7.CalculateTotalWinningsJoker(File.ReadAllLines("./Day7/input
 long Day8A() => Day8.CalculateNumSteps(File.ReadAllLines("./Day8/input.txt"));
 long Day8B() => Day8.CalculateNumStepsGhosts(File.ReadAllLines("./Day8/input.txt"));
 
-Console.WriteLine(Day8A());
-Console.WriteLine(Day8B());
+long Day9A() => Day9.SumExtrapolatedValues(File.ReadAllLines("./Day9/input.txt"));
+long Day9B() => Day9.SumExtrapolatedValuesReverse(File.ReadAllLines("./Day9/input.txt"));
+
+Console.WriteLine(Day9A());
+Console.WriteLine(Day9B());
