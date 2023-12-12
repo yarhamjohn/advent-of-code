@@ -37,6 +37,7 @@ long Day9A() => Day9.SumExtrapolatedValues(File.ReadAllLines("./Day9/input.txt")
 long Day9B() => Day9.SumExtrapolatedValuesReverse(File.ReadAllLines("./Day9/input.txt"));
 
 long Day10A() => Day10.CountSteps(File.ReadAllLines("./Day10/input.txt"));
+long Day10B() => Day10.CountInternalSpaces(File.ReadAllLines("./Day10/input.txt"));
 
 Console.WriteLine(Day10A());
-// Console.WriteLine(Day10B());
+Console.WriteLine(Day10B());
