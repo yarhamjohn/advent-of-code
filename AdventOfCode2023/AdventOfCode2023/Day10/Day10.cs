@@ -19,46 +19,118 @@ public static class Day10
         return GetMaxScore(scoredGrid);
     }
 
-    private static int[][] ScoreGrid(char[][] grid, (int row, int col) start)
+    private static string[][] ScoreGrid(char[][] grid, (int row, int col) start)
     {
-        var scoredGrid = new int[grid.GetLongLength(0)][];
-        for (var row = 0; row < grid.GetLongLength(0); row++)
+        var scoredGrid = new string[grid.Length][];
+        for (var row = 0; row < grid.Length; row++)
         {
-            scoredGrid[row] = new int[grid.GetLongLength(1)];
+            scoredGrid[row] = Enumerable.Range(0, grid.Length).Select(x => ".").ToArray();
         }
+
+        var distance = 0;
+        scoredGrid[start.row][start.col] = distance.ToString();
         
-        var nextLocations = GetNextLocations(grid, start);
+        var nextLocations = GetNextLocations(grid, scoredGrid, start);
         while (nextLocations.Count != 0)
         {
             var locationsToAdd = new List<(int, int)>();
             foreach (var location in nextLocations)
             {
-                scoredGrid[location.row][location.col]++;
-                locationsToAdd.AddRange(GetNextLocations(grid, location));
+                scoredGrid[location.row][location.col] = (distance + 1).ToString();
+                locationsToAdd.AddRange(GetNextLocations(grid, scoredGrid, location));
             }
-            
+
+            distance++;
             nextLocations = locationsToAdd;
         }
 
         return scoredGrid;
     }
 
-    private static List<(int row, int col)> GetNextLocations(char[][] grid, (int row, int col) location)
+    private static List<(int row, int col)> GetNextLocations(char[][] grid, string[][] scoredGrid, (int row, int col) location)
     {
-        // TODO: don't return the location we came from
-        throw new NotImplementedException();
+        var nextLocations = new List<(int, int)>();
+        
+        var possibleLocations = new List<(int row, int col)>
+        {
+            (location.row - 1, location.col),
+            (location.row + 1, location.col),
+            (location.row, location.col - 1),
+            (location.row, location.col + 1)
+        };
+
+        foreach (var loc in possibleLocations)
+        {
+            if (loc.row < 0 || loc.row >= grid.Length || loc.col < 0 || loc.col >= grid.Length)
+            {
+                continue;
+            }
+            
+            if (scoredGrid[loc.row][loc.col] != ".")
+            {
+                continue;
+            }
+            
+            var targetCh = grid[loc.row][loc.col];
+            var startCh = grid[location.row][location.col];
+            if (loc.row < location.row)
+            {
+                if (startCh is 'S' or '|' or 'J' or 'L')
+                {
+                    if (targetCh is '|' or '7' or 'F')
+                    {
+                        nextLocations.Add(loc);
+                    }
+                }
+            }
+            
+            if (loc.row > location.row)
+            {
+                if (startCh is 'S' or '|' or 'F' or '7')
+                {
+                    if (targetCh is '|' or 'J' or 'L')
+                    {
+                        nextLocations.Add(loc);
+                    }
+                }
+            }
+            
+            if (loc.col < location.col)
+            {
+                if (startCh is 'S' or '-' or 'J' or '7')
+                {
+                    if (targetCh is '-' or 'L' or 'F')
+                    {
+                        nextLocations.Add(loc);
+                    }
+                }
+            }
+            
+            if (loc.col > location.col)
+            {
+                if (startCh is 'S' or '-' or 'F' or 'L')
+                {
+                    if (targetCh is '-' or 'J' or '7')
+                    {
+                        nextLocations.Add(loc);
+                    }
+                }
+            }
+        }
+
+        return nextLocations;
     }
 
-    private static long GetMaxScore(int[][] scoredGrid)
+    private static long GetMaxScore(string[][] scoredGrid)
     {
         var maxScore = 0;
-        for (var row = 0; row < scoredGrid.GetLongLength(0); row++)
+        for (var row = 0; row < scoredGrid.Length; row++)
         {
-            for (var col = 0; col < scoredGrid.GetLongLength(1); col++)
+            for (var col = 0; col < scoredGrid.Length; col++)
             {
-                if (scoredGrid[row][col] > maxScore)
+                if (int.TryParse(scoredGrid[row][col], out var num) && num > maxScore)
                 {
-                    maxScore = scoredGrid[row][col];
+                    maxScore = num;
                 }
             }
         }
@@ -68,9 +140,9 @@ public static class Day10
 
     private static (int row, int col) GetStartPosition(char[][] grid)
     {
-        for (var row = 0; row < grid.GetLongLength(0); row++)
+        for (var row = 0; row < grid.Length; row++)
         {
-            for (var col = 0; col < grid.GetLongLength(1); col++)
+            for (var col = 0; col < grid.Length; col++)
             {
                 if (grid[row][col] == 'S')
                 {
@@ -103,7 +175,7 @@ public static class Day10
         }
     }
     
-    private static void PrintGrid(int[][] grid)
+    private static void PrintGrid(string[][] grid)
     {
         foreach (var row in grid)
         {
