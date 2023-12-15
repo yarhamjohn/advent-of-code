@@ -1,5 +1,6 @@
 ﻿using AdventOfCode2023.Day1;
 using AdventOfCode2023.Day10;
+using AdventOfCode2023.Day11;
 using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
@@ -39,5 +40,7 @@ long Day9B() => Day9.SumExtrapolatedValuesReverse(File.ReadAllLines("./Day9/inpu
 long Day10A() => Day10.CountSteps(File.ReadAllLines("./Day10/input.txt"));
 long Day10B() => Day10.CountInternalSpaces(File.ReadAllLines("./Day10/input.txt"));
 
-Console.WriteLine(Day10A());
-Console.WriteLine(Day10B());
+long Day11A() => Day11.SumPathLengths(File.ReadAllLines("./Day11/input.txt"));
+
+Console.WriteLine(Day11A());
+// Console.WriteLine(Day10B());
