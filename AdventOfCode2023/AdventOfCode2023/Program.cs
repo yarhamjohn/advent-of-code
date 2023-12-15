@@ -1,6 +1,7 @@
 ﻿using AdventOfCode2023.Day1;
 using AdventOfCode2023.Day10;
 using AdventOfCode2023.Day11;
+using AdventOfCode2023.Day12;
 using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
@@ -43,5 +44,7 @@ long Day10B() => Day10.CountInternalSpaces(File.ReadAllLines("./Day10/input.txt"
 long Day11A() => Day11.SumPathLengths(File.ReadAllLines("./Day11/input.txt"), 2);
 long Day11B() => Day11.SumPathLengths(File.ReadAllLines("./Day11/input.txt"), 1000000);
 
-Console.WriteLine(Day11A());
-Console.WriteLine(Day11B());
+long Day12A() => Day12.SumDamageCombinations(File.ReadAllLines("./Day12/input.txt"));
+
+Console.WriteLine(Day12A());
+// Console.WriteLine(Day12B());
