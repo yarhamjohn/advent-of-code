@@ -4,29 +4,59 @@ public static class Day11
 {
     public static long SumPathLengths(string[] input)
     {
-        foreach (var line in input)
-        {
-            Console.WriteLine(line);
-        }
-        Console.WriteLine();
+        // foreach (var line in input)
+        // {
+        //     Console.WriteLine(line);
+        // }
+        // Console.WriteLine();
         
         var grid = ExpandGridRows(input);
 
-        foreach (var line in grid)
-        {
-            Console.WriteLine(line);
-        }
-        Console.WriteLine();
+        // foreach (var line in grid)
+        // {
+        //     Console.WriteLine(line);
+        // }
+        // Console.WriteLine();
 
         var finalGrid = ExpandGridColumns(input, grid);
 
-        foreach (var line in finalGrid)
-        {
-            Console.WriteLine(string.Join("", line.Select(x => x.ToString())));
-        }
-        Console.WriteLine();
+        // foreach (var line in finalGrid)
+        // {
+        //     Console.WriteLine(string.Join("", line.Select(x => x.ToString())));
+        // }
+        // Console.WriteLine();
 
         var galaxyLocations = GetGalaxyLocations(finalGrid).ToArray();
+        Console.WriteLine($"Galaxy locations: {galaxyLocations.Length}");
+        
+        var pairs = GetGalaxyPairs(galaxyLocations);
+        Console.WriteLine($"Galaxy pairs: {pairs.Count}");
+        
+        return SumDistances(galaxyLocations, finalGrid, pairs);
+    }
+
+    private static int SumDistances((int row, int col)[] galaxyLocations, List<char>[] finalGrid, List<((int row, int col) from, (int row, int col) to)> pairs)
+    {
+        var result = 0;
+        for (var i = 0; i < galaxyLocations.Length; i++)
+        {
+            var scoredGrid = GetScoredGrid(finalGrid, galaxyLocations[i]);
+            // foreach (var line in scoredGrid)
+            // {
+            //     Console.WriteLine(string.Join("", line.Select(x => x?.ToString() ?? "N")));
+            // }
+            // Console.WriteLine();
+            
+            var scoredLocations = pairs.Where(x => x.from == galaxyLocations[i]);
+            Console.WriteLine($"Calculating distance for galaxy #{i}: {galaxyLocations[i]}. There are {scoredLocations.Count()} locations. Current score: {result}");
+            result += scoredLocations.Sum(l => (int)scoredGrid[l.to.row][l.to.col]!);
+        }
+
+        return result;
+    }
+
+    private static List<((int row, int col) from, (int row, int col) to)> GetGalaxyPairs((int row, int col)[] galaxyLocations)
+    {
         var pairs = new List<((int row, int col) from, (int row, int col) to)>();
         for (var i = 0; i < galaxyLocations.Length; i++)
         {
@@ -35,24 +65,7 @@ public static class Day11
             pairs.AddRange(start.Zip(targets));
         }
 
-        foreach (var x in pairs)
-        {
-            Console.WriteLine(x);
-        }
-        Console.WriteLine();
-
-        var result = 0;
-        foreach (var location in galaxyLocations)
-        {
-            var scoredGrid = GetScoredGrid(finalGrid, location);
-            var scoredLocations = pairs.Where(x => x.from == location);
-            foreach (var l in scoredLocations)
-            {
-                result += (int) scoredGrid[l.to.row][l.to.col]!;
-            }
-        }
-
-        return result;
+        return pairs;
     }
 
     private static int?[][] GetScoredGrid(List<char>[] finalGrid, (int row, int col) location)
@@ -61,18 +74,68 @@ public static class Day11
 
         var count = 0;
         scoredGrid[location.row][location.col] = count;
-        
-        var nextLocations = GetNextLocations(scoredGrid, location);
-        while (nextLocations.Any())
+
+        // Go right and down
+        for (var startRow = location.row; startRow < scoredGrid.Length; startRow++)
         {
-            count++;
-            foreach (var loc in nextLocations)
+            for (var startCol = location.col; startCol < scoredGrid[0].Length; startCol++)
             {
-                scoredGrid[loc.row][loc.col] = count;
+                scoredGrid[startRow][startCol] = startCol - location.col + count;
             }
 
-            nextLocations = GetNextLocations(scoredGrid, location);
+            count++;
         }
+
+        count = 0;
+        // Go right and up
+        for (var startRow = location.row; startRow >= 0; startRow--)
+        {
+            for (var startCol = location.col; startCol < scoredGrid[0].Length; startCol++)
+            {
+                scoredGrid[startRow][startCol] = startCol - location.col + count;
+            }
+
+            count++;
+        }
+        
+        count = 0;
+        // Go left and up
+        for (var startRow = location.row; startRow >= 0; startRow--)
+        {
+            for (var startCol = location.col; startCol >= 0; startCol--)
+            {
+                scoredGrid[startRow][startCol] = location.col - startCol + count;
+            }
+
+            count++;
+        }
+        
+        count = 0;
+        // Go left and down
+        for (var startRow = location.row; startRow < scoredGrid.Length; startRow++)
+        {
+            for (var startCol = location.col; startCol >= 0; startCol--)
+            {
+                scoredGrid[startRow][startCol] = location.col - startCol + count;
+            }
+
+            count++;
+        }
+        //
+        // var nextLocations = GetNextLocations(scoredGrid, location);
+        // while (nextLocations.Any())
+        // {
+        //     var locs = nextLocations.Select(x => x).ToArray();
+        //     nextLocations.Clear();
+        //     
+        //     count++;
+        //     foreach (var loc in locs)
+        //     {
+        //         scoredGrid[loc.row][loc.col] = count;
+        //         nextLocations.AddRange(GetNextLocations(scoredGrid, loc));
+        //     }
+        //
+        // }
 
         return scoredGrid;
     }
@@ -104,7 +167,7 @@ public static class Day11
             }
         }
 
-        if (location.col < scoredGrid[0].Length)
+        if (location.col < scoredGrid[0].Length - 1)
         {
             if (scoredGrid[location.row][location.col + 1] == null)
             {
