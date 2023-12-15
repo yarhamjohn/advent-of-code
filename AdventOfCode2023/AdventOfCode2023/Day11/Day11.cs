@@ -2,73 +2,96 @@
 
 public static class Day11
 {
-    public static long SumPathLengths(string[] input)
+    public static long SumPathLengths(string[] input, int howBig)
     {
-        // foreach (var line in input)
-        // {
-        //     Console.WriteLine(line);
-        // }
-        // Console.WriteLine();
-        
-        var grid = ExpandGridRows(input);
+        var grid = input.Select(line => line.ToCharArray()).ToArray();
+        var galaxyLocations = GetGalaxyLocations(grid).ToArray();
+        var galaxyPairs = GetGalaxyPairs(galaxyLocations, input);
 
-        // foreach (var line in grid)
-        // {
-        //     Console.WriteLine(line);
-        // }
-        // Console.WriteLine();
-
-        var finalGrid = ExpandGridColumns(input, grid);
-
-        // foreach (var line in finalGrid)
-        // {
-        //     Console.WriteLine(string.Join("", line.Select(x => x.ToString())));
-        // }
-        // Console.WriteLine();
-
-        var galaxyLocations = GetGalaxyLocations(finalGrid).ToArray();
-        Console.WriteLine($"Galaxy locations: {galaxyLocations.Length}");
-        
-        var pairs = GetGalaxyPairs(galaxyLocations);
-        Console.WriteLine($"Galaxy pairs: {pairs.Count}");
-        
-        return SumDistances(galaxyLocations, finalGrid, pairs);
+        return SumDistances(galaxyLocations, grid, galaxyPairs, howBig);
     }
 
-    private static int SumDistances((int row, int col)[] galaxyLocations, List<char>[] finalGrid, List<((int row, int col) from, (int row, int col) to)> pairs)
+    private static IEnumerable<((int row, int col) from, (int row, int col) to, int numRows, int numCols)> GetGalaxyPairs(
+        (int row, int col)[] galaxyLocations,
+        IReadOnlyList<string> input)
     {
-        var result = 0;
-        for (var i = 0; i < galaxyLocations.Length; i++)
+        var rowsToExpand = GetRowsToExpand(input);
+        var colsToExpand = GetColsToExpand(input);
+        
+        foreach (var (from, to) in GetGalaxyPairs(galaxyLocations))
         {
-            var scoredGrid = GetScoredGrid(finalGrid, galaxyLocations[i]);
-            // foreach (var line in scoredGrid)
-            // {
-            //     Console.WriteLine(string.Join("", line.Select(x => x?.ToString() ?? "N")));
-            // }
-            // Console.WriteLine();
+            var numRows = rowsToExpand.Count(i => i > from.row && i < to.row || i < from.row && i > to.row);
+            var numCols = colsToExpand.Count(i => i > from.col && i < to.col || i < from.col && i > to.col);
             
-            var scoredLocations = pairs.Where(x => x.from == galaxyLocations[i]);
-            Console.WriteLine($"Calculating distance for galaxy #{i}: {galaxyLocations[i]}. There are {scoredLocations.Count()} locations. Current score: {result}");
-            result += scoredLocations.Sum(l => (int)scoredGrid[l.to.row][l.to.col]!);
+            yield return (from, to, numRows, numCols);
+        }
+    }
+
+    private static List<int> GetColsToExpand(IReadOnlyCollection<string> input)
+    {
+        var result = new List<int>();
+        for (var col = 0; col < input.Count; col++)
+        {
+            if (input.Select(row => row[col]).All(x => x == '.'))
+            {
+                result.Add(col);
+            }
         }
 
         return result;
     }
 
-    private static List<((int row, int col) from, (int row, int col) to)> GetGalaxyPairs((int row, int col)[] galaxyLocations)
+    private static List<int> GetRowsToExpand(IReadOnlyList<string> input)
+    {
+        return input
+            .Select((line, idx) => (line, idx))
+            .Where(pair => pair.line.All(ch => ch == '.'))
+            .Select(pair => pair.idx).ToList();
+    }
+
+    private static long SumDistances(
+        IEnumerable<(int row, int col)> galaxyLocations,
+        char[][] finalGrid,
+        IEnumerable<((int row, int col) from, (int row, int col) to, int numRows, int numCols)> pairs,
+        int howBig)
+    {
+        return galaxyLocations
+            .Sum(location => pairs
+                .Where(pair => pair.from == location)
+                .Sum(pair => GetDistance(finalGrid, howBig, location, pair)));
+    }
+
+    private static long GetDistance(
+        IEnumerable<char[]> finalGrid,
+        int howBig,
+        (int row, int col) location,
+        ((int row, int col) from, (int row, int col) to, int numRows, int numCols) pair)
+    {
+        var extraRows = pair.numRows * (howBig - 1);
+        var extraCols = pair.numCols * (howBig - 1);
+        var distance = (long) GetScoredGrid(finalGrid, location)[pair.to.row][pair.to.col]!;
+        
+        return distance + extraRows + extraCols;
+    }
+
+    private static List<((int row, int col) from, (int row, int col) to)> GetGalaxyPairs(
+        (int row, int col)[] galaxyLocations)
     {
         var pairs = new List<((int row, int col) from, (int row, int col) to)>();
         for (var i = 0; i < galaxyLocations.Length; i++)
         {
             var targets = galaxyLocations[(i + 1)..];
+            
+            // ReSharper disable once AccessToModifiedClosure
             var start = Enumerable.Range(0, targets.Length).Select(_ => galaxyLocations[i]);
+            
             pairs.AddRange(start.Zip(targets));
         }
 
         return pairs;
     }
 
-    private static int?[][] GetScoredGrid(List<char>[] finalGrid, (int row, int col) location)
+    private static int?[][] GetScoredGrid(IEnumerable<char[]> finalGrid, (int row, int col) location)
     {
         var scoredGrid = finalGrid.Select(x => x.Select(_ => (int?) null).ToArray()).ToArray();
 
@@ -121,68 +144,15 @@ public static class Day11
 
             count++;
         }
-        //
-        // var nextLocations = GetNextLocations(scoredGrid, location);
-        // while (nextLocations.Any())
-        // {
-        //     var locs = nextLocations.Select(x => x).ToArray();
-        //     nextLocations.Clear();
-        //     
-        //     count++;
-        //     foreach (var loc in locs)
-        //     {
-        //         scoredGrid[loc.row][loc.col] = count;
-        //         nextLocations.AddRange(GetNextLocations(scoredGrid, loc));
-        //     }
-        //
-        // }
 
         return scoredGrid;
     }
 
-    private static List<(int row, int col)> GetNextLocations(int?[][] scoredGrid, (int row, int col) location)
+    private static IEnumerable<(int row, int col)> GetGalaxyLocations(IReadOnlyList<char[]> finalGrid)
     {
-        var nextLocations = new List<(int row, int col)>();
-        if (location.row > 0)
+        for (var row = 0; row < finalGrid.Count; row++)
         {
-            if (scoredGrid[location.row - 1][location.col] == null)
-            {
-                nextLocations.Add((location.row - 1, location.col));
-            }
-        }
-
-        if (location.row < scoredGrid.Length - 1)
-        {
-            if (scoredGrid[location.row + 1][location.col] == null)
-            {
-                nextLocations.Add((location.row + 1, location.col));
-            }
-        }
-
-        if (location.col > 0)
-        {
-            if (scoredGrid[location.row][location.col - 1] == null)
-            {
-                nextLocations.Add((location.row, location.col - 1));
-            }
-        }
-
-        if (location.col < scoredGrid[0].Length - 1)
-        {
-            if (scoredGrid[location.row][location.col + 1] == null)
-            {
-                nextLocations.Add((location.row, location.col + 1));
-            }
-        }
-
-        return nextLocations;
-    }
-
-    private static IEnumerable<(int row, int col)> GetGalaxyLocations(List<char>[] finalGrid)
-    {
-        for (var row = 0; row < finalGrid.Length; row++)
-        {
-            for (var col = 0; col < finalGrid[0].Count; col++)
+            for (var col = 0; col < finalGrid[0].Length; col++)
             {
                 if (finalGrid[row][col] == '#')
                 {
@@ -190,45 +160,5 @@ public static class Day11
                 }
             }
         }
-    }
-
-    private static List<char>[] ExpandGridColumns(string[] input, List<string> grid)
-    {
-        var finalGrid = Enumerable.Range(0, grid.Count).Select(_ => new List<char>()).ToArray();
-
-        // expand cols
-        for (var col = 0; col < input.Length; col++)
-        {
-            var wholeCol = grid.Select(row => row[col]).ToArray();
-            for (var row = 0; row < grid.Count; row++)
-            {
-                finalGrid[row].Add(grid[row][col]);
-
-                if (wholeCol.All(x => x == '.'))
-                {
-                    finalGrid[row].Add('.');
-                }
-            }
-        }
-
-        return finalGrid;
-    }
-
-    private static List<string> ExpandGridRows(string[] input)
-    {
-        var grid = new List<string>();
-
-        // expand rows
-        foreach (var line in input)
-        {
-            grid.Add(line);
-            
-            if (line.All(x => x == '.'))
-            {
-                grid.Add(line);
-            }
-        }
-
-        return grid;
     }
 }

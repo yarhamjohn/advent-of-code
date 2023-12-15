@@ -11,7 +11,27 @@ public class Day11Tests
         var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day11Tests/Input/example.txt");
         var input = File.ReadAllLines(inputPath);
 
-        var result = Day11.SumPathLengths(input);
+        var result = Day11.SumPathLengths(input, 2);
         Assert.That(result, Is.EqualTo(374));
+    }
+    
+    [Test]
+    public void SumExtrapolatedValuesBig()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day11Tests/Input/example.txt");
+        var input = File.ReadAllLines(inputPath);
+
+        var result = Day11.SumPathLengths(input, 10);
+        Assert.That(result, Is.EqualTo(1030));
+    }
+    
+    [Test]
+    public void SumExtrapolatedValuesBig2()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day11Tests/Input/example.txt");
+        var input = File.ReadAllLines(inputPath);
+
+        var result = Day11.SumPathLengths(input, 100);
+        Assert.That(result, Is.EqualTo(8410));
     }
 }
