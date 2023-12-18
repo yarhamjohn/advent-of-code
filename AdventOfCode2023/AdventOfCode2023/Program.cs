@@ -45,6 +45,7 @@ long Day11A() => Day11.SumPathLengths(File.ReadAllLines("./Day11/input.txt"), 2)
 long Day11B() => Day11.SumPathLengths(File.ReadAllLines("./Day11/input.txt"), 1000000);
 
 long Day12A() => Day12.SumDamageCombinations(File.ReadAllLines("./Day12/input.txt"));
+long Day12B() => Day12.SumDamageCombinationsUnfolded(File.ReadAllLines("./Day12/input.txt"));
 
-Console.WriteLine(Day12A());
-// Console.WriteLine(Day12B());
+// Console.WriteLine(Day12A());
+Console.WriteLine(Day12B());
