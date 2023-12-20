@@ -40,6 +40,13 @@ public static class Day12
 
     private static List<string> GetCombinations(StringBuilder current, List<string> found, string remainder, int[] springs)
     {
+        Console.WriteLine("-----------");
+        Console.WriteLine(current);
+        Console.WriteLine(string.Join(",", found));
+        Console.WriteLine(remainder);
+        Console.WriteLine(string.Join(",", springs));
+        Console.WriteLine("-----------");
+
         // There are no more things to fit
         if (springs.Length == 0)
         {
@@ -59,7 +66,7 @@ public static class Day12
             // skip known dots
             if (remainder[i] == '.')
             {
-                current.Append(remainder[i]);
+                current.Append(remainder[i].ToString());
                 continue;
             }
             
@@ -77,9 +84,22 @@ public static class Day12
             if (remainder[i..(i + firstSpring)].All(x => x != '.'))
             {
                 // check there is no spring immediately after its end
-                if (firstSpring == (remainder.Length - i) || remainder[i + firstSpring] != '#')
+                if (firstSpring == remainder.Length - i || remainder[i + firstSpring] != '#')
                 {
-                    current.Append(Enumerable.Range(0, firstSpring).Select(_ => "#"));
+                    var idx = current.Length;
+                    current.Append(string.Join("", Enumerable.Range(0, firstSpring).Select(_ => "#")));
+                    if (firstSpring < remainder.Length - i)
+                    {
+                        current.Append(".");
+                        GetCombinations(current, found, remainder[(i + firstSpring + 1)..].ToString(), springs[1..]);
+                        current.Remove(idx, firstSpring + 1);
+                    }
+                    else
+                    {
+                        GetCombinations(current, found, remainder[(i + firstSpring)..].ToString(),
+                            springs[1..]);
+                        current.Remove(idx, firstSpring);
+                    }
                 }
             }
         }
