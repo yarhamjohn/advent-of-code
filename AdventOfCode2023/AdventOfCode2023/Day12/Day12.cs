@@ -9,20 +9,21 @@ public static class Day12
     {
         var lines = input.Select(x => x.Split(" ")).Select(y => (y[0], y[1].Split(",").Select(int.Parse).ToArray()));
 
-        // for each line
-        // recursively
-        // put first item in string
-        // repeat with other items until they don't fit
-        // if all fit, add 1 to score
-        // each level, shift right until they don't fit
-
         var combinations = 0;
         foreach (var line in lines)
         {
-            var found = GetCombinations(new StringBuilder(), new List<string>(), line.Item1, line.Item2);
+            found = new List<string>(); 
+            GetCombinations("", line.Item1, line.Item2);
+            
+            // Console.WriteLine("================");
+            Console.WriteLine(line.Item1 + " - " + found.Count);
+            // Console.WriteLine(string.Join(",", found));
+            // Console.WriteLine("================");
+
             combinations += found.ToHashSet().Count;
         }
 
+        Console.WriteLine("===================== " + combinations);
         return combinations;
         
         var totalCombinations = 0;
@@ -38,122 +39,138 @@ public static class Day12
         return totalCombinations;
     }
 
-    private static List<string> GetCombinations(StringBuilder current, List<string> found, string remainder, int[] springs)
+    private static List<string> found;
+
+    private static void GetCombinations(string current, string remainder, int[] springs)
     {
-        Console.WriteLine("-----------");
-        Console.WriteLine(current);
-        Console.WriteLine(string.Join(",", found));
-        Console.WriteLine(remainder);
-        Console.WriteLine(string.Join(",", springs));
-        Console.WriteLine("-----------");
+        // Console.WriteLine("-----------");
+        // Console.WriteLine(current);
+        // Console.WriteLine(string.Join(",", found));
+        // Console.WriteLine(remainder);
+        // Console.WriteLine(string.Join(",", springs));
+        // Console.WriteLine("-----------");
 
         // There are no more things to fit
         if (springs.Length == 0)
         {
-            // Add any trailing bits
-            current.Append(remainder);
+            // If there are springs remaining, its invalid
+            if (remainder.Any(x => x == '#'))
+            {
+                return;
+            }
             
-            // Add the mask to the found list
-            found.Add(current.ToString());
-            
+            // Add the remainder and include in found
+            found.Add(current + string.Join("", Enumerable.Range(0, remainder.Length).Select(_ => ".")));
+
             // return
-            return found;
-        }
-        
-        // find first index where it fits
-        for (var i = 0; i < remainder.Length; i++)
-        {
-            // skip known dots
-            if (remainder[i] == '.')
-            {
-                current.Append(remainder[i].ToString());
-                continue;
-            }
-            
-            // can't fit the rest in
-            if (i + springs.Sum() + (springs.Length - 1) > remainder.Length)
-            {
-                current.Append(remainder);
-                found.Add(current.ToString());
-                break;
-            }
-
-            var firstSpring = springs.First();
-            
-            // check it can fit spring
-            if (remainder[i..(i + firstSpring)].All(x => x != '.'))
-            {
-                // check there is no spring immediately after its end
-                if (firstSpring == remainder.Length - i || remainder[i + firstSpring] != '#')
-                {
-                    var idx = current.Length;
-                    current.Append(string.Join("", Enumerable.Range(0, firstSpring).Select(_ => "#")));
-                    if (firstSpring < remainder.Length - i)
-                    {
-                        current.Append(".");
-                        GetCombinations(current, found, remainder[(i + firstSpring + 1)..].ToString(), springs[1..]);
-                        current.Remove(idx, firstSpring + 1);
-                    }
-                    else
-                    {
-                        GetCombinations(current, found, remainder[(i + firstSpring)..].ToString(),
-                            springs[1..]);
-                        current.Remove(idx, firstSpring);
-                    }
-                }
-            }
-        }
-
-        return found;
-    }
-    
-    private static int num = 0;
-
-    private static void CountCombinations(string conditions, int[] springs)
-    {
-        Console.WriteLine(conditions + " | " + string.Join(",", springs) + " | " + num);
-        // all the springs fitted
-        if (springs.Length == 0)
-        {
-            Console.WriteLine("Add 1");
-            num++;
             return;
         }
 
-        var firstSpring = springs.First();
-
         // find first index where it fits
-        for (var i = 0; i < conditions.Length; i++)
+        for (var i = 0; i < remainder.Length; i++)
         {
+            var firstSpring = springs.First();
+
             // skip known dots
-            if (conditions[i] == '.')
+            if (remainder[i] == '.')
             {
+                // break if we are part way through the spring
+                if (current.Length >= firstSpring && current[^1] == '#' && current[^firstSpring..].Any(x => x != '#'))
+                {
+                    break;
+                }
+                
+                current += remainder[i].ToString();
                 continue;
             }
-            
+
             // can't fit the rest in
-            if (i + springs.Sum() + (springs.Length - 1) > conditions.Length)
+            if (i + springs.Sum() + (springs.Length - 1) > remainder.Length)
             {
                 break;
             }
             
-            // check it can fit spring
-            if (conditions[i..(i + firstSpring)].All(x => x != '.'))
+            // if in middle of spring we have already evaluated, finish it
+            if (i > 0 && (remainder[i - 1] == '#' || current[^1] == '#'))
             {
-                // check there is no spring immediately after its end
-                if (firstSpring == (conditions.Length - i) || conditions[i+firstSpring] != '#')
+                if (remainder[i] == '?')
                 {
-                    // Add space for a trailing '.' if its not the last spring and the next place is not a '.'
-                    var remainingConditions = springs.Length == 1
-                        ? conditions[(i + firstSpring)..]
-                        : conditions[i + firstSpring] == '.'
-                            ? conditions[(i + firstSpring)..]
-                            : conditions[(i + firstSpring + 1)..];
-
-                    var remainingSprings = springs[1..];
-
-                    CountCombinations(remainingConditions, remainingSprings);
+                    // spring is complete so go to the next
+                    if (current.Length >= firstSpring && current[^firstSpring..].All(x => x == '#'))
+                    {
+                        current += ".";
+                        springs = springs[1..];
+                        firstSpring = springs.First();
+                    }
+                    else
+                    {
+                        current += "#";
+                        continue;
+                    }
                 }
+            
+                if (remainder[i] == '#')
+                {
+                    current += '#';
+                    continue;
+                }
+            }
+
+            // check it can fit spring
+            if (remainder[i..(i + firstSpring)].All(x => x != '.'))
+            {
+                // check there is no spring immediately after its end or before its start
+                if (firstSpring == remainder.Length - i || remainder[i + firstSpring] != '#')
+                {
+                    current += string.Join("", Enumerable.Range(0, firstSpring).Select(_ => "#"));
+                    if (firstSpring < remainder.Length - i)
+                    {
+                        current += ".";
+                        GetCombinations(current, remainder[(i + firstSpring + 1)..], springs[1..]);
+                        current = current[..^(firstSpring + 1)];
+                    }
+                    else
+                    {
+                        GetCombinations(current, remainder[(i + firstSpring)..], springs[1..]);
+                        current = current[..^firstSpring];
+                    }
+                    
+                    // if the position was unknown, we now assign it to be '.' and go on
+                    if (remainder[i] == '?')
+                    {
+                        current += ".";
+                    }
+
+                    // if it was the last spring and it was fixed don't carry on
+                    if (remainder[i] == '#' && springs.Length == 1)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    // this is required to be included but couldn't be
+                    if (remainder[i] == '#')
+                    {
+                        break;
+                    }
+                    
+                    // it must have been unknown but now can't be a spring
+                    current += ".";
+                }
+            }
+            else
+            {
+                // there is a spring here but we can't use it
+                var firstIndexOfASpring = remainder[i..(i + firstSpring)].IndexOf('#');
+                var lastIndexOfASpace = remainder[i..(i + firstSpring)].LastIndexOf('.');
+                if (firstIndexOfASpring != -1 && lastIndexOfASpace != -1 && firstIndexOfASpring < lastIndexOfASpace)
+                {
+                    break;
+                }
+                
+                // it must have been unknown but now can't be a spring
+                current += ".";
             }
         }
     }
@@ -163,6 +180,23 @@ public static class Day12
         var lines = input.Select(x => x.Split(" ")).Select(y => (y[0], y[1].Split(",").Select(int.Parse).ToArray()));
         var unfoldedLines = Unfold(lines);
 
+        var combinations = 0;
+        foreach (var line in unfoldedLines)
+        {
+            found = new List<string>(); 
+            GetCombinations("", line.Item1, line.Item2);
+            
+            // Console.WriteLine("================");
+            Console.WriteLine(line.Item1 + " - " + found.Count);
+            // Console.WriteLine(string.Join(",", found));
+            // Console.WriteLine("================");
+
+            combinations += found.ToHashSet().Count;
+        }
+
+        Console.WriteLine("===================== " + combinations);
+        return combinations;
+        
         var totalCombinations = 0;
         foreach (var (line, places) in unfoldedLines)
         {
@@ -199,30 +233,6 @@ public static class Day12
         return line
             .Where((ch, idx) => ch != mask[idx])
             .All(ch => ch == '?');
-    }
-
-    public static List<string> GetMasks2(int lineLength, int[] places)
-    {
-        var result = new List<string>();
-
-        var numDots = lineLength - places.Sum();
-        var numGaps = places.Length + 1; // gaps between numbers and start/end
-        var minimumString = string.Join(".", places.Select(x => Enumerable.Range(1, x).Select(_ => "#")));
-        var remainingDots = lineLength - minimumString.Length;
-
-        if (remainingDots == 0)
-        {
-            result.Add(minimumString);
-        } else if (remainingDots == 1)
-        {
-            var gapIndexes = minimumString.Select((x, i) => (x, i)).Where(y => y.x == '.').Select(z => z.i).Concat(new List<int> {0, minimumString.Length});
-            foreach (var gap in gapIndexes)
-            {
-                result.Add(minimumString[..gap] + "." + minimumString[gap..]);
-            }
-        }
-        
-        return result;
     }
 
     public static IEnumerable<string> GetMasks(int lineLength, int[] places)
