@@ -44,8 +44,9 @@ long Day10B() => Day10.CountInternalSpaces(File.ReadAllLines("./Day10/input.txt"
 long Day11A() => Day11.SumPathLengths(File.ReadAllLines("./Day11/input.txt"), 2);
 long Day11B() => Day11.SumPathLengths(File.ReadAllLines("./Day11/input.txt"), 1000000);
 
-long Day12A() => Day12.SumDamageCombinations(File.ReadAllLines("./Day12/input.txt"));
-long Day12B() => Day12.SumDamageCombinationsUnfolded(File.ReadAllLines("./Day12/input.txt"));
+long Day12A() => Day12.test(File.ReadAllLines("./Day12/input.txt"));
+long Day12B() => Day12.testUnfolded(File.ReadAllLines("./Day12/input.txt"));
+long Day12C() => Day12.testUnfolded(new[] { "#???????????????#?? 3,2,1,5"});
 
-Console.WriteLine(Day12A());
-// Console.WriteLine(Day12B());
+// Console.WriteLine(Day12A());
+Console.WriteLine(Day12B());

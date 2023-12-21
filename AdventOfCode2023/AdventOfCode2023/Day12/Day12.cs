@@ -9,23 +9,52 @@ public static class Day12
     {
         var lines = input.Select(x => x.Split(" ")).Select(y => (y[0], y[1].Split(",").Select(int.Parse).ToArray()));
 
+        var num = 0;
         foreach (var line in lines)
         {
-            Console.WriteLine("====================");
-            Console.WriteLine(line.Item1 + " " + string.Join(",", line.Item2));
-            recurse(line.Item1, line.Item2, 0);
+            seen = new();
+            // Console.WriteLine("==================== " + seen.Count);
+            // Console.WriteLine(line.Item1 + " " + string.Join(",", line.Item2));
+            Recurse(line.Item1, line.Item2, 0);
+            // Console.WriteLine("==================== " + seen.Count);
+            num += seen.Count;
+        }
+
+        return num;
+    }
+
+    // Need shortcuts. It should be possible to identify that we have reached
+    // a position in the line, where we know how many matches there are given the
+    // remaining springs
+    public static long testUnfolded(string[] input)
+    {
+        var lines = input.Select(x => x.Split(" ")).Select(y => (y[0], y[1].Split(",").Select(int.Parse).ToArray()));
+        var unfoldedLines = Unfold(lines);
+
+        var num = 0L;
+        var count = 0;
+        foreach (var line in unfoldedLines)
+        {
+            count++;
+            seen = new();
+            // Console.WriteLine("==================== " + seen.Count);
+            // Console.WriteLine(line.Item1 + " " + string.Join(",", line.Item2));
+            Recurse(line.Item1, line.Item2, 0);
+            Console.WriteLine(count + ": " + line.Item1 + " - " + seen.Count);
+            num += seen.Count;
         }
 
         return num;
     }
     
-    private static int num = 0;
+    private static HashSet<string> seen;
 
-    private static void recurse(string line, int[] springs, int position)
+    private static void Recurse(string line, int[] springs, int position)
     {
-        if (position == line.Length - 1)
+        if (position == line.Length)
         {
-            num++;
+            // Console.WriteLine("++++++++++++ " + line);
+            seen.Add(line);
             return;
         }
         
@@ -42,125 +71,97 @@ public static class Day12
 
         foreach (var l in possibleLines)
         {
-            if (isValid(l, springs, position))
+            if (IsValid(l, springs, position))
             {
-                Console.WriteLine(l + " - TRUE - " + position);
-                recurse(l, springs, position + 1);
+                // Console.WriteLine(l + " - TRUE - " + position);
+                Recurse(l, springs, position + 1);
             }
             else
             {
-                Console.WriteLine(l + " - FALSE - " + position);
+                // Console.WriteLine(l + " - FALSE - " + position);
             }
         }
     }
 
-    private static bool isValid(string line, int[] springs, int position)
+    private static bool IsValid(string line, int[] springs, int position)
     {
-        // Return if it can't fit
-        if (!canFitRestIn(line, springs, position))
+        var (seenSprings, inPlay) = GetSeenSprings(line, position);
+
+        // if more springs were already seen than we have, its invalid
+        if (seenSprings.Count > springs.Length)
         {
             return false;
         }
 
-        // return if springs are invalid matches
-        var inPlaySprings = new List<int>();
-        var inPlay = false;
-        for (var i = 0; i < position; i++)
-        {
-            if (line[i] == '#')
-            {
-                if (inPlay)
-                {
-                    inPlaySprings[^1]++;
-                }
-                else
-                {
-                    inPlaySprings.Add(1);
-                    inPlay = true;
-                }
-            }
-
-            if (line[i] == '.')
-            {
-                inPlay = false;
-            }
-        }
-
-        if (inPlaySprings.Count > springs.Length)
+        // If the remaining springs can't fit the rest of the line, its not valid
+        if (!CanFitRestIn(line, springs, position, seenSprings, inPlay))
         {
             return false;
         }
 
-        for (var x = 0; x < inPlaySprings.Count; x++)
-        {
-            if (inPlaySprings[x] == springs[x])
-            {
-                continue;
-            }
-
-            if (inPlaySprings[x] < springs[x] && x == inPlaySprings.Count - 1 & inPlay)
-            {
-                continue;
-            }
-
-            if (inPlaySprings[x] > springs[x])
-            {
-                return false;
-            }
-        }
-        
-        return true;
+        // If there any already seen springs which have an incorrect length, its not valid
+        return !seenSprings.Where((t, x) => t > springs[x]).Any();
     }
 
-    private static bool canFitRestIn(string line, int[] springs, int position)
+    private static bool CanFitRestIn(string line, int[] springs, int position, List<int> seenSprings, bool inPlay)
     {
-        var (seenSprings, inPlay) = getSeenSprings(line, position);
+        var totalSpringLengthLeft = springs[seenSprings.Count..].Sum();
+        var numSpringsLeft = springs[seenSprings.Count..].Length;
 
-        var requiredSpace = 0;
+        int requiredSpringSpace;
+        int requiredGapSpace;
         if (inPlay)
         {
-            // inplay spring was complete
+            // The current spring was complete
             if (seenSprings[^1] == springs[seenSprings.Count - 1])
             {
-                // remaining springs + gaps (including gap after inplay spring
-                requiredSpace = springs[seenSprings.Count..].Sum() + (springs[seenSprings.Count..].Length - 1) + 1;
+                requiredSpringSpace = totalSpringLengthLeft;
+                requiredGapSpace = numSpringsLeft;
             }
             else
             {
-                // remaining springs + remainder of current spring + gaps
-                requiredSpace = springs[seenSprings.Count - 1] - seenSprings[^1] + springs[seenSprings.Count..].Sum() + (springs[seenSprings.Count..].Length - 1) + 1;
+                // The current spring was incomplete
+                var remainsOfCurrentSpring = springs[seenSprings.Count - 1] - seenSprings[^1];
+                requiredSpringSpace = remainsOfCurrentSpring + totalSpringLengthLeft;
+                requiredGapSpace = numSpringsLeft;
             }
         }
         else
         {
-            requiredSpace = springs[seenSprings.Count..].Sum() + (springs[seenSprings.Count..].Length - 1);
+            // The last spring was completed but smaller than required, so it is invalid
+            if (seenSprings.Count != 0 && seenSprings[^1] < springs[seenSprings.Count - 1])
+            {
+                return false;
+            }
+            
+            requiredSpringSpace = totalSpringLengthLeft;
+            requiredGapSpace = numSpringsLeft - 1;
         }
 
-        var availableSpace = line[position..].Length;
-        return requiredSpace >= availableSpace;
+        var availableSpringSpace = line[(position + 1)..].Count(x => x != '.');
+        var availableSpace = line[(position + 1)..].Length;
+        return requiredSpringSpace <= availableSpringSpace && requiredSpringSpace + requiredGapSpace <= availableSpace;
     }
 
-    private static (List<int> seenSprings, bool inPlay) getSeenSprings(string line, int position)
+    private static (List<int> seenSprings, bool inPlay) GetSeenSprings(string line, int position)
     {
         var seenSprings = new List<int>();
         var inPlay = false;
+        
         for (var i = 0; i <= position; i++)
         {
-            if (line[i] == '#')
+            switch (line[i])
             {
-                if (inPlay)
-                {
+                case '#' when inPlay:
                     seenSprings[^1]++;
-                }
-                else
-                {
+                    break;
+                case '#':
                     seenSprings.Add(1);
                     inPlay = true;
-                }
-            }
-            else
-            {
-                inPlay = false;
+                    break;
+                default:
+                    inPlay = false;
+                    break;
             }
         }
 
@@ -342,22 +343,22 @@ public static class Day12
         var lines = input.Select(x => x.Split(" ")).Select(y => (y[0], y[1].Split(",").Select(int.Parse).ToArray()));
         var unfoldedLines = Unfold(lines);
 
-        var combinations = 0;
-        foreach (var line in unfoldedLines)
-        {
-            found = new List<string>(); 
-            GetCombinations("", line.Item1, line.Item2);
-            
-            // Console.WriteLine("================");
-            Console.WriteLine(line.Item1 + " - " + found.Count);
-            // Console.WriteLine(string.Join(",", found));
-            // Console.WriteLine("================");
-
-            combinations += found.ToHashSet().Count;
-        }
-
-        Console.WriteLine("===================== " + combinations);
-        return combinations;
+        // var combinations = 0;
+        // foreach (var line in unfoldedLines)
+        // {
+        //     found = new List<string>(); 
+        //     GetCombinations("", line.Item1, line.Item2);
+        //     
+        //     // Console.WriteLine("================");
+        //     Console.WriteLine(line.Item1 + " - " + found.Count);
+        //     // Console.WriteLine(string.Join(",", found));
+        //     // Console.WriteLine("================");
+        //
+        //     combinations += found.ToHashSet().Count;
+        // }
+        //
+        // Console.WriteLine("===================== " + combinations);
+        // return combinations;
         
         var totalCombinations = 0;
         foreach (var (line, places) in unfoldedLines)

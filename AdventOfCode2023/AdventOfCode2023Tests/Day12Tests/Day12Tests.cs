@@ -14,6 +14,27 @@ public class Day12Tests
         var result = Day12.test(input);
         Assert.That(result, Is.EqualTo(21));
     }
+    
+    
+    [TestCase("???.### 1,1,3", 1)]
+    [TestCase(".??..??...?##. 1,1,3", 4)]
+    [TestCase("?#?#?#?#?#?#?#? 1,3,1,6", 1)]
+    [TestCase("????.#...#... 4,1,1", 1)]
+    [TestCase("????.######..#####. 1,6,5", 4)]
+    [TestCase("?###???????? 3,2,1", 10)]
+    [TestCase("#???????????????#?? 3,2,1,5", 46)]
+    public static void test2(string line, int expected)
+    {
+        var result = Day12.test(new []{line});
+        Assert.That(result, Is.EqualTo(expected));
+    }
+
+    [TestCase("#???????????????#?? 3,2,1,5", 1)]
+    public static void test3(string line, int expected)
+    {
+        var result = Day12.testUnfolded(new []{line});
+        Assert.That(result, Is.EqualTo(expected));
+    }
 
     [Test]
     public static void SumDamageCombinations()
@@ -31,7 +52,7 @@ public class Day12Tests
         var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day12Tests/Input/example.txt");
         var input = File.ReadAllLines(inputPath);
 
-        var result = Day12.SumDamageCombinationsUnfolded(input);
+        var result = Day12.testUnfolded(input);
         Assert.That(result, Is.EqualTo(525152));
     }
     
