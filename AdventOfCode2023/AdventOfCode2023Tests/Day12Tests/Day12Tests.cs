@@ -6,6 +6,16 @@ namespace AdventOfCode2023Tests.Day12Tests;
 public class Day12Tests
 {
     [Test]
+    public static void test()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day12Tests/Input/example.txt");
+        var input = File.ReadAllLines(inputPath);
+
+        var result = Day12.test(input);
+        Assert.That(result, Is.EqualTo(21));
+    }
+
+    [Test]
     public static void SumDamageCombinations()
     {
         var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day12Tests/Input/example.txt");

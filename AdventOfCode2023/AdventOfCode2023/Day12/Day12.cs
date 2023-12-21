@@ -5,6 +5,168 @@ namespace AdventOfCode2023.Day12;
 
 public static class Day12
 {
+    public static long test(string[] input)
+    {
+        var lines = input.Select(x => x.Split(" ")).Select(y => (y[0], y[1].Split(",").Select(int.Parse).ToArray()));
+
+        foreach (var line in lines)
+        {
+            Console.WriteLine("====================");
+            Console.WriteLine(line.Item1 + " " + string.Join(",", line.Item2));
+            recurse(line.Item1, line.Item2, 0);
+        }
+
+        return num;
+    }
+    
+    private static int num = 0;
+
+    private static void recurse(string line, int[] springs, int position)
+    {
+        if (position == line.Length - 1)
+        {
+            num++;
+            return;
+        }
+        
+        var possibleLines = new List<string>();
+        if (line[position] is '.' or '#')
+        {
+            possibleLines.Add(line);
+        }
+        else
+        {
+            possibleLines.Add(line[..position] + "." + line[(position + 1)..]);
+            possibleLines.Add(line[..position] + "#" + line[(position + 1)..]);
+        }
+
+        foreach (var l in possibleLines)
+        {
+            if (isValid(l, springs, position))
+            {
+                Console.WriteLine(l + " - TRUE - " + position);
+                recurse(l, springs, position + 1);
+            }
+            else
+            {
+                Console.WriteLine(l + " - FALSE - " + position);
+            }
+        }
+    }
+
+    private static bool isValid(string line, int[] springs, int position)
+    {
+        // Return if it can't fit
+        if (!canFitRestIn(line, springs, position))
+        {
+            return false;
+        }
+
+        // return if springs are invalid matches
+        var inPlaySprings = new List<int>();
+        var inPlay = false;
+        for (var i = 0; i < position; i++)
+        {
+            if (line[i] == '#')
+            {
+                if (inPlay)
+                {
+                    inPlaySprings[^1]++;
+                }
+                else
+                {
+                    inPlaySprings.Add(1);
+                    inPlay = true;
+                }
+            }
+
+            if (line[i] == '.')
+            {
+                inPlay = false;
+            }
+        }
+
+        if (inPlaySprings.Count > springs.Length)
+        {
+            return false;
+        }
+
+        for (var x = 0; x < inPlaySprings.Count; x++)
+        {
+            if (inPlaySprings[x] == springs[x])
+            {
+                continue;
+            }
+
+            if (inPlaySprings[x] < springs[x] && x == inPlaySprings.Count - 1 & inPlay)
+            {
+                continue;
+            }
+
+            if (inPlaySprings[x] > springs[x])
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    private static bool canFitRestIn(string line, int[] springs, int position)
+    {
+        var (seenSprings, inPlay) = getSeenSprings(line, position);
+
+        var requiredSpace = 0;
+        if (inPlay)
+        {
+            // inplay spring was complete
+            if (seenSprings[^1] == springs[seenSprings.Count - 1])
+            {
+                // remaining springs + gaps (including gap after inplay spring
+                requiredSpace = springs[seenSprings.Count..].Sum() + (springs[seenSprings.Count..].Length - 1) + 1;
+            }
+            else
+            {
+                // remaining springs + remainder of current spring + gaps
+                requiredSpace = springs[seenSprings.Count - 1] - seenSprings[^1] + springs[seenSprings.Count..].Sum() + (springs[seenSprings.Count..].Length - 1) + 1;
+            }
+        }
+        else
+        {
+            requiredSpace = springs[seenSprings.Count..].Sum() + (springs[seenSprings.Count..].Length - 1);
+        }
+
+        var availableSpace = line[position..].Length;
+        return requiredSpace >= availableSpace;
+    }
+
+    private static (List<int> seenSprings, bool inPlay) getSeenSprings(string line, int position)
+    {
+        var seenSprings = new List<int>();
+        var inPlay = false;
+        for (var i = 0; i <= position; i++)
+        {
+            if (line[i] == '#')
+            {
+                if (inPlay)
+                {
+                    seenSprings[^1]++;
+                }
+                else
+                {
+                    seenSprings.Add(1);
+                    inPlay = true;
+                }
+            }
+            else
+            {
+                inPlay = false;
+            }
+        }
+
+        return (seenSprings, inPlay);
+    }
+
     public static long SumDamageCombinations(string[] input)
     {
         var lines = input.Select(x => x.Split(" ")).Select(y => (y[0], y[1].Split(",").Select(int.Parse).ToArray()));
