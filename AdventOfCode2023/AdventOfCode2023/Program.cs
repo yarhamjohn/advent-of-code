@@ -5,6 +5,7 @@ using AdventOfCode2023.Day12;
 using AdventOfCode2023.Day13;
 using AdventOfCode2023.Day14;
 using AdventOfCode2023.Day15;
+using AdventOfCode2023.Day16;
 using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
@@ -60,5 +61,8 @@ long Day14B() => Day14.SumRockLoadCycles(File.ReadAllLines("./Day14/input.txt"))
 long Day15A() => Day15.SumHashAlgorithm(File.ReadAllText("./Day15/input.txt"));
 long Day15B() => Day15.CalculateFocusingPower(File.ReadAllText("./Day15/input.txt"));
 
-Console.WriteLine(Day15A());
-Console.WriteLine(Day15B());
+long Day16A() => Day16.CountEnergizedTiles(File.ReadAllLines("./Day16/input.txt"));
+long Day16B() => Day16.MaxEnergizedTiles(File.ReadAllLines("./Day16/input.txt"));
+
+// Console.WriteLine(Day16A());
+Console.WriteLine(Day16B());
