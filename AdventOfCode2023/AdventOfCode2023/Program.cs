@@ -3,6 +3,7 @@ using AdventOfCode2023.Day10;
 using AdventOfCode2023.Day11;
 using AdventOfCode2023.Day12;
 using AdventOfCode2023.Day13;
+using AdventOfCode2023.Day14;
 using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
@@ -52,5 +53,8 @@ long Day12C() => Day12.testUnfolded(new[] { "#???????????????#?? 3,2,1,5"});
 long Day13A() => Day13.ReflectionSum(File.ReadAllLines("./Day13/input.txt"));
 long Day13B() => Day13.ReflectionSmudgeSum(File.ReadAllLines("./Day13/input.txt"));
 
-// Console.WriteLine(Day13A());
-Console.WriteLine(Day13B());
+long Day14A() => Day14.SumRockLoad(File.ReadAllLines("./Day14/input.txt"));
+long Day14B() => Day14.SumRockLoadCycles(File.ReadAllLines("./Day14/input.txt"));
+
+// Console.WriteLine(Day14A());
+Console.WriteLine(Day14B());
