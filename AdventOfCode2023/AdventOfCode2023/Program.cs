@@ -4,6 +4,7 @@ using AdventOfCode2023.Day11;
 using AdventOfCode2023.Day12;
 using AdventOfCode2023.Day13;
 using AdventOfCode2023.Day14;
+using AdventOfCode2023.Day15;
 using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
@@ -56,5 +57,8 @@ long Day13B() => Day13.ReflectionSmudgeSum(File.ReadAllLines("./Day13/input.txt"
 long Day14A() => Day14.SumRockLoad(File.ReadAllLines("./Day14/input.txt"));
 long Day14B() => Day14.SumRockLoadCycles(File.ReadAllLines("./Day14/input.txt"));
 
-// Console.WriteLine(Day14A());
-Console.WriteLine(Day14B());
+long Day15A() => Day15.SumHashAlgorithm(File.ReadAllText("./Day15/input.txt"));
+long Day15B() => Day15.CalculateFocusingPower(File.ReadAllText("./Day15/input.txt"));
+
+Console.WriteLine(Day15A());
+Console.WriteLine(Day15B());

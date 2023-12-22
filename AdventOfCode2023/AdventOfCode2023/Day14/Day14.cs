@@ -14,27 +14,20 @@ public static class Day14
     public static long SumRockLoadCycles(string[] input)
     {
         var platform = ParseInput(input);
-        var platform2 = ParseInput(input);
         // PrintPlatform(platform);
 
         for (var i = 0; i < 1000000000; i++)
         {
             if (i % 100000 == 0)
             {
-                Console.WriteLine("Reached " + i + " cycles");
+                Console.Write("Reached " + i + " cycles");
             }
             
             TiltNorth(platform);
             TiltWest(platform);
             TiltSouth(platform);
             TiltEast(platform);
-
-            if (MatchesStart(platform, platform2))
-            {
-                Console.WriteLine("It matched after " + i + 1 + " cycles");
-                break;
-            }
-
+            
             // PrintPlatform(platform);
         }
         
