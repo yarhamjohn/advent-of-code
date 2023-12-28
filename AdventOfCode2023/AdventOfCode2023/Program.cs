@@ -73,6 +73,7 @@ long Day18A() => Day18.CalculateLagoonSize(File.ReadAllLines("./Day18/input.txt"
 long Day18B() => Day18.CalculateGiantLagoonSize(File.ReadAllLines("./Day18/input.txt"));
 
 long Day19A() => Day19.SumPartRatings(File.ReadAllLines("./Day19/input.txt"));
+long Day19B() => Day19.SumPartRatingsSuper(File.ReadAllLines("./Day19/input.txt"));
 
-Console.WriteLine(Day19A());
-// Console.WriteLine(Day18B());
+// Console.WriteLine(Day19A());
+Console.WriteLine(Day19B());
