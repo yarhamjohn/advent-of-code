@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
-namespace AdventOfCode2023.Day18;
+﻿namespace AdventOfCode2023.Day18;
 
 public static class Day18
 {
@@ -9,7 +6,26 @@ public static class Day18
     {
         var parsedInput = ParseInput(input);
         
-        // assume it starts at (0, 0)
+        var edgePositions = GetRelativeEdgePositions(parsedInput);
+        
+        edgePositions = NormalisePositions(edgePositions);
+
+        return Calculate(edgePositions);
+    }
+
+    private static (int row, int col)[] NormalisePositions((int row, int col)[] edgePositions)
+    {
+        edgePositions = edgePositions.Order().ToArray();
+
+        // Assumes min is negative and add buffer so top/bottom row and left/right cols are all empty
+        var minRow = edgePositions.Min(x => x.row) - 1; 
+        var minCol = edgePositions.Min(x => x.col) - 1;
+        
+        return edgePositions.Select(x => (x.row - minRow, x.col - minCol)).ToArray();
+    }
+
+    private static (int row, int col)[] GetRelativeEdgePositions(IEnumerable<(string direction, int count, string colour)> parsedInput)
+    {
         var positions = new List<(int row, int col)>();
         var currentPosition = (row: 0, col: 0);
         foreach (var x in parsedInput)
@@ -46,101 +62,130 @@ public static class Day18
             }
         }
 
-        // Console.WriteLine(string.Join(",", positions));
+        return positions.ToArray();
+    }
 
-        var orderedPositions = positions.Order().ToArray();
-
-        Print(orderedPositions);
-        PrintFull(orderedPositions);
+    private static long Calculate((int row, int col)[] orderedPositions)
+    {
+        var num = 0L;
         
-        // Console.WriteLine(string.Join(",", orderedPositions));
+        var min = (orderedPositions.Min(x => x.row), orderedPositions.Min(x => x.col));
+        var max = (orderedPositions.Max(x => x.row), orderedPositions.Max(x => x.col));
 
-        var num = 0;
-        var groups = orderedPositions.GroupBy(x => x.row);
-        foreach (var group in groups)
+        for (var i = min.Item1; i <= max.Item1; i++)
         {
-            var cols = group.Select(x => x.col);
-
             var inGrp = false;
-            for (var i = cols.Min(); i <= cols.Max(); i++)
+            var startGrp = false;
+            var multiEdge = false;
+            var startJoin = "";
+            
+            for (var j = min.Item2; j <= max.Item2; j++)
             {
-                if (cols.Contains(i) && inGrp == false)
+                // Print the right thing
+                if (orderedPositions.Contains((i, j)))
                 {
-                    inGrp = true;
                     num++;
                 }
                 else if (inGrp)
                 {
                     num++;
                 }
-                else if (!cols.Contains(i + 1) && inGrp == true)
-                {
-                    inGrp = false;
-                }
-            }
-        }
-
-        return num;
-        
-        //90719 too high
-    }
-
-    private static void Print((int row, int col)[] orderedPositions)
-    {
-        var min = (orderedPositions.Min(x => x.row), orderedPositions.Min(x => x.col));
-        var max = (orderedPositions.Max(x => x.row), orderedPositions.Max(x => x.col));
-
-        var inGrp = false;
-        for (var i = min.Item1; i <= max.Item1; i++)
-        {
-            for (var j = min.Item2; j <= max.Item2; j++)
-            {
-                if (orderedPositions.Contains((i, j)))
-                {
-                    Console.Write('#');
-                }
                 else
                 {
-                    Console.Write('.');
+                    // do nothing
                 }
-            }
 
-            Console.WriteLine();
-        }
-
-        Console.WriteLine();
-    }
-
-    private static void PrintFull((int row, int col)[] orderedPositions)
-    {
-        var min = (orderedPositions.Min(x => x.row), orderedPositions.Min(x => x.col));
-        var max = (orderedPositions.Max(x => x.row), orderedPositions.Max(x => x.col));
-
-        var inGrp = false;
-        for (var i = min.Item1; i <= max.Item1; i++)
-        {
-            inGrp = false;
-            for (var j = min.Item2; j <= max.Item2; j++)
-            {
-                if (orderedPositions.Contains((i, j)) || inGrp)
+                // Not previously in a group
+                if (!inGrp)
                 {
-                    Console.Write('#');
+                    // Not currently on a wall
+                    if (!orderedPositions.Contains((i, j)))
+                    {
+                        continue;
+                    }
+
+                    // Now on a single-thick wall
+                    if (orderedPositions.Contains((i, j)) && !orderedPositions.Contains((i, j + 1)))
+                    {
+                        inGrp = true;
+                        continue;
+                    }
+
+                    // Now on a multi-thick wall
+                    multiEdge = true;
+                    if (orderedPositions.Contains((i + 1, j)))
+                    {
+                        startJoin = "D";
+                    }
+                    else if (orderedPositions.Contains((i - 1, j)))
+                    {
+                        startJoin = "U";
+                    }
+
                     inGrp = true;
+                    startGrp = false;
+                    
+                    continue;
                 }
                 
-                if (!orderedPositions.Contains((i, j)))
+                if (multiEdge)
                 {
+                    // still in a multi-thick wall
+                    if (orderedPositions.Contains((i, j)) && orderedPositions.Contains((i, j + 1)))
+                    {
+                        continue;
+                    }
+                    
+                    // leaving a multi-thick wall
+                    if (orderedPositions.Contains((i, j)) && !orderedPositions.Contains((i, j + 1)))
+                    {
+                        multiEdge = false;
+                        
+                        // Determine whether we are still in a group or not
+                        if (orderedPositions.Contains((i + 1, j)) && startJoin == "D")
+                        {
+                            inGrp = startGrp;
+                        }
+                        else if (orderedPositions.Contains((i - 1, j)) && startJoin == "U")
+                        {
+                            inGrp = startGrp;
+                        }
+                        else
+                        {
+                            inGrp = !startGrp;
+                        }   
+                        
+                        continue;
+                    }
                 }
 
-                Console.Write('.');
+                // In group and now on a single-thick wall
+                if (orderedPositions.Contains((i, j)) && !orderedPositions.Contains((i, j + 1)))
+                {
+                    inGrp = false;
+                    continue;
+                }
+                
+                // In group and now on a multi-thick wall
+                if (orderedPositions.Contains((i, j)) && orderedPositions.Contains((i, j + 1)))
+                {
+                    startGrp = true;
+                    multiEdge = true;
+                    if (orderedPositions.Contains((i + 1, j)))
+                    {
+                        startJoin = "D";
+                    }
+                    else if (orderedPositions.Contains((i - 1, j)))
+                    {
+                        startJoin = "U";
+                    }
+                }
             }
-
-            Console.WriteLine();
         }
-
-        Console.WriteLine();
+        
+        return num;
     }
-
+    
     private static IEnumerable<(string direction, int count, string colour)> ParseInput(string[] input)
     {
         return input
