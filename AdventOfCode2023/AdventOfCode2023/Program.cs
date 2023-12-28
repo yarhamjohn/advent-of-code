@@ -8,6 +8,7 @@ using AdventOfCode2023.Day15;
 using AdventOfCode2023.Day16;
 using AdventOfCode2023.Day17;
 using AdventOfCode2023.Day18;
+using AdventOfCode2023.Day19;
 using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
@@ -69,6 +70,9 @@ long Day16B() => Day16.MaxEnergizedTiles(File.ReadAllLines("./Day16/input.txt"))
 long Day17A() => Day17.CountEnergyLost(File.ReadAllLines("./Day17/input.txt"));
 
 long Day18A() => Day18.CalculateLagoonSize(File.ReadAllLines("./Day18/input.txt"));
+long Day18B() => Day18.CalculateGiantLagoonSize(File.ReadAllLines("./Day18/input.txt"));
 
-Console.WriteLine(Day18A());
-// Console.WriteLine(Day17B());
+long Day19A() => Day19.SumPartRatings(File.ReadAllLines("./Day19/input.txt"));
+
+Console.WriteLine(Day19A());
+// Console.WriteLine(Day18B());
