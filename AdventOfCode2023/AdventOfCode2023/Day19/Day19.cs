@@ -10,10 +10,10 @@ public static class Day19
         
         // TODO: Are conditions correct?
         var conditionsToAccept = GetConditionsToAccept(rules).Order();
-        foreach (var c in conditionsToAccept)
-        {
-            Console.WriteLine($"x: {c.x}, m: {c.m}, a: {c.a}, s: {c.s}");
-        }
+        // foreach (var c in conditionsToAccept)
+        // {
+        //     Console.WriteLine($"x: {c.x}, m: {c.m}, a: {c.a}, s: {c.s}");
+        // }
 
         // TODO: Likely need to deduplicate (e.g. where a part would match multiple criteria)
         
@@ -61,10 +61,6 @@ public static class Day19
         string nextRule)
     {
         var result = new List<((long min, long max) x, (long min, long max) m, (long min, long max) a, (long min, long max) s)>();
-        if (nextRule == "A")
-        {
-            return [currentMinMax];
-        }
         
         if (nextRule == "R")
         {
@@ -75,7 +71,16 @@ public static class Day19
         foreach (var step in ruleToEvaluate.Value.Steps)
         {
             var newMinMax = ruleToEvaluate.Value.GetNewMinMax(step.Key, currentMinMax);
-            result.AddRange(Recurse(rules, newMinMax, step.Value.result));
+
+            // Console.WriteLine($"{nextRule}: ({step.Value.result}) - " + newMinMax);
+            if (step.Value.result == "A")
+            {
+                result.Add(newMinMax);
+            }
+            else
+            {
+                result.AddRange(Recurse(rules, newMinMax, step.Value.result));
+            }
         }
 
         return result;
@@ -198,7 +203,7 @@ public static class Day19
                     // if x < 2000 then we need x >= 2000 which means setting the min to 2000
                     if (formula.Symbol == "<")
                     {
-                        if (formula.Value < currentMinMax.x.min)
+                        if (formula.Value > currentMinMax.x.min)
                         {
                             currentMinMax.x.min = formula.Value;
                         }
@@ -209,7 +214,7 @@ public static class Day19
                 {
                     if (formula.Symbol == ">")
                     {
-                        if (formula.Value > currentMinMax.m.max)
+                        if (formula.Value < currentMinMax.m.max)
                         {
                             currentMinMax.m.max = formula.Value;
                         }
@@ -217,7 +222,7 @@ public static class Day19
                     
                     if (formula.Symbol == "<")
                     {
-                        if (formula.Value < currentMinMax.m.min)
+                        if (formula.Value > currentMinMax.m.min)
                         {
                             currentMinMax.m.min = formula.Value;
                         }
@@ -228,7 +233,7 @@ public static class Day19
                 {
                     if (formula.Symbol == ">")
                     {
-                        if (formula.Value > currentMinMax.a.max)
+                        if (formula.Value < currentMinMax.a.max)
                         {
                             currentMinMax.a.max = formula.Value;
                         }
@@ -236,7 +241,7 @@ public static class Day19
                     
                     if (formula.Symbol == "<")
                     {
-                        if (formula.Value < currentMinMax.a.min)
+                        if (formula.Value > currentMinMax.a.min)
                         {
                             currentMinMax.a.min = formula.Value;
                         }
@@ -247,7 +252,7 @@ public static class Day19
                 {
                     if (formula.Symbol == ">")
                     {
-                        if (formula.Value > currentMinMax.s.max)
+                        if (formula.Value < currentMinMax.s.max)
                         {
                             currentMinMax.s.max = formula.Value;
                         }
@@ -255,7 +260,7 @@ public static class Day19
                     
                     if (formula.Symbol == "<")
                     {
-                        if (formula.Value < currentMinMax.s.min)
+                        if (formula.Value > currentMinMax.s.min)
                         {
                             currentMinMax.s.min = formula.Value;
                         }
