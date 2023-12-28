@@ -8,14 +8,7 @@ public static class Day19
         var blankLine = input.Select((line, idx) => (line, idx)).Single(tuple => string.IsNullOrWhiteSpace(tuple.line)).idx;
         var rules = GetRules(input[..blankLine]);
         
-        // TODO: Are conditions correct?
         var conditionsToAccept = GetConditionsToAccept(rules).Order();
-        // foreach (var c in conditionsToAccept)
-        // {
-        //     Console.WriteLine($"x: {c.x}, m: {c.m}, a: {c.a}, s: {c.s}");
-        // }
-
-        // TODO: Likely need to deduplicate (e.g. where a part would match multiple criteria)
         
         return conditionsToAccept
             .Sum(condition => 
@@ -23,36 +16,6 @@ public static class Day19
                 (condition.m.max - condition.m.min + 1) * 
                 (condition.a.max - condition.a.min + 1) * 
                 (condition.s.max - condition.s.min + 1));
-    }
-
-    private static bool Evaluate(IOrderedEnumerable<((long min, long max) x, (long min, long max) m, (long min, long max) a, (long min, long max) s)> conditionsToAccept, int x, int m, int a, int s)
-    {
-        foreach (var condition in conditionsToAccept)
-        {
-            if (x < condition.x.min || x > condition.x.max)
-            {
-                continue;
-            }
-            
-            if (m < condition.m.min || m > condition.m.max)
-            {
-                continue;
-            }
-            
-            if (a < condition.a.min || a > condition.a.max)
-            {
-                continue;
-            }
-            
-            if (s < condition.s.min || s > condition.s.max)
-            {
-                continue;
-            }
-
-            return true;    
-        }
-
-        return false;
     }
 
     private static List<((long min, long max) x, (long min, long max) m, (long min, long max) a, (long min, long max) s)> Recurse(
@@ -72,7 +35,6 @@ public static class Day19
         {
             var newMinMax = ruleToEvaluate.Value.GetNewMinMax(step.Key, currentMinMax);
 
-            // Console.WriteLine($"{nextRule}: ({step.Value.result}) - " + newMinMax);
             if (step.Value.result == "A")
             {
                 result.Add(newMinMax);
