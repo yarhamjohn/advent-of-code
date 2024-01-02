@@ -10,6 +10,7 @@ using AdventOfCode2023.Day17;
 using AdventOfCode2023.Day18;
 using AdventOfCode2023.Day19;
 using AdventOfCode2023.Day2;
+using AdventOfCode2023.Day20;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
 using AdventOfCode2023.Day5;
@@ -75,5 +76,7 @@ long Day18B() => Day18.CalculateGiantLagoonSize(File.ReadAllLines("./Day18/input
 long Day19A() => Day19.SumPartRatings(File.ReadAllLines("./Day19/input.txt"));
 long Day19B() => Day19.SumPartRatingsSuper(File.ReadAllLines("./Day19/input.txt"));
 
-// Console.WriteLine(Day19A());
-Console.WriteLine(Day19B());
+long Day20A() => Day20.SumPulses(File.ReadAllLines("./Day20/input.txt"));
+
+Console.WriteLine(Day20A());
+// Console.WriteLine(Day19B());
