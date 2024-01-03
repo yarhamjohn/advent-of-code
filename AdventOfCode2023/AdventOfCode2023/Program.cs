@@ -77,6 +77,7 @@ long Day19A() => Day19.SumPartRatings(File.ReadAllLines("./Day19/input.txt"));
 long Day19B() => Day19.SumPartRatingsSuper(File.ReadAllLines("./Day19/input.txt"));
 
 long Day20A() => Day20.SumPulses(File.ReadAllLines("./Day20/input.txt"));
+long Day20B() => Day20.CountButtonPresses(File.ReadAllLines("./Day20/input.txt"));
 
 Console.WriteLine(Day20A());
-// Console.WriteLine(Day19B());
+Console.WriteLine(Day20B());

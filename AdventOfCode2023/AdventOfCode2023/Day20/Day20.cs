@@ -4,7 +4,7 @@ public static class Day20
 {
     public static long SumPulses(string[] input)
     {
-        var broadcasterModule = CreateModules(input);
+        var (broadcasterModule, untypedModule) = CreateModules(input);
 
         var buttonModule = new ButtonModule();
 
@@ -17,7 +17,24 @@ public static class Day20
         return pulses.Count(p => p.Type == PulseType.Low) * pulses.Count(p => p.Type == PulseType.High);
     }
 
-    private static BroadcasterModule CreateModules(string[] input)
+    public static long CountButtonPresses(string[] input)
+    {
+        var (broadcasterModule, untypedModule) = CreateModules(input);
+
+        var buttonModule = new ButtonModule();
+        
+        var pulses = new Queue<Pulse>();
+        var count = 0;
+        while (!untypedModule.turnedOn)
+        {
+            PressButton(buttonModule, broadcasterModule, pulses);
+            count++;
+        }
+        
+        return count;
+    }
+
+    private static (BroadcasterModule, UntypedModule) CreateModules(string[] input)
     {
         List<IModule> modules = [];
         Dictionary<string, IEnumerable<string>> mappings = [];
@@ -77,7 +94,7 @@ public static class Day20
             }
         }
 
-        return (BroadcasterModule)modules.Single(x => x is BroadcasterModule);
+        return ((BroadcasterModule)modules.Single(x => x is BroadcasterModule),(UntypedModule)modules.Single(x => x is UntypedModule));
     }
 
     private static void PressButton(
@@ -85,11 +102,20 @@ public static class Day20
         BroadcasterModule broadcasterModule,
         Queue<Pulse> pulses)
     {
-        pulses.Enqueue(new Pulse(buttonModule, broadcasterModule, PulseType.Low));
+        var x = new Queue<(IModule source, IModule target, PulseType pulseType)>();
+        x.Enqueue((buttonModule, broadcasterModule, PulseType.Low));
 
-        foreach (var pulse in broadcasterModule.HandlePulse(buttonModule, PulseType.Low))
+        while (x.Count != 0)
         {
-            pulses.Enqueue(pulse);
+            var current = x.Dequeue();
+            pulses.Enqueue(new Pulse(current.source, current.target, current.pulseType));
+
+            var next = current.target.GetNext(current.source, current.pulseType);
+
+            foreach (var t in next)
+            {
+                x.Enqueue(t);
+            }
         }
     }
 
@@ -108,6 +134,8 @@ public static class Day20
         IEnumerable<Pulse> HandlePulse(IModule source, PulseType pulseType);
 
         void AddTarget(IModule module);
+
+        List<(IModule, IModule, PulseType)> GetNext(IModule source, PulseType pulseType);
     }
 
     private class ButtonModule : IModule
@@ -124,6 +152,11 @@ public static class Day20
         public void AddTarget(IModule module)
         {
         }
+
+        public List<(IModule, IModule, PulseType)> GetNext(IModule source, PulseType pulseType)
+        {
+            return [];
+        }
     }
 
     private class BroadcasterModule : IModule
@@ -139,7 +172,6 @@ public static class Day20
             var modules = _targets
                 .Select(target => new Pulse(this, target, pulseType))
                 .ToList();
-
             
             foreach (var target in _targets)
             {
@@ -153,6 +185,11 @@ public static class Day20
         public void AddTarget(IModule module)
         {
             _targets.Add(module);
+        }
+
+        public List<(IModule, IModule, PulseType)> GetNext(IModule source, PulseType pulseType)
+        {
+            return _targets.Select(x => ((IModule) this, x, pulseType)).ToList();
         }
     }
 
@@ -206,7 +243,6 @@ public static class Day20
                     modules.AddRange(target.HandlePulse(this, PulseType.Low));
                 }
             }
-
             
             return modules;
         }
@@ -214,6 +250,25 @@ public static class Day20
         public void AddTarget(IModule module)
         {
             _targets.Add(module);
+        }
+
+        public List<(IModule, IModule, PulseType)> GetNext(IModule source, PulseType pulseType)
+        {
+            if (pulseType is PulseType.High)
+            {
+                return [];
+            }
+            
+            isOn = !isOn;
+
+            if (isOn)
+            {
+                return _targets.Select(x => ((IModule)this, x, PulseType.High)).ToList();
+            }
+            else
+            {
+                return _targets.Select(x => ((IModule)this, x, PulseType.Low)).ToList();
+            }
         }
     }
 
@@ -271,6 +326,20 @@ public static class Day20
             _targets.Add(module);
         }
 
+        public List<(IModule, IModule, PulseType)> GetNext(IModule source, PulseType pulseType)
+        {
+            _previousPulses[source.GetName()] = pulseType;
+
+            if (_previousPulses.Values.All(x => x == PulseType.High))
+            {
+                return _targets.Select(x => ((IModule)this, x, PulseType.Low)).ToList();
+            }
+            else
+            {
+                return _targets.Select(x => ((IModule)this, x, PulseType.High)).ToList();
+            }
+        }
+
         public void AddSource(IModule module)
         {
             _previousPulses[module.GetName()] = PulseType.Low;
@@ -280,6 +349,7 @@ public static class Day20
     private class UntypedModule : IModule
     {
         private string _name;
+        public bool turnedOn;
         
         public UntypedModule(string name)
         {
@@ -290,11 +360,18 @@ public static class Day20
 
         public IEnumerable<Pulse> HandlePulse(IModule source, PulseType pulseType)
         {
+            turnedOn = pulseType == PulseType.Low;
             return [];
         }
 
         public void AddTarget(IModule module)
         {
+        }
+
+        public List<(IModule, IModule, PulseType)> GetNext(IModule source, PulseType pulseType)
+        {
+            turnedOn = pulseType == PulseType.Low;
+            return [];
         }
     }
 
