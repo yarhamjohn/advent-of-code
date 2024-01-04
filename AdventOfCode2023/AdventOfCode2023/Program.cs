@@ -11,6 +11,7 @@ using AdventOfCode2023.Day18;
 using AdventOfCode2023.Day19;
 using AdventOfCode2023.Day2;
 using AdventOfCode2023.Day20;
+using AdventOfCode2023.Day21;
 using AdventOfCode2023.Day3;
 using AdventOfCode2023.Day4;
 using AdventOfCode2023.Day5;
@@ -79,5 +80,8 @@ long Day19B() => Day19.SumPartRatingsSuper(File.ReadAllLines("./Day19/input.txt"
 long Day20A() => Day20.SumPulses(File.ReadAllLines("./Day20/input.txt"));
 long Day20B() => Day20.CountButtonPresses(File.ReadAllLines("./Day20/input.txt"));
 
-Console.WriteLine(Day20A());
-Console.WriteLine(Day20B());
+long Day21A() => Day21.CountGardenPlots(File.ReadAllLines("./Day21/input.txt"), 64);
+long Day21B() => Day21.CountGardenPlotsBig(File.ReadAllLines("./Day21/input.txt"), 26501365);
+
+Console.WriteLine(Day21A());
+// Console.WriteLine(Day21B());
