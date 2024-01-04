@@ -16,10 +16,16 @@ public static class Day21
 
     public static long CountGardenPlotsBig(string[] input, long steps)
     {
-        var (grid, currentPositions) = ParseInput(input);
+        var (grid, currentPositions) = ParseInputBig(input);
 
         for (var i = 0; i < steps; i++)
         {
+            // TODO: Need to improve performance dramatically
+            // key is which grid (starting grid is (0,0)) and values are the positions on that grid
+            var gridMapping = new Dictionary<(int x, int y), HashSet<(int x, int y)>>();
+            // Then get relative next positions for all the values (this can be calculated once and stored)
+            // Apply the relative positioning to each value - this may mean moving an element from one grid to another
+            
             currentPositions = currentPositions.SelectMany(x => GetNextPositionsBig(x, grid)).ToHashSet();
         }
         
@@ -73,8 +79,17 @@ public static class Day21
         }
     }
 
+    private static readonly Dictionary<(int x, int y), List<(int x, int y)>> NextPositions = [];
+    
     private static IEnumerable<(int x, int y)> GetNextPositionsBig((int x, int y) position, List<List<Element>> grid)
     {
+        if (NextPositions.TryGetValue(position, out var positions))
+        {
+            return positions;
+        }
+
+        NextPositions[position] = [];
+
         var numRows = (decimal) grid.Count;
         var numCols = (decimal) grid[0].Count;
 
@@ -89,23 +104,25 @@ public static class Day21
         
         if (grid[xModAbove][yMod] == Element.Garden)
         {
-            yield return (position.x - 1, position.y);
+            NextPositions[position].Add((position.x - 1, position.y));
         }
 
         if (grid[xMod][yModLeft] == Element.Garden)
         {
-            yield return (position.x, position.y - 1);
+            NextPositions[position].Add((position.x, position.y - 1));
         }
         
         if (grid[xModBelow][yMod] == Element.Garden)
         {
-            yield return (position.x + 1, position.y);
+            NextPositions[position].Add((position.x + 1, position.y));
         }
         
         if (grid[xMod][yModRight] == Element.Garden)
         {
-            yield return (position.x, position.y + 1);
+            NextPositions[position].Add((position.x, position.y + 1));
         }
+        
+        return NextPositions[position];
     }
 
     private static decimal GetMod(long position, decimal modulo)
