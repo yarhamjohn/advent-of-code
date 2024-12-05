@@ -1,3 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using AdventOfCode2024.Day1;
 
-Console.WriteLine("Hello, World!");
+long Day1A() => Day1.Part1(File.ReadAllLines("./Day1/input.txt"));
+long Day1B() => Day1.Part2(File.ReadAllLines("./Day1/input.txt"));
+
+Console.WriteLine(Day1B());

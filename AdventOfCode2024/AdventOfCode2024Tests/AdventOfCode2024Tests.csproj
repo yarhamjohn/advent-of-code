@@ -24,4 +24,10 @@
       <ProjectReference Include="..\AdventOfCode2024\AdventOfCode2024.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="Day1Tests\Input\example.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>
