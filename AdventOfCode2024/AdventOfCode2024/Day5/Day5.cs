@@ -4,61 +4,78 @@ public static class Day5
 {
     public static int Part1(string[] input)
     {
-       var rules = new List<(int first, int second)>();
-       var updates = new List<int[]>();
+        var (rules, updates) = ParseInput(input);
+
+        return updates
+           .Where(update => !UpdateIsInvalid(update, rules))
+           .Sum(update => update[(update.Length - 1) / 2]);
+    }
+
+    public static int Part2(string[] input)
+    {
+        var (rules, updates) = ParseInput(input);
+
+        return updates
+            .Where(update => UpdateIsInvalid(update, rules))
+            .Select(update => ReorderUpdate(update, rules))
+            .Sum(update => update[(update.Length - 1) / 2]);
+    }
+    
+    private static int[] ReorderUpdate(int[] update, List<(int first, int second)> rules)
+    {
+        return update
+            .Select(page => (page, count: GetRelevantRules(rules, page, update).Count(r => r.first == page)))
+            .OrderByDescending(x => x.count)
+            .Select(x => x.page)
+            .ToArray();
+    }
+
+    private static (List<(int first, int second)>, List<int[]>) ParseInput(string[] input)
+    {
+        var rules = new List<(int first, int second)>();
+        var updates = new List<int[]>();
        
-       foreach (var line in input)
-       {
-           if (line.Contains('|'))
-           {
-               var ruleSplit = line.Split("|").Select(int.Parse).ToArray();
-               rules.Add((ruleSplit[0], ruleSplit[1]));
-           }
+        foreach (var line in input)
+        {
+            if (line.Contains('|'))
+            {
+                var ruleSplit = line.Split("|").Select(int.Parse).ToArray();
+                rules.Add((ruleSplit[0], ruleSplit[1]));
+            }
 
-           if (line.Contains(','))
-           {
-               var updateSplit = line.Split(",").Select(int.Parse).ToArray();
-               updates.Add(updateSplit);
-           }
-       }
+            if (line.Contains(','))
+            {
+                var updateSplit = line.Split(",").Select(int.Parse).ToArray();
+                updates.Add(updateSplit);
+            }
+        }
 
-       var result = 0;
+        return (rules, updates);
+    }
 
-       foreach (var update in updates)
-       {
-           var isValid = true;
-           for (var pageIdx = 0; pageIdx < update.Length; pageIdx++)
-           {
-               var page = update[pageIdx];
-               var relevantRules = rules.Where(x => x.first == page && update.Contains(x.second) || x.second == page && update.Contains(x.first)).ToList();
+    private static bool UpdateIsInvalid(int[] update, List<(int first, int second)> rules)
+    {
+        return update
+            .Where((page, pageIdx) => PageIsIncorrectlyPositioned(rules, page, update, pageIdx))
+            .Any();
+    }
 
-               foreach (var rule in relevantRules)
-               {
-                   if (rule.first == page && update[..pageIdx].Contains(rule.second))
-                   {
-                       isValid = false;
-                       break;
-                   }
-                   
-                   if (rule.second == page && update[(pageIdx + 1)..].Contains(rule.first))
-                   {
-                       isValid = false;
-                       break;
-                   }
-               }
+    private static bool PageIsIncorrectlyPositioned(List<(int first, int second)> rules, int page, int[] update, int pageIdx)
+    {
+        return GetRelevantRules(rules, page, update)
+            .Any(rule => RuleIsBroken(rule, page, pageIdx, update));
+    }
 
-               if (!isValid)
-               {
-                   break;
-               }
-           }
+    private static IEnumerable<(int first, int second)> GetRelevantRules(List<(int first, int second)> rules, int page, int[] update)
+    {
+        return rules.Where(x =>
+            x.first == page && update.Contains(x.second) ||
+            x.second == page && update.Contains(x.first));
+    }
 
-           if (isValid)
-           {
-               result += update[(update.Length - 1) / 2];
-           }
-       }
-
-       return result;
+    private static bool RuleIsBroken((int first, int second) rule, int page, int pageIdx, int[] update)
+    {
+        return rule.first == page && update[..pageIdx].Contains(rule.second) || 
+               rule.second == page && update[(pageIdx + 1)..].Contains(rule.first);
     }
 }
