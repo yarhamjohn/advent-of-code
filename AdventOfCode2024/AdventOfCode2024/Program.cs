@@ -21,5 +21,6 @@ long Day5A() => Day5.Part1(File.ReadAllLines("./Day5/input.txt"));
 long Day5B() => Day5.Part2(File.ReadAllLines("./Day5/input.txt"));
 
 long Day6A() => Day6.Part1(File.ReadAllLines("./Day6/input.txt"));
+long Day6B() => Day6.Part2(File.ReadAllLines("./Day6/input.txt"));
 
-Console.WriteLine(Day6A());
+Console.WriteLine(Day6B());

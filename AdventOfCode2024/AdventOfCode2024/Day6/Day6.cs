@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace AdventOfCode2024.Day6;
+﻿namespace AdventOfCode2024.Day6;
 
 public static class Day6
 {
@@ -8,55 +6,112 @@ public static class Day6
     {
         var position = GetPosition(input);
 
-        var blockers = GetBlockers(input);
-
         List<(int row, int col)> visitedLocations = [(position.row, position.col)];
         
         while (true)
         {
-            position = GetNextPosition(position, blockers);
-            
-            if (IsOffGrid(position, input))
+            if (position.direction == "^")
             {
-                break;
+                var nextPos = (position.row - 1, position.col);
+
+                if (nextPos.Item1 < 0)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item2 + 1 == input.First().Length)
+                    {
+                        break;
+                    }
+                    
+                    position = (">", position.row, position.col);
+
+                    continue;
+                }
+
+                position = ("^", nextPos.Item1, nextPos.Item2);
+            }
+            else if (position.direction == ">")
+            {
+                var nextPos = (position.row, position.col + 1);
+
+                if (nextPos.Item2 == input.First().Length)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item1 + 1 == input.Length)
+                    {
+                        break;
+                    }
+                    
+                    position = ("v", position.row, position.col);
+
+                    continue;
+                }
+
+                position = (">", nextPos.Item1, nextPos.Item2);
+            }
+            else if (position.direction == "v")
+            {
+                var nextPos = (position.row + 1, position.col);
+
+                if (nextPos.Item1 == input.Length)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item2 < 0)
+                    {
+                        break;
+                    }
+                    
+                    position = ("<", position.row, position.col);
+
+                    continue;
+                }
+
+                position = ("v", nextPos.Item1, nextPos.Item2);
+            }
+            else 
+            {
+                var nextPos = (position.row, position.col - 1);
+
+                if (nextPos.Item1 < 0)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item1 < 0)
+                    {
+                        break;
+                    }
+                    
+                    position = ("^", position.row, position.col);
+
+                    continue;
+                }
+
+                position = ("<", nextPos.Item1, nextPos.Item2);
             }
             
             visitedLocations.Add((position.row, position.col));
         }
         
-        return visitedLocations.Count;
+        return visitedLocations.Distinct().Count();
     }
-    
-    private static (string direction, int row, int col) GetNextPosition(
-        (string direction, int row, int col) position, 
-        List<(int row, int col)> blockers)
-    {
-    }
-    
-    private static bool IsOffGrid((string direction, int row, int col) position, string[] input)
-    {
-        return position.row < 0 || 
-               position.row >= input.Length || 
-               position.col < 0 || 
-               position.col >= input[position.row].Length;
-    }
-    
-    private static List<(int row, int col)> GetBlockers(string[] input)
-    {
-        var blockers = new List<(int row, int col)>();
-        
-        for (var row = 0; row < input.Length; row++)
-        {
-            for (var col = 0; col < input[row].Length; col++)
-            {
-                if (input[row][col] == '#')
-                {
-                    blockers.Add((row, col));
-                }
-            }
-        }
 
-        return blockers;
+    public static int Part2(string[] input)
+    {
+        return 0;
     }
     
     private static (string direction, int row, int col) GetPosition(string[] input)
