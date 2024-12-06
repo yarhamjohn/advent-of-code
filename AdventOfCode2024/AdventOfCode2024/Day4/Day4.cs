@@ -13,8 +13,44 @@ public static class Day4
 
         return GetCount(input) + GetCount(verticals) + GetCount(diagonals);
     }
+    
+    public static int Part2(string[] input)
+    {
+        var result = 0;
+        
+        for (var col = 1; col < input.First().Length - 1; col++)
+        {
+            for (var row = 1; row < input.Length - 1; row++)
+            {
+                if (input[row][col] != 'A')
+                {
+                    continue;
+                }
 
-    private static IEnumerable<string> GetDiagonals(string[] input)
+                if (IsXMas(input, col, row))
+                {
+                    result++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static bool IsXMas(string[] input, int col, int row)
+    {
+        var downAndLeftIsMas = 
+            input[row - 1][col - 1] == 'M' && input[row + 1][col + 1] == 'S' ||
+            input[row - 1][col - 1] == 'S' && input[row + 1][col + 1] == 'M';
+        
+        var downAndRightIsMas = 
+            input[row - 1][col + 1] == 'M' && input[row + 1][col - 1] == 'S' ||
+            input[row - 1][col + 1] == 'S' && input[row + 1][col - 1] == 'M';
+
+        return downAndLeftIsMas && downAndRightIsMas;
+    }
+
+    private static List<string> GetDiagonals(string[] input)
     {
         List<string> diagonals = [];
         

@@ -14,4 +14,14 @@ public class Day4Tests
         var result = Day4.Part1(input.ToArray());
         Assert.That(result, Is.EqualTo(18));
     }
+    
+    [Test]
+    public void Part2Test()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day4Tests/Input/example.txt");
+        var input = File.ReadLines(inputPath);
+
+        var result = Day4.Part2(input.ToArray());
+        Assert.That(result, Is.EqualTo(9));
+    }
 }
