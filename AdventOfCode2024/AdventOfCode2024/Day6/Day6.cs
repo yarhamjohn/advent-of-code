@@ -112,6 +112,7 @@ public static class Day6
     public static int Part2(string[] input)
     {
         var position = GetPosition(input);
+        var blockers = GetBlockers(input);
 
         List<(string direction, int row, int col)> visitedLocations = [position];
         List<(int row, int col)> blockPositions = [];
@@ -141,7 +142,13 @@ public static class Day6
 
                 // If crossing a row/col where to the right we have been before (before a block is reached)
                 // Not necessarily that we have been to that block itself before.
-                if (visitedLocations.Contains((">", position.row, position.col)))
+                var loopableLocations = visitedLocations.Where(loc =>
+                    loc.direction == ">" && loc.row == position.row && loc.col >= position.col);
+
+                var b = blockers.Where(b => b.row == position.row && b.col > position.col);
+                var firstBlocker = b.Any() ? b.MinBy(z => z.col).col : input.First().Length;
+                
+                if (loopableLocations.Any(abc => abc.col < firstBlocker))
                 {
                     if (position.row > 0)
                     {
@@ -172,7 +179,13 @@ public static class Day6
                     continue;
                 }
 
-                if (visitedLocations.Contains(("v", position.row, position.col)))
+                var loopableLocations = visitedLocations.Where(loc =>
+                    loc.direction == "v" && loc.row >= position.row && loc.col == position.col);
+                
+                var b = blockers.Where(b => b.row > position.row && b.col == position.col);
+                var firstBlocker = b.Any() ? b.MinBy(z => z.row).row : input.Length;
+                
+                if (loopableLocations.Any(abc => abc.row < firstBlocker))
                 {
                     if (position.col < input.First().Length - 1)
                     {
@@ -203,7 +216,13 @@ public static class Day6
                     continue;
                 }
 
-                if (visitedLocations.Contains(("<", position.row, position.col)))
+                var loopableLocations = visitedLocations.Where(loc =>
+                    loc.direction == "<" && loc.row == position.row && loc.col <= position.col);
+                
+                var b = blockers.Where(b => b.row == position.row && b.col < position.col);
+                var firstBlocker = b.Any() ? b.MaxBy(z => z.col).col : -1;
+                
+                if (loopableLocations.Any(abc => abc.col > firstBlocker))
                 {
                     if (position.row < input.Length - 1)
                     {
@@ -234,7 +253,13 @@ public static class Day6
                     continue;
                 }
 
-                if (visitedLocations.Contains(("^", position.row, position.col)))
+                var loopableLocations = visitedLocations.Where(loc =>
+                    loc.direction == "^" && loc.row <= position.row && loc.col == position.col);
+                
+                var b = blockers.Where(b => b.row > position.row && b.col == position.col);
+                var firstBlocker = b.Any() ? b.MaxBy(z => z.row).row : -1;
+                
+                if (loopableLocations.Any(abc => abc.row > firstBlocker))
                 {
                     if (position.col > 0)
                     {
@@ -270,5 +295,23 @@ public static class Day6
         }
         
         throw new InvalidOperationException("No starting position found");
+    }
+    
+    private static List<(int row, int col)> GetBlockers(string[] input)
+    {
+        var blockers = new List<(int row, int col)>();
+        
+        for (var row = 0; row < input.Length; row++)
+        {
+            for (var col = 0; col < input[row].Length; col++)
+            {
+                if (input[row][col] == '#')
+                {
+                    blockers.Add((row, col));
+                }
+            }
+        }
+
+        return blockers;
     }
 }
