@@ -111,7 +111,144 @@ public static class Day6
 
     public static int Part2(string[] input)
     {
-        return 0;
+        var position = GetPosition(input);
+
+        List<(string direction, int row, int col)> visitedLocations = [position];
+        List<(int row, int col)> blockPositions = [];
+        
+        while (true)
+        {
+            if (position.direction == "^")
+            {
+                var nextPos = (position.row - 1, position.col);
+
+                if (nextPos.Item1 < 0)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item2 + 1 == input.First().Length)
+                    {
+                        break;
+                    }
+                    
+                    position = (">", position.row, position.col);
+
+                    continue;
+                }
+
+                // If crossing a row/col where to the right we have been before (before a block is reached)
+                // Not necessarily that we have been to that block itself before.
+                if (visitedLocations.Contains((">", position.row, position.col)))
+                {
+                    if (position.row > 0)
+                    {
+                        blockPositions.Add((position.row - 1, position.col));
+                    }
+                }
+
+                position = ("^", nextPos.Item1, nextPos.Item2);
+            }
+            else if (position.direction == ">")
+            {
+                var nextPos = (position.row, position.col + 1);
+
+                if (nextPos.Item2 == input.First().Length)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item1 + 1 == input.Length)
+                    {
+                        break;
+                    }
+                    
+                    position = ("v", position.row, position.col);
+
+                    continue;
+                }
+
+                if (visitedLocations.Contains(("v", position.row, position.col)))
+                {
+                    if (position.col < input.First().Length - 1)
+                    {
+                        blockPositions.Add((position.row, position.col + 1));
+                    }
+                }
+
+                position = (">", nextPos.Item1, nextPos.Item2);
+            }
+            else if (position.direction == "v")
+            {
+                var nextPos = (position.row + 1, position.col);
+
+                if (nextPos.Item1 == input.Length)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item2 < 0)
+                    {
+                        break;
+                    }
+                    
+                    position = ("<", position.row, position.col);
+
+                    continue;
+                }
+
+                if (visitedLocations.Contains(("<", position.row, position.col)))
+                {
+                    if (position.row < input.Length - 1)
+                    {
+                        blockPositions.Add((position.row + 1, position.col));
+                    }
+                }
+
+                position = ("v", nextPos.Item1, nextPos.Item2);
+            }
+            else 
+            {
+                var nextPos = (position.row, position.col - 1);
+
+                if (nextPos.Item1 < 0)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item1 < 0)
+                    {
+                        break;
+                    }
+                    
+                    position = ("^", position.row, position.col);
+
+                    continue;
+                }
+
+                if (visitedLocations.Contains(("^", position.row, position.col)))
+                {
+                    if (position.col > 0)
+                    {
+                        blockPositions.Add((position.row, position.col - 1));
+                    }
+                }
+
+                position = ("<", nextPos.Item1, nextPos.Item2);
+            }
+            
+            visitedLocations.Add(position);
+        }
+        
+        return blockPositions.Distinct().Count();
     }
     
     private static (string direction, int row, int col) GetPosition(string[] input)
