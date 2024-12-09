@@ -1,282 +1,69 @@
-﻿namespace AdventOfCode2024.Day6;
+﻿using System.Text;
+
+namespace AdventOfCode2024.Day6;
 
 public static class Day6
 {
     public static int Part1(string[] input)
     {
-        var position = GetPosition(input);
-
-        List<(int row, int col)> visitedLocations = [(position.row, position.col)];
-        
-        while (true)
-        {
-            if (position.direction == "^")
-            {
-                var nextPos = (position.row - 1, position.col);
-
-                if (nextPos.Item1 < 0)
-                {
-                    break;
-                }
-
-                if (input[nextPos.Item1][nextPos.Item2] == '#')
-                {
-                    if (nextPos.Item2 + 1 == input.First().Length)
-                    {
-                        break;
-                    }
-                    
-                    position = (">", position.row, position.col);
-
-                    continue;
-                }
-
-                position = ("^", nextPos.Item1, nextPos.Item2);
-            }
-            else if (position.direction == ">")
-            {
-                var nextPos = (position.row, position.col + 1);
-
-                if (nextPos.Item2 == input.First().Length)
-                {
-                    break;
-                }
-
-                if (input[nextPos.Item1][nextPos.Item2] == '#')
-                {
-                    if (nextPos.Item1 + 1 == input.Length)
-                    {
-                        break;
-                    }
-                    
-                    position = ("v", position.row, position.col);
-
-                    continue;
-                }
-
-                position = (">", nextPos.Item1, nextPos.Item2);
-            }
-            else if (position.direction == "v")
-            {
-                var nextPos = (position.row + 1, position.col);
-
-                if (nextPos.Item1 == input.Length)
-                {
-                    break;
-                }
-
-                if (input[nextPos.Item1][nextPos.Item2] == '#')
-                {
-                    if (nextPos.Item2 < 0)
-                    {
-                        break;
-                    }
-                    
-                    position = ("<", position.row, position.col);
-
-                    continue;
-                }
-
-                position = ("v", nextPos.Item1, nextPos.Item2);
-            }
-            else 
-            {
-                var nextPos = (position.row, position.col - 1);
-
-                if (nextPos.Item1 < 0)
-                {
-                    break;
-                }
-
-                if (input[nextPos.Item1][nextPos.Item2] == '#')
-                {
-                    if (nextPos.Item1 < 0)
-                    {
-                        break;
-                    }
-                    
-                    position = ("^", position.row, position.col);
-
-                    continue;
-                }
-
-                position = ("<", nextPos.Item1, nextPos.Item2);
-            }
-            
-            visitedLocations.Add((position.row, position.col));
-        }
-        
-        return visitedLocations.Distinct().Count();
+        return GetVisitedLocations(input, GetStartPosition(input))
+            .Select(x => (x.row, x.col))
+            .Distinct()
+            .Count();
     }
 
     public static int Part2(string[] input)
     {
-        var position = GetPosition(input);
-        var blockers = GetBlockers(input);
+        return GetLoopFormingBlockPositions(
+            input, 
+            GetVisitedLocations(input, GetStartPosition(input)), 
+            GetStartPosition(input))
+            .Count;
+    }
 
-        List<(string direction, int row, int col)> visitedLocations = [position];
-        List<(int row, int col)> blockPositions = [];
-        
-        while (true)
+    private static HashSet<(int row, int col)> GetLoopFormingBlockPositions(
+        string[] input, HashSet<(string direction, int row, int col)> visitedLocations,
+        (string direction, int row, int col) position)
+    {
+        var blockingPositions = new HashSet<(int row, int col)>();
+
+        foreach (var location in visitedLocations)
         {
-            if (position.direction == "^")
+            if (location.row == position.row && location.col == position.col)
             {
-                var nextPos = (position.row - 1, position.col);
-
-                if (nextPos.Item1 < 0)
-                {
-                    break;
-                }
-
-                if (input[nextPos.Item1][nextPos.Item2] == '#')
-                {
-                    if (nextPos.Item2 + 1 == input.First().Length)
-                    {
-                        break;
-                    }
-                    
-                    position = (">", position.row, position.col);
-
-                    continue;
-                }
-
-                // If crossing a row/col where to the right we have been before (before a block is reached)
-                // Not necessarily that we have been to that block itself before.
-                var loopableLocations = visitedLocations.Where(loc =>
-                    loc.direction == ">" && loc.row == position.row && loc.col >= position.col);
-
-                var b = blockers.Where(b => b.row == position.row && b.col > position.col);
-                var firstBlocker = b.Any() ? b.MinBy(z => z.col).col : input.First().Length;
-                
-                if (loopableLocations.Any(abc => abc.col < firstBlocker))
-                {
-                    if (position.row > 0)
-                    {
-                        blockPositions.Add((position.row - 1, position.col));
-                    }
-                }
-
-                position = ("^", nextPos.Item1, nextPos.Item2);
+                continue;
             }
-            else if (position.direction == ">")
+
+            var newInput = new string[input.Length];
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i < input.Length; i++)
             {
-                var nextPos = (position.row, position.col + 1);
-
-                if (nextPos.Item2 == input.First().Length)
+                if (i == location.row)
                 {
-                    break;
+                    stringBuilder = new StringBuilder(input[i]);
+                    stringBuilder.Remove(location.col, 1);
+                    stringBuilder.Insert(location.col, "#");
+                    newInput[i] = stringBuilder.ToString();
                 }
-
-                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                else
                 {
-                    if (nextPos.Item1 + 1 == input.Length)
-                    {
-                        break;
-                    }
-                    
-                    position = ("v", position.row, position.col);
-
-                    continue;
+                    stringBuilder.Append(input[i]);
+                    newInput[i] = stringBuilder.ToString();
                 }
-
-                var loopableLocations = visitedLocations.Where(loc =>
-                    loc.direction == "v" && loc.row >= position.row && loc.col == position.col);
                 
-                var b = blockers.Where(b => b.row > position.row && b.col == position.col);
-                var firstBlocker = b.Any() ? b.MinBy(z => z.row).row : input.Length;
-                
-                if (loopableLocations.Any(abc => abc.row < firstBlocker))
-                {
-                    if (position.col < input.First().Length - 1)
-                    {
-                        blockPositions.Add((position.row, position.col + 1));
-                    }
-                }
-
-                position = (">", nextPos.Item1, nextPos.Item2);
-            }
-            else if (position.direction == "v")
-            {
-                var nextPos = (position.row + 1, position.col);
-
-                if (nextPos.Item1 == input.Length)
-                {
-                    break;
-                }
-
-                if (input[nextPos.Item1][nextPos.Item2] == '#')
-                {
-                    if (nextPos.Item2 < 0)
-                    {
-                        break;
-                    }
-                    
-                    position = ("<", position.row, position.col);
-
-                    continue;
-                }
-
-                var loopableLocations = visitedLocations.Where(loc =>
-                    loc.direction == "<" && loc.row == position.row && loc.col <= position.col);
-                
-                var b = blockers.Where(b => b.row == position.row && b.col < position.col);
-                var firstBlocker = b.Any() ? b.MaxBy(z => z.col).col : -1;
-                
-                if (loopableLocations.Any(abc => abc.col > firstBlocker))
-                {
-                    if (position.row < input.Length - 1)
-                    {
-                        blockPositions.Add((position.row + 1, position.col));
-                    }
-                }
-
-                position = ("v", nextPos.Item1, nextPos.Item2);
-            }
-            else 
-            {
-                var nextPos = (position.row, position.col - 1);
-
-                if (nextPos.Item1 < 0)
-                {
-                    break;
-                }
-
-                if (input[nextPos.Item1][nextPos.Item2] == '#')
-                {
-                    if (nextPos.Item1 < 0)
-                    {
-                        break;
-                    }
-                    
-                    position = ("^", position.row, position.col);
-
-                    continue;
-                }
-
-                var loopableLocations = visitedLocations.Where(loc =>
-                    loc.direction == "^" && loc.row <= position.row && loc.col == position.col);
-                
-                var b = blockers.Where(b => b.row > position.row && b.col == position.col);
-                var firstBlocker = b.Any() ? b.MaxBy(z => z.row).row : -1;
-                
-                if (loopableLocations.Any(abc => abc.row > firstBlocker))
-                {
-                    if (position.col > 0)
-                    {
-                        blockPositions.Add((position.row, position.col - 1));
-                    }
-                }
-
-                position = ("<", nextPos.Item1, nextPos.Item2);
+                stringBuilder.Clear();
             }
             
-            visitedLocations.Add(position);
+            if (FormsLoop(newInput, position))
+            {
+                blockingPositions.Add((location.row, location.col));
+            }
         }
-        
-        return blockPositions.Distinct().Count();
+
+        return blockingPositions;
     }
-    
-    private static (string direction, int row, int col) GetPosition(string[] input)
+
+    private static (string direction, int row, int col) GetStartPosition(string[] input)
     {
         string[] options = ["^", ">", "v", "<"];
 
@@ -297,21 +84,227 @@ public static class Day6
         throw new InvalidOperationException("No starting position found");
     }
     
-    private static List<(int row, int col)> GetBlockers(string[] input)
+    private static HashSet<(string direction, int row, int col)> GetVisitedLocations(string[] input, (string direction, int row, int col) position)
     {
-        var blockers = new List<(int row, int col)>();
-        
-        for (var row = 0; row < input.Length; row++)
+        HashSet<(string direction, int row, int col)> visitedLocations = [position];
+
+        while (true)
         {
-            for (var col = 0; col < input[row].Length; col++)
+            if (position.direction == "^")
             {
-                if (input[row][col] == '#')
+                var nextPos = (position.row - 1, position.col);
+
+                if (nextPos.Item1 < 0)
                 {
-                    blockers.Add((row, col));
+                    break;
                 }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item2 + 1 == input.First().Length)
+                    {
+                        break;
+                    }
+                    
+                    position = (">", position.row, position.col);
+
+                    continue;
+                }
+
+                position = ("^", nextPos.Item1, nextPos.Item2);
             }
+            else if (position.direction == ">")
+            {
+                var nextPos = (position.row, position.col + 1);
+
+                if (nextPos.Item2 == input.First().Length)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item1 + 1 == input.Length)
+                    {
+                        break;
+                    }
+                    
+                    position = ("v", position.row, position.col);
+
+                    continue;
+                }
+
+                position = (">", nextPos.Item1, nextPos.Item2);
+            }
+            else if (position.direction == "v")
+            {
+                var nextPos = (position.row + 1, position.col);
+
+                if (nextPos.Item1 == input.Length)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item2 < 0)
+                    {
+                        break;
+                    }
+                    
+                    position = ("<", position.row, position.col);
+
+                    continue;
+                }
+
+                position = ("v", nextPos.Item1, nextPos.Item2);
+            }
+            else 
+            {
+                var nextPos = (position.row, position.col - 1);
+
+                if (nextPos.Item1 < 0)
+                {
+                    break;
+                }
+
+                if (input[nextPos.Item1][nextPos.Item2] == '#')
+                {
+                    if (nextPos.Item1 < 0)
+                    {
+                        break;
+                    }
+                    
+                    position = ("^", position.row, position.col);
+
+                    continue;
+                }
+
+                position = ("<", nextPos.Item1, nextPos.Item2);
+            }
+            
+            visitedLocations.Add(position);
         }
 
-        return blockers;
+        return visitedLocations;
+    }
+
+    private static bool FormsLoop(string[] input, (string direction, int row, int col) position)
+    {
+        HashSet<(string direction, int row, int col)> visitedLocations = [position];
+
+        while (true)
+        {
+            switch (position.direction)
+            {
+                case "^":
+                {
+                    var nextPos = (position.row - 1, position.col);
+
+                    if (nextPos.Item1 < 0)
+                    {
+                        return false;
+                    }
+
+                    if (input[nextPos.Item1][nextPos.Item2] == '#')
+                    {
+                        if (nextPos.Item2 + 1 == input.First().Length)
+                        {
+                            return false;
+                        }
+                    
+                        position = (">", position.row, position.col);
+                    }
+                    else
+                    {
+                        position = ("^", nextPos.Item1, nextPos.Item2);
+                    }
+
+                    break;
+                }
+                case ">":
+                {
+                    var nextPos = (position.row, position.col + 1);
+
+                    if (nextPos.Item2 == input.First().Length)
+                    {
+                        return false;
+                    }
+
+                    if (input[nextPos.Item1][nextPos.Item2] == '#')
+                    {
+                        if (nextPos.Item1 + 1 == input.Length)
+                        {
+                            return false;
+                        }
+                    
+                        position = ("v", position.row, position.col);
+                    }
+                    else
+                    {
+                        position = (">", nextPos.Item1, nextPos.Item2);
+                    }
+
+                    break;
+                }
+                case "v":
+                {
+                    var nextPos = (position.row + 1, position.col);
+
+                    if (nextPos.Item1 == input.Length)
+                    {
+                        return false;
+                    }
+
+                    if (input[nextPos.Item1][nextPos.Item2] == '#')
+                    {
+                        if (nextPos.Item2 < 0)
+                        {
+                            return false;
+                        }
+                    
+                        position = ("<", position.row, position.col);
+                    }
+                    else
+                    {
+                        position = ("v", nextPos.Item1, nextPos.Item2);
+                    }
+
+                    break;
+                }
+                default:
+                {
+                    var nextPos = (position.row, position.col - 1);
+
+                    if (nextPos.Item2 < 0)
+                    {
+                        return false;
+                    }
+
+                    if (input[nextPos.Item1][nextPos.Item2] == '#')
+                    {
+                        if (nextPos.Item1 < 0)
+                        {
+                            return false;
+                        }
+                    
+                        position = ("^", position.row, position.col);
+                    }
+                    else
+                    {
+                        position = ("<", nextPos.Item1, nextPos.Item2);
+                    }
+
+                    break;
+                }
+            }
+            
+            if (visitedLocations.Contains(position) && visitedLocations.Count > 1)
+            {
+                return true;
+            }
+
+            visitedLocations.Add(position);
+        }
     }
 }

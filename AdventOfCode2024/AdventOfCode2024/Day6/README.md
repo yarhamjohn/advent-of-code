@@ -234,3 +234,5 @@ time paradoxes, and in this example, there are `6` different positions you could
 
 You need to get the guard stuck in a loop by adding a single new obstruction. How many different positions could you 
 choose for this obstruction?
+
+`Your puzzle answer was 1911.`
