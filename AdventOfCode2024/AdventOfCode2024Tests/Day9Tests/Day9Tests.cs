@@ -19,9 +19,9 @@ public class Day9Tests
     public void Part2Test()
     {
         var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day9Tests/Input/example2.txt");
-        var input = File.ReadLines(inputPath);
+        var input = File.ReadAllText(inputPath);
 
-        var result = Day9.Part2(input.ToArray());
-        Assert.That(result, Is.EqualTo(9));
+        var result = Day9.Part2(input);
+        Assert.That(result, Is.EqualTo(2858));
     }
 }
