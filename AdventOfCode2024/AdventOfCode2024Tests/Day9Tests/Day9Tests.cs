@@ -18,7 +18,7 @@ public class Day9Tests
     [Test]
     public void Part2Test()
     {
-        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day9Tests/Input/example2.txt");
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day9Tests/Input/example.txt");
         var input = File.ReadAllText(inputPath);
 
         var result = Day9.Part2(input);

@@ -8,6 +8,8 @@ using AdventOfCode2024.Day7;
 using AdventOfCode2024.Day8;
 using AdventOfCode2024.Day9;
 
+#pragma warning disable CS8321 // Local function is declared but never used
+
 long Day1A() => Day1.Part1(File.ReadAllLines("./Day1/input.txt"));
 long Day1B() => Day1.Part2(File.ReadAllLines("./Day1/input.txt"));
 
@@ -35,4 +37,4 @@ long Day8B() => Day8.Part2(File.ReadAllLines("./Day8/input.txt"));
 long Day9A() => Day9.Part1(File.ReadAllText("./Day9/input.txt"));
 long Day9B() => Day9.Part2(File.ReadAllText("./Day9/input.txt"));
 
-Console.WriteLine(Day9B());
+Console.WriteLine(Day9A());
