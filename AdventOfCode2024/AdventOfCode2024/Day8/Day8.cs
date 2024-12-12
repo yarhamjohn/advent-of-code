@@ -10,6 +10,53 @@ public static class Day8
             .Count(x => IsInGrid(input, x));
     }
 
+    public static long Part2(string[] input)
+    {
+        return GetResonantAntiNodes(input, ParseInput(input))
+            .SelectMany(x => x.Value)
+            .Distinct()
+            .Count();
+    }
+
+    private static Dictionary<char, List<(int row, int col)>> GetResonantAntiNodes(string[] input, Dictionary<char, (int row, int col)[]> antennas)
+    {
+        var antinodes = new Dictionary<char, List<(int row, int col)>>();
+
+        foreach (var (antenna, positions) in antennas)
+        {
+            var positionPairs = GetPositionPairs(positions, 2);
+            
+            antinodes.Add(antenna, []);
+
+            foreach (var pair in positionPairs)
+            {
+                var first = pair.First();
+                var second = pair.Last();
+                
+                antinodes[antenna].Add(first);
+
+                var distance = (first.row - second.row, first.col - second.col);
+
+                var candidate = (first.row + distance.Item1, first.col + distance.Item2);
+
+                while (true)
+                {
+                    if (candidate.Item1 < 0 || candidate.Item1 >= input.Length ||
+                        candidate.Item2 < 0 || candidate.Item2 >= input.First().Length)
+                    {
+                        break;
+                    }
+                    
+                    antinodes[antenna].Add(candidate);
+                    
+                    candidate = (candidate.Item1 + distance.Item1, candidate.Item2 + distance.Item2);
+                }
+            }
+        }
+
+        return antinodes;
+    }
+
     private static bool IsInGrid(string[] input, (int row, int col) position)
     {
         return 
@@ -80,10 +127,5 @@ public static class Day8
         }
 
         return antennas;
-    }
-
-    public static long Part2(string[] input)
-    {
-        return 0;
     }
 }

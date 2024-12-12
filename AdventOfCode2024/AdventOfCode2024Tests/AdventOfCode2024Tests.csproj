@@ -52,6 +52,9 @@
       <Content Include="Day8Tests\Input\example.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <Content Include="Day8Tests\Input\example2.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
