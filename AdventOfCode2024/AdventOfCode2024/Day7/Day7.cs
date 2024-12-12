@@ -1,11 +1,23 @@
-﻿namespace AdventOfCode2024.Day7;
+﻿using System.Text;
+
+namespace AdventOfCode2024.Day7;
 
 public static class Day7
 {
     public static long Part1(string[] input)
     {
+        return Evaluate(input, ["*", "+"]);
+    }
+
+    public static long Part2(string[] input)
+    {
+        return Evaluate(input, ["*", "+", "||"]);
+    }
+
+    private static long Evaluate(string[] input, string[] operators)
+    {
         return ParseInput(input)
-            .Where(equation => IsPossiblyTrue(["*", "+"], equation))
+            .Where(equation => IsPossiblyTrue(operators, equation))
             .Sum(equation => equation.testValue);
     }
 
@@ -21,13 +33,22 @@ public static class Day7
 
             for (var opIdx = 0; opIdx < combination.Length; opIdx++)
             {
+                var nextElement = equation.elements[opIdx + 1];
+                
                 switch (combination[opIdx])
                 {
                     case "*":
-                        runningTotal *= equation.elements[opIdx + 1];
+                        runningTotal *= nextElement;
                         break;
                     case "+":
-                        runningTotal += equation.elements[opIdx + 1];
+                        runningTotal += nextElement;
+                        break;
+                    case "||":
+                        var stringBuilder = new StringBuilder();
+                        stringBuilder.Append(runningTotal);
+                        stringBuilder.Append(nextElement);
+                        
+                        runningTotal = long.Parse(stringBuilder.ToString());
                         break;
                 }
                 
@@ -68,10 +89,5 @@ public static class Day7
                 testValue: long.Parse(splitLine[0]), 
                 elements: splitLine[1].Split(" ").Select(long.Parse).ToArray());
         }
-    }
-
-    public static int Part2(string[] input)
-    {
-        return 0;
     }
 }
