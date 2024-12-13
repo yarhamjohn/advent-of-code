@@ -39,5 +39,6 @@ long Day9A() => Day9.Part1(File.ReadAllText("./Day9/input.txt"));
 long Day9B() => Day9.Part2(File.ReadAllText("./Day9/input.txt"));
 
 long Day10A() => Day10.Part1(File.ReadAllLines("./Day10/input.txt"));
+long Day10B() => Day10.Part2(File.ReadAllLines("./Day10/input.txt"));
 
-Console.WriteLine(Day10A());
+Console.WriteLine(Day10B());

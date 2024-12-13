@@ -6,11 +6,35 @@ public static class Day10
     {
         var map = ParseInput(input);
 
-        var trailEnds = GetLocations(map, 9);
-
-        return trailEnds.SelectMany(x => FindTrailHeads(map, x)).Count();
+        return GetLocations(map, 9).SelectMany(x => FindTrailHeads(map, x).Distinct()).Count();
     }
 
+    public static long Part2(string[] input)
+    {
+        var map = ParseInput(input);
+
+        return GetLocations(map, 9).SelectMany(x => FindTrailHeads(map, x)).Count();
+    }
+
+    private static List<int[]> ParseInput(string[] input)
+    {
+        var result = new List<int[]>();
+
+        foreach (var row in input)
+        {
+            var newRow = new int[input.First().Length];
+            
+            for (var col = 0; col < input.First().Length; col++)
+            {
+                newRow[col] = row[col] - '0';
+            }
+            
+            result.Add(newRow);
+        }
+
+        return result;
+    }
+    
     private static List<(int row, int col)> FindTrailHeads(List<int[]> map, (int row, int col) location)
     {
         if (map[location.row][location.col] == 0)
@@ -20,7 +44,6 @@ public static class Day10
 
         return GetNextLocations(map, location)
             .SelectMany(y => FindTrailHeads(map, y))
-            .Distinct()
             .ToList();
     }
 
@@ -54,29 +77,5 @@ public static class Day10
         }
 
         return locations;
-    }
-
-    public static long Part2(string[] input)
-    {
-        return 0;
-    }
-
-    private static List<int[]> ParseInput(string[] input)
-    {
-        var result = new List<int[]>();
-
-        foreach (var row in input)
-        {
-            var newRow = new int[input.First().Length];
-            
-            for (var col = 0; col < input.First().Length; col++)
-            {
-                newRow[col] = row[col] - '0';
-            }
-            
-            result.Add(newRow);
-        }
-
-        return result;
     }
 }
