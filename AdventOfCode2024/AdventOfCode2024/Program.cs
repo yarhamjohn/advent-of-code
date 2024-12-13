@@ -1,4 +1,5 @@
 ﻿using AdventOfCode2024.Day1;
+using AdventOfCode2024.Day10;
 using AdventOfCode2024.Day2;
 using AdventOfCode2024.Day3;
 using AdventOfCode2024.Day4;
@@ -37,4 +38,6 @@ long Day8B() => Day8.Part2(File.ReadAllLines("./Day8/input.txt"));
 long Day9A() => Day9.Part1(File.ReadAllText("./Day9/input.txt"));
 long Day9B() => Day9.Part2(File.ReadAllText("./Day9/input.txt"));
 
-Console.WriteLine(Day9A());
+long Day10A() => Day10.Part1(File.ReadAllLines("./Day10/input.txt"));
+
+Console.WriteLine(Day10A());
