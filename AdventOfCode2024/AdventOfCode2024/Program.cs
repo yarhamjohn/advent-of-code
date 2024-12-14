@@ -45,4 +45,4 @@ long Day10B() => Day10.Part2(File.ReadAllLines("./Day10/input.txt"));
 long Day11A() => Day11.Part1(File.ReadAllText("./Day11/input.txt"));
 long Day11B() => Day11.Part2(File.ReadAllText("./Day11/input.txt"));
 
-Console.WriteLine(Day11A());
+Console.WriteLine(Day11B());

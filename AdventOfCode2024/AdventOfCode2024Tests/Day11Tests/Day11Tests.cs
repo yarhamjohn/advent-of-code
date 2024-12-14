@@ -14,4 +14,14 @@ public class Day11Tests
         var result = Day11.Part1(input);
         Assert.That(result, Is.EqualTo(55312));
     }
+    
+    [Test]
+    public void Part2Test()
+    {
+        var inputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Day11Tests/Input/example.txt");
+        var input = File.ReadAllText(inputPath);
+
+        var result = Day11.Part2(input);
+        Assert.That(result, Is.EqualTo(65601038650482));
+    }
 }
